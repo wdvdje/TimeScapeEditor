@@ -18,7 +18,7 @@ function itemsOptions() {
         } else if (result.isDenied) {
             window.location.href = "URL_list.html";
         } else if (result.isDismissed) {
-            console.log("The user cancelled the action);
+            console.log("The user cancelled the action");
         }
     });
 }
