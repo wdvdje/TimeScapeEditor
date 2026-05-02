@@ -17,6 +17,7 @@ p {
 
 /* elements */
 body {
+  margin: 0;
   padding: 40px;
   box-sizing: border-box}
 div.formbox {
