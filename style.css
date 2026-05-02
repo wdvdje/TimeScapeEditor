@@ -16,6 +16,9 @@ p {
   font-size: 14px}
 
 /* elements */
+body {
+  padding: 40px;
+  box-sizing: border-box}
 div.formbox {
   border: 4px solid blue;
   width: 100%}
