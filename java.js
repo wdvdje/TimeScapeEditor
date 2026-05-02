@@ -6,11 +6,11 @@ function itemsOptions() {
         showDenyButton: true,
         showCancelButton: true,
         confirmButtonColor: 'blue',
-        cancelButtonColor: 'blue',
-        denyButtonColor: 'gray',
+        cancelButtonColor: 'grey',
+        denyButtonColor: 'blue',
         confirmButtonText: 'Create',
-        cancelButtonText: 'Manage',
-        denyButtonText: 'Cancel',
+        cancelButtonText: 'Cancel',
+        denyButtonText: 'Manage',
         reverseButtons: false
     }).then((result) => {
         if (result.isConfirmed) {
