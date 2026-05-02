@@ -14,3 +14,8 @@ h2 {
 p {
   font-family: "Source Sans 3", sans-serif;
   font-size: 14px}
+
+/* elements */
+div.formbox {
+  border: 4px;
+  color: blue}
