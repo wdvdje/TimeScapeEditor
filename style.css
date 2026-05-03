@@ -30,6 +30,7 @@ div.formbox {
   gap: 10px;
   border: 4px solid blue;
   border-radius: 25px;
+  background: lightgray;
   width: 100%;
   padding: 25px;
 }
