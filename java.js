@@ -1,4 +1,4 @@
-
+// items dialogues
 function itemsOptions(createLink, manageLink, item) {
     Swal.fire({
         title: `${item} Editor`,
@@ -22,3 +22,10 @@ function itemsOptions(createLink, manageLink, item) {
         }
     });
 }
+
+// today's date
+const dateElement = document.getElementById('current-date');
+const today = new Date();
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+const dateFormat = today.toLocaleDateString('en-US', options);
+dateElement.textContent = dateFormat;
