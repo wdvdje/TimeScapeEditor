@@ -79,7 +79,7 @@ input.spec {
 	border: 2px solid #ccc;
   border-radius: 8px;
   font-family: "Source Sans 3", sans-serif;
-  font-size: 16px
+  font-size: 16px;
   font-weight: 400;
   transition: 0.3s;
   outline: none;
