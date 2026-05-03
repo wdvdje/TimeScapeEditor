@@ -45,3 +45,17 @@ if (dateElement) {
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   dateElement.textContent = today.toLocaleDateString('en-US', options);
 }
+
+// create form swap
+function formSwap(eventType) {
+  document.getElementById('eventTypes').style.display = 'none';
+  document.getElementById('area-form').style.display = 'block';
+  const allTypes = document.querySelectorAll('.dynamic-form');
+  allTypes.forEach(f => f.style.display = 'none');
+  const idForm = 'form-' + eventType.toLowerCase();
+  document.getElementById(idForm).style.display = 'block';
+}
+function returnType() {
+  document.getElementById('form-area').style.display = 'none';
+  document.getElementById('eventTypes').style.display = 'flex';
+}
