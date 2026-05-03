@@ -1,5 +1,19 @@
 /* styles */
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap");
+@media (max-width: 600px) {
+    div.formbox {
+        flex-direction: column;
+    }
+    
+    button.formbutton {
+        width: 100%;
+        font-size: 20px;
+    }
+    
+    body {
+        padding: 20px;
+    }
+}
 
 h1 {
   font-family: "Source Sans 3", sans-serif;
