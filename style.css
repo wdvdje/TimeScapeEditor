@@ -75,7 +75,6 @@ input.main:focus {
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
 }
 input.spec {
-	display: inline-block;
 	border: 2px solid #ccc;
   border-radius: 8px;
   font-family: "Source Sans 3", sans-serif;
@@ -83,4 +82,8 @@ input.spec {
   font-weight: 400;
   transition: 0.3s;
   outline: none;
+}
+input.spec:focus {
+    border: 2px solid #4CAF50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
 }
