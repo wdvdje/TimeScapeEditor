@@ -1,8 +1,8 @@
 
-function itemsOptions() {
+function itemsOptions(createLink, manageLink, item) {
     Swal.fire({
-        title: 'Editor',
-        text: 'Create or manage items.',
+        title: '${item} Editor',
+        text: 'Create or manage ${items}.',
         showDenyButton: true,
         showCancelButton: true,
         confirmButtonColor: 'blue',
@@ -14,9 +14,9 @@ function itemsOptions() {
         reverseButtons: false
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = "URL_create.html";
+            window.location.href = createLink;
         } else if (result.isDenied) {
-            window.location.href = "URL_list.html";
+            window.location.href = manageLink;
         } else if (result.isDismissed) {
             console.log("The user cancelled the action");
         }
