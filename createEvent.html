@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+y<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
   <body>
     <h1>Create Event</h1>
     <div id="eventType" class="formbox">
-      <button class="formbutton">
+      <button class="formbutton" onclick="formSwap('appointment')">
         <p>Appointment</p>
       </button>
       <button class="formbutton">
@@ -24,8 +24,10 @@
         <p>Job</p>
       </button>
     </div>
-    <div id="form-area">
-      <input type="text" class="main" id="eventTitle" name="eventTitle" placeholder="Event Title">
+    <div id="form-area" style="display: none;">
+      <form id="form-appointment" class="dynamic-form" style="display: none;">
+      	<input type="text" class="main" id="eventTitle" name="eventTitle" placeholder="Event Title">
+      </form>
     <div> 
     <script src="java.js"></script>
   </body>
