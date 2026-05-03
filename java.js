@@ -2,7 +2,7 @@
 function itemsOptions(createLink, manageLink, item) {
     Swal.fire({
         title: '${item} Editor',
-        text: 'Create or manage ${items}.',
+        text: 'Create or manage ${item.toLowerCase()}.',
         showDenyButton: true,
         showCancelButton: true,
         confirmButtonColor: 'blue',
