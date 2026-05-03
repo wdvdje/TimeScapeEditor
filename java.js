@@ -28,7 +28,7 @@ function itemsOptions(createLink, manageLink, item) {
             window.open(
                 createLink,
                 'NewWindow',
-                'width=' + width + ',height=' + height + ',top=' + height + ',left=' + left + ',resizable=yes,scrollbar=yes'
+                'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbar=yes'
             );
         } else if (result.isDenied) {
             window.location.href = manageLink;
