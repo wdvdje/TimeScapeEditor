@@ -14,7 +14,15 @@ function itemsOptions(createLink, manageLink, item) {
         reverseButtons: false
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = createLink;
+            const width = 600;
+            const height = 700;
+            const left = (screen.width / 2) - (width / 2);
+            const top = (screen.height / 2) - (height / 2);
+            window.open(
+                createLink,
+                'NewWindow',
+                'width=' + width + ',height=' + height + ',top=' + height + ',left=' + left + ',resizable=yes,scrollbar=yes'
+            );
         } else if (result.isDenied) {
             window.location.href = manageLink;
         } else if (result.isDismissed) {
