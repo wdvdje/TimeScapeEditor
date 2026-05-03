@@ -1,3 +1,10 @@
+// service worker registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+
 // items dialogues
 function itemsOptions(createLink, manageLink, item) {
     Swal.fire({
@@ -33,7 +40,8 @@ function itemsOptions(createLink, manageLink, item) {
 
 // today's date
 const dateElement = document.getElementById('current-date');
-const today = new Date();
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-const dateFormat = today.toLocaleDateString('en-US', options);
-dateElement.textContent = dateFormat;
+if (dateElement) {
+  const today = new Date();
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  dateElement.textContent = today.toLocaleDateString('en-US', options);
+}

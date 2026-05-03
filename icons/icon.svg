@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Background -->
+  <rect width="192" height="192" rx="36" ry="36" fill="#0000ff"/>
+  <!-- Calendar body -->
+  <rect x="36" y="56" width="120" height="104" rx="12" ry="12" fill="white"/>
+  <!-- Calendar header -->
+  <rect x="36" y="56" width="120" height="36" rx="12" ry="12" fill="#0000cc"/>
+  <rect x="36" y="74" width="120" height="18" fill="#0000cc"/>
+  <!-- Binding pegs -->
+  <rect x="68" y="44" width="10" height="24" rx="5" ry="5" fill="white"/>
+  <rect x="114" y="44" width="10" height="24" rx="5" ry="5" fill="white"/>
+  <!-- Clock face -->
+  <circle cx="96" cy="120" r="28" fill="none" stroke="#0000ff" stroke-width="5"/>
+  <!-- Clock hands -->
+  <line x1="96" y1="120" x2="96" y2="100" stroke="#0000ff" stroke-width="4" stroke-linecap="round"/>
+  <line x1="96" y1="120" x2="112" y2="128" stroke="#0000ff" stroke-width="4" stroke-linecap="round"/>
+  <!-- Center dot -->
+  <circle cx="96" cy="120" r="4" fill="#0000ff"/>
+</svg>
