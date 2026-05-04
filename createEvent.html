@@ -14,7 +14,7 @@
       <button class="formbutton" onclick="formSwap('appointment')">
         <p>Appointment</p>
       </button>
-      <button class="formbutton">
+      <button class="formbutton" onclick="formSwap('event')">
         <p>Event</p>
       </button>
       <button class="formbutton">
@@ -22,6 +22,9 @@
       </button>
       <button class="formbutton">
         <p>Job</p>
+      </button>
+      <button class="formbutton">
+        <p>Meeting</p>
       </button>
     </div>
     <div id="area-form" style="display: none;">
@@ -34,6 +37,12 @@
         <h2>Appointment Details</h2>
         <p>Domain: <select name="domainSelect" id="domainSelect"></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
         <p>Appointment Type: <button>Medical</button><button>Interview</button><button>Professional</button>
+      </form>
+      <form id="form-event" class="dynamic-form" style="display: none;">
+        <h2>New Event</h2>
+      </form>
+      <form id="form-focus" class="dynamic-form" style="display: none;">
+        <h2>New Focus</h2>
       </form>
     </div>
     <script src="java.js"></script>
