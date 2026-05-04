@@ -59,3 +59,14 @@ function returnType() {
   document.getElementById('form-area').style.display = 'none';
   document.getElementById('eventTypes').style.display = 'flex';
 }
+
+// reveal a hidden element when a button is clicked
+function revealOnClick(buttonId, targetId) {
+  const button = document.getElementById(buttonId);
+  const target = document.getElementById(targetId);
+  button.setAttribute('aria-expanded', 'false');
+  button.addEventListener('click', () => {
+    target.classList.remove('hidden');
+    button.setAttribute('aria-expanded', 'true');
+  });
+}
