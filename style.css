@@ -54,6 +54,9 @@ button.formbutton {
   border-radius: 25px;
   background: blue;
   padding: 20px;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
   color: white;
 }
 input.main {
