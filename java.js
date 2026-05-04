@@ -59,3 +59,15 @@ function returnType() {
   document.getElementById('form-area').style.display = 'none';
   document.getElementById('eventTypes').style.display = 'flex';
 }
+
+// reveal a hidden element when an input has text
+function revealOnInput(inputId, targetId) {
+  const input = document.getElementById(inputId);
+  const target = document.getElementById(targetId);
+  input.setAttribute('aria-expanded', 'false');
+  input.addEventListener('input', () => {
+    const hasText = input.value.trim().length > 0;
+    target.classList.toggle('hidden', !hasText);
+    input.setAttribute('aria-expanded', hasText ? 'true' : 'false');
+  });
+}
