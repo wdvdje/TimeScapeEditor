@@ -17,13 +17,13 @@
       <button class="formbutton" onclick="formSwap('event')">
         <p>Event</p>
       </button>
-      <button class="formbutton">
+      <button class="formbutton" onclick="formSwap('focus')">
         <p>Focus</p>
       </button>
-      <button class="formbutton">
+      <button class="formbutton" onclick="formSwap=('job')">
         <p>Job</p>
       </button>
-      <button class="formbutton">
+      <button class="formbutton" onclick="formSwap('meeting')">
         <p>Meeting</p>
       </button>
     </div>
@@ -43,6 +43,12 @@
       </form>
       <form id="form-focus" class="dynamic-form" style="display: none;">
         <h2>New Focus</h2>
+      </form>
+      <form>
+        <h2>New Job</h2>
+      </form>
+      <form id="form-meeting" class="dynamic-form" sytle="display: none;">
+        <h2>New Meeting</h2>
       </form>
     </div>
     <script src="java.js"></script>
