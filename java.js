@@ -60,14 +60,13 @@ function returnType() {
   document.getElementById('eventTypes').style.display = 'flex';
 }
 
-// reveal a hidden element when an input has text
-function revealOnInput(inputId, targetId) {
-  const input = document.getElementById(inputId);
+// reveal a hidden element when a button is clicked
+function revealOnClick(buttonId, targetId) {
+  const button = document.getElementById(buttonId);
   const target = document.getElementById(targetId);
-  input.setAttribute('aria-expanded', 'false');
-  input.addEventListener('input', () => {
-    const hasText = input.value.trim().length > 0;
-    target.classList.toggle('hidden', !hasText);
-    input.setAttribute('aria-expanded', hasText ? 'true' : 'false');
+  button.setAttribute('aria-expanded', 'false');
+  button.addEventListener('click', () => {
+    target.classList.remove('hidden');
+    button.setAttribute('aria-expanded', 'true');
   });
 }
