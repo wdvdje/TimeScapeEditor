@@ -36,7 +36,10 @@
         <p>Location: <input type="text" class="spec" id="appointmentLocation" name="appointmentLocation"></p>
         <h2>Appointment Details</h2>
         <p>Domain: <select name="domainSelect" id="domainSelect"></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
-        <p>Appointment Type: <button>Medical</button><button>Interview</button><button>Psychological</button><button>Personal Care</button><button>Personal Service</button><button>Professional Service</button>
+        <p>Appointment Type: <button id="medicalAppointment" aria-controls="medicalDetails">Medical</button><button>Interview</button><button>Psychological</button><button>Personal Care</button><button>Personal Service</button><button>Professional Service</button>
+          <div id="medicalDetails class="hidden">
+            <p>Emoji:</p>
+          </div>
       </form>
       <form id="form-event" class="dynamic-form" style="display: none;">
         <h2>New Event</h2>
@@ -57,5 +60,6 @@
       </form>
     </div>
     <script src="java.js"></script>
+    <script>revealOnClick('medicalAppointment', 'medicalDetails');</script>
   </body>
 </html>
