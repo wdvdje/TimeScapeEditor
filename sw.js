@@ -1,4 +1,4 @@
-const CACHE_NAME = 'timescapeeditor-v2';
+const CACHE_NAME = 'timescapeeditor-v4';
 
 const STATIC_ASSETS = [
   '/TimeScapeEditor/',
@@ -6,6 +6,9 @@ const STATIC_ASSETS = [
   '/TimeScapeEditor/createEvent.html',
   '/TimeScapeEditor/createReminder.html',
   '/TimeScapeEditor/createTask.html',
+  '/TimeScapeEditor/manageEvents.html',
+  '/TimeScapeEditor/manageReminders.html',
+  '/TimeScapeEditor/manageTasks.html',
   '/TimeScapeEditor/java.js',
   '/TimeScapeEditor/style.css',
   '/TimeScapeEditor/icons/icon.svg',
