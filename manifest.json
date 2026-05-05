@@ -2,32 +2,32 @@
   "name": "TimeScape Editor",
   "short_name": "TimeScape",
   "description": "Manage your events, tasks, and reminders with TimeScape Editor.",
-  "start_url": "/index.html",
-  "scope": "/",
+  "start_url": "/TimeScapeEditor/index.html",
+  "scope": "/TimeScapeEditor/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0000ff",
   "icons": [
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
