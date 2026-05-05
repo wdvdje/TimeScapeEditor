@@ -74,10 +74,22 @@
         <input type="text" class="main" id="eventTitle" name="eventTitle" placeholder="Event Title">
         <h2>Event Details</h2>
           <p>Event Type:
-            <button type="button" id="communityEvent">Community</button>
-            <button type="button" id="socialEvent">Social</button>
+            <button type="button" id="communityEvent" aria-controls="communityEventDetails">Community</button>
             <button type="button" id="professionalEvent">Professional</button>
+            <button type="button" id="socialEvent">Social</button>
           </p>
+          <div id="communityEventDetails" class="hidden">
+            <p>Icon:</p>
+            <p>Organizer: <input type="text" class="spec" id="communityEventOrganizer" name="communityEventOrganizer"></p>
+          </div>
+          <div id="professionalEventDetails" class="hidden">
+            <p>Icon:</p>
+            <p>Organizer: <input type="text" class="spec" id="professionalEventOrganizer" name="professionalEventOrganizer"></p>
+          </div>
+          <div id="socialEventDetails" class="hidden">
+            <p>Icon:</p>
+            <p>Organizer: <input type="text" class="spec" id="socialEventOrganizer" name="socialEventOrganizer"></p>
+          </div>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="eventAdditionalDetails"></textarea>
         <button class="spec">Save</button>
@@ -114,5 +126,8 @@
     <script>revealOnClick('personalCareAppointment', 'personalCareDetails');</script>
     <script>revealOnClick('personalServiceAppointment', 'personalServiceDetails');</script>
     <script>revealOnClick('professionalServiceAppointment', 'medicalDetails');</script>
+    <script>revealOnClick('communityEvent', 'communityEventDetails');</script>
+    <script>revealOnClick('professionalEvent', 'professionalEventDetails');</script>
+    <script>revealOnClick('socialEvent', 'socialEventDetails');</script>
   </body>
 </html>
