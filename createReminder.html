@@ -10,6 +10,41 @@
   </head>
   <body>
     <h1>Create Reminder</h1>
+    <div id="reminderTypes" class="formbox">
+      <button class="formbutton" onclick="formSwap('one-time', 'reminderTypes', 'reminder-area-form')">
+        <p>One-Time</p>
+      </button>
+      <button class="formbutton" onclick="formSwap('recurring', 'reminderTypes', 'reminder-area-form')">
+        <p>Recurring</p>
+      </button>
+    </div>
+    <div id="reminder-area-form" style="display: none;">
+      <form id="form-one-time" class="dynamic-form" style="display: none;">
+        <h2>New One-Time Reminder</h2>
+        <input type="text" class="main" id="oneTimeTitle" name="oneTimeTitle" placeholder="Reminder Title">
+        <p>Date: <input type="date" class="spec" id="oneTimeDate" name="oneTimeDate">.</p>
+        <p>Time: <input type="time" class="spec" id="oneTimeTime" name="oneTimeTime">.</p>
+        <p>Additional Details:</p>
+        <input type="textarea" class="spec" name="oneTimeAdditionalDetails">
+        <button class="spec">Save</button>
+      </form>
+      <form id="form-recurring" class="dynamic-form" style="display: none;">
+        <h2>New Recurring Reminder</h2>
+        <input type="text" class="main" id="recurringTitle" name="recurringTitle" placeholder="Reminder Title">
+        <p>Start Date: <input type="date" class="spec" id="recurringStartDate" name="recurringStartDate">.</p>
+        <p>Time: <input type="time" class="spec" id="recurringTime" name="recurringTime">.</p>
+        <p>Repeat: <select class="spec" id="recurringFrequency" name="recurringFrequency">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
+        </select></p>
+        <p>Additional Details:</p>
+        <input type="textarea" class="spec" name="recurringAdditionalDetails">
+        <button class="spec">Save</button>
+      </form>
+      <button class="formbutton" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
+    </div>
     <script src="java.js"></script>
   </body>
 </html>
