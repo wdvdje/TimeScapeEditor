@@ -5,7 +5,7 @@
   "start_url": "/TimeScapeEditor/index.html",
   "scope": "/TimeScapeEditor/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#f0f0f0",
   "theme_color": "#0000ff",
   "icons": [
     {
