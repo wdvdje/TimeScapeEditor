@@ -66,12 +66,18 @@
           <p>Icon:</p>
         </div>
         <h2>Additional Details:</h2>
-        <input type="textarea" class="spec" name="appointmentAdditionalDetails">
+        <textarea style="width: 100%; height: 75px;" class="spec" name="appointmentAdditionalDetails"></textarea>
         <button class="spec">Save</button>
       </form>
       <form id="form-event" class="dynamic-form" style="display: none;">
         <h2>New Event</h2>
         <input type="text" class="main" id="eventTitle" name="eventTitle" placeholder="Event Title">
+        <h2>Event Details<h2>
+          <p>Event Type:
+            <button type="button" id="communityEvent">Community</button>
+            <button type="button" id="socialEvent">Social</button>
+            <button type="button" id="professionalEvent">Professional</button>button>
+          </p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="eventAdditionalDetails"></textarea>
         <button class="spec">Save</button>
