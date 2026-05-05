@@ -1,4 +1,4 @@
-const CACHE_NAME = 'timescapeeditor-v1';
+const CACHE_NAME = 'timescapeeditor-v2';
 
 const STATIC_ASSETS = [
   '/',
@@ -9,6 +9,9 @@ const STATIC_ASSETS = [
   '/java.js',
   '/style.css',
   '/icons/icon.svg',
+  '/icons/icon-180x180.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
   '/manifest.json',
   'https://cdn.jsdelivr.net/npm/sweetalert2@11',
 ];
