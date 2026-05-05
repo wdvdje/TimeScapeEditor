@@ -47,7 +47,7 @@ div.formbox {
   border-radius: 25px;
   background: lightgray;
   width: 100%;
-  padding: 20px;
+  padding: 10px;
 }
 button.formbutton {
   flex: 1;
