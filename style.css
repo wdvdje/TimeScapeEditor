@@ -37,6 +37,7 @@ body {
   margin: 0;
   padding: 40px;
   box-sizing: border-box;
+  background: #f0f0f0;
 }
 div.formbox {
   display: flex;
