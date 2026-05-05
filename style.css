@@ -59,7 +59,7 @@ button.formbutton {
   font-weight: 700;
   color: white;
 }
-button.formbutton:hover {
+.formbutton:hover {
 	border: 4px solid white;
 	cursor: pointer;
 }	
