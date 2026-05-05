@@ -25,9 +25,13 @@ function itemsOptions(createLink, manageLink, item) {
             const height = 700;
             const left = (screen.width / 2) - (width / 2);
             const top = (screen.height / 2) - (height / 2);
+
+            // Unique per item (Events / Tasks / Reminders)
+            const windowName = `Create_${String(item).replace(/\s+/g, '_')}`;
+
             window.open(
                 createLink,
-                'NewWindow',
+                windowName,
                 'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbar=yes'
             );
         } else if (result.isDenied) {
