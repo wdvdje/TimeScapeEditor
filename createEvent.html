@@ -36,10 +36,31 @@
         <p>Location: <input type="text" class="spec" id="appointmentLocation" name="appointmentLocation"></p>
         <h2>Appointment Details</h2>
         <p>Domain: <select name="domainSelect" id="domainSelect"></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
-        <p>Appointment Type: <button id="medicalAppointment" type="button" aria-controls="medicalDetails">Medical</button><button>Interview</button><button>Psychological</button><button>Personal Care</button><button>Personal Service</button><button>Professional Service</button>
-          <div id="medicalDetails" class="hidden">
-            <p>Emoji:</p>
-          </div>
+        <p>Appointment Type: 
+          <button id="medicalAppointment" type="button" aria-controls="medicalDetails">Medical</button>
+          <button id="interviewAppointment" type="button" aria-controls="interviewDetails">Interview</button>
+          <button id="psychologicalAppointment" type="button" aria-controls="psychologicalDetails">Psychological</button>
+          <button id="personalCareAppointment" type="button" aria-controls="personalCareDetails">Personal Care</button>
+          <button id="personalServiceAppointment" type="button" aria-controls="personalServiceDetails">Personal Service</button>
+          <button id="professionalServiceAppointment" type="button" aria-controls="professionalServiceDetails">Professional Service</button>
+        <div id="medicalDetails" class="hidden">
+          <p>Icon:</p>
+        </div>
+        <div id="interviewDetails class="hidden">
+          <p>Icon:</p>
+        </div>
+        <div id="psychologicalDetails class="hidden">
+          <p>Icon:</p>
+        </div>
+        <div id="personalCareDetails class="hidden">
+          <p>Icon:</p>
+        </div>
+        <div id="personalServiceDetails class="hidden">
+          <p>Icon:</p>
+        </div>
+        <div id="professionalServiceDetails class="hidden">
+          <p>Icon:</p>
+        </div>
       </form>
       <form id="form-event" class="dynamic-form" style="display: none;">
         <h2>New Event</h2>
@@ -61,5 +82,10 @@
     </div>
     <script src="java.js"></script>
     <script>revealOnClick('medicalAppointment', 'medicalDetails');</script>
+    <script>revealOnClick('interviewAppointment', 'interviewDetails');</script>
+    <script>revealOnClick('psychologicalAppointment', 'psychologicalDetails');</script>
+    <script>revealOnClick('personalCareAppointment', 'personalCareDetails');</script>
+    <script>revealOnClick('personalServiceAppointment', 'personalServiceDetails');</script>
+    <script>revealOnClick('professionalServiceAppointment', 'medicalDetails');</script>
   </body>
 </html>
