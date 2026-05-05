@@ -41,15 +41,36 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: cache-first for same-origin assets, network-first for everything else
+// File extensions that update frequently — always try network first
+const NETWORK_FIRST_EXTENSIONS = ['.html', '.css', '.js'];
+
+// Fetch: network-first for HTML/CSS/JS, cache-first for everything else
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
   const isSameOrigin = url.origin === self.location.origin;
+  const isNetworkFirst =
+    isSameOrigin &&
+    (url.pathname === '/TimeScapeEditor/' ||
+      NETWORK_FIRST_EXTENSIONS.some((ext) => url.pathname.endsWith(ext)));
 
-  if (isSameOrigin) {
-    // Cache-first strategy for local static assets
+  if (isNetworkFirst) {
+    // Network-first for HTML/CSS/JS: always reflect latest changes, fall back to cache offline
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+  } else if (isSameOrigin) {
+    // Cache-first for icons and other static assets that rarely change
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) return cached;
@@ -64,7 +85,7 @@ self.addEventListener('fetch', (event) => {
       })
     );
   } else {
-    // Network-first strategy for cross-origin resources (e.g. CDN)
+    // Network-first for cross-origin resources (e.g. CDN)
     event.respondWith(
       fetch(request)
         .then((response) => {
