@@ -51,17 +51,16 @@ if (dateElement) {
 }
 
 // create form swap
-function formSwap(eventType) {
-  document.getElementById('eventTypes').style.display = 'none';
-  document.getElementById('area-form').style.display = 'block';
-  const allTypes = document.querySelectorAll('.dynamic-form');
-  allTypes.forEach(f => f.style.display = 'none');
-  const idForm = 'form-' + eventType.toLowerCase();
-  document.getElementById(idForm).style.display = 'block';
+function formSwap(eventType, typesContainerId = 'eventTypes', formAreaId = 'area-form') {
+  document.getElementById(typesContainerId).style.display = 'none';
+  const formArea = document.getElementById(formAreaId);
+  formArea.style.display = 'block';
+  formArea.querySelectorAll('.dynamic-form').forEach(f => f.style.display = 'none');
+  document.getElementById('form-' + eventType.toLowerCase()).style.display = 'block';
 }
-function returnType() {
-  document.getElementById('form-area').style.display = 'none';
-  document.getElementById('eventTypes').style.display = 'flex';
+function returnType(typesContainerId = 'eventTypes', formAreaId = 'area-form') {
+  document.getElementById(formAreaId).style.display = 'none';
+  document.getElementById(typesContainerId).style.display = 'flex';
 }
 
 // reveal a hidden element when a button is clicked
