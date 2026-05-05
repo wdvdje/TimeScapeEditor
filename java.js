@@ -9,7 +9,7 @@ if ('serviceWorker' in navigator) {
 function itemsOptions(createLink, manageLink, item) {
     Swal.fire({
         title: `${item} Editor`,
-        text: `Create or manage ${item.toLowerCase()}.`,
+        html: `<p>Create or manage ${item.toLowerCase()}.</p>`,
         showDenyButton: true,
         showCancelButton: true,
         confirmButtonColor: 'blue',
