@@ -1,18 +1,18 @@
 const CACHE_NAME = 'timescapeeditor-v2';
 
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/createEvent.html',
-  '/createReminder.html',
-  '/createTask.html',
-  '/java.js',
-  '/style.css',
-  '/icons/icon.svg',
-  '/icons/icon-180x180.png',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  '/manifest.json',
+  '/TimeScapeEditor/',
+  '/TimeScapeEditor/index.html',
+  '/TimeScapeEditor/createEvent.html',
+  '/TimeScapeEditor/createReminder.html',
+  '/TimeScapeEditor/createTask.html',
+  '/TimeScapeEditor/java.js',
+  '/TimeScapeEditor/style.css',
+  '/TimeScapeEditor/icons/icon.svg',
+  '/TimeScapeEditor/icons/icon-180x180.png',
+  '/TimeScapeEditor/icons/icon-192x192.png',
+  '/TimeScapeEditor/icons/icon-512x512.png',
+  '/TimeScapeEditor/manifest.json',
   'https://cdn.jsdelivr.net/npm/sweetalert2@11',
 ];
 
