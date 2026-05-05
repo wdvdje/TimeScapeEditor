@@ -79,10 +79,10 @@ input.main {
 }
 input.main:focus {
     border: 2px solid #4CAF50;
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 0 8px blue;
 }
 input.spec {
-	border: 2px solid #ccc;
+  border: 2px solid #ccc;
   border-radius: 8px;
   font-family: "Source Sans 3", sans-serif;
   font-size: 16px;
@@ -92,7 +92,7 @@ input.spec {
 }
 input.spec:focus {
     border: 2px solid #4CAF50;
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 0 8px blue;
 }
 .hidden {
     display: none;
