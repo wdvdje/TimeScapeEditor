@@ -125,7 +125,7 @@ table.itemsTable thead th {
   font-weight: bold;
   color: #FFFFFF;
   text-align: center;
-  border-left: 6px solid #0000FF;
+  border: 6px solid #0000FF;
 }
 table.itemsTable thead th:first-child {
   border-left: none;
