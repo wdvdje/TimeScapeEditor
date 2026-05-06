@@ -72,13 +72,14 @@ function revealOnClick(buttonId, targetId) {
   button.setAttribute('aria-expanded', 'false');
   _revealOnClickRegistry.push({ button, target });
   button.addEventListener('click', () => {
+    const isOpen = !target.classList.contains('hidden');
     _revealOnClickRegistry.forEach(entry => {
-      if (entry.target !== target) {
-        entry.target.classList.add('hidden');
-        entry.button.setAttribute('aria-expanded', 'false');
-      }
+      entry.target.classList.add('hidden');
+      entry.button.setAttribute('aria-expanded', 'false');
     });
-    target.classList.remove('hidden');
-    button.setAttribute('aria-expanded', 'true');
+    if (!isOpen) {
+      target.classList.remove('hidden');
+      button.setAttribute('aria-expanded', 'true');
+    }
   });
 }
