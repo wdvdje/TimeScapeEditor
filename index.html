@@ -13,7 +13,7 @@
   </head>
   <body>
     <h1>TimeScape Editor</h1>
-    <p>Today is <span id="current-date"></span>. You have  events,  tasks, and  reminders.</p>
+    <p>Today is <strong><span id="current-date"></span></strong>. You have <strong><span id="event-count"></span></strong> events, <strong><span id="task-count"></span></strong> tasks, and <strong><span id="reminder-count"></span></strong> reminders.</p>
     <h2>Schedules & Calendars</h2>
     <div class="formbox">
       <button class="formbutton">
@@ -43,13 +43,13 @@
     </div>
     <h2>Edit & Manage Domains</h2>
     <div class="formbox">
-      <button class="formbutton">
+      <button class="formbutton" onclick="location.href='managePersonal.html'">
         <p>Personal</p>
       </button>
-      <button class="formbutton">
+      <button class="formbutton" onclick="location.href='manageHousehold.html'">
         <p>Household</p>
       </button>
-      <button class="formbutton">
+      <button class="formbutton" onclick="location.href='manageJobs.html'">
         <p>Jobs</p>
       </button>
     </div>
