@@ -82,8 +82,12 @@
         </div>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="appointmentAdditionalDetails"></textarea>
-        <p>Create Sub-Item</p>
-        <button class="type">Save</button>
+        <p>Create Sub-Item
+        <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
+        <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button>
+        </p>
+        <br />
+        <button class="type" id="saveAppointment" name="saveAppointment">Save</button>
       </form>
       <form id="form-event" class="dynamic-form" style="display: none;">
         <h2>New Event</h2>
@@ -113,8 +117,11 @@
           </div>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="eventAdditionalDetails"></textarea>
-        <p>Create Sub-Item</p>
-        <button class="spec">Save</button>
+        <p>Create Sub-Item
+        <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
+        <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button></p>
+        <br />
+        <button class="type" id="saveEvent" name="saveEvent">Save</button>
       </form>
       <form id="form-focus" class="dynamic-form" style="display: none;">
         <h2>New Focus</h2>
@@ -148,8 +155,11 @@
         </div>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="focusAdditionalDetails"></textarea>
-        <p>Create Sub-Item</p>
-        <button class="spec">Save</button>
+        <p>Create Sub-Item
+        <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
+        <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button></p>
+        <br />
+        <button class="type" id="saveFocus" name="saveFocus">Save</button>
       </form>
       <form id="form-job" class="dynamic-form" style="display: none;">
         <h2>New Job</h2>
@@ -160,8 +170,11 @@
         <p>Repeat: <select class="type"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="jobAdditionalDetails"></textarea>
-        <p>Create Sub-Item</p>
-        <button class="spec">Save</button>
+        <p>Create Sub-Item
+        <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
+        <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button></p>
+        <br />
+        <button class="type" id="saveJob" name="saveJob">Save</button>
       </form>
       <form id="form-meeting" class="dynamic-form" style="display: none;">
         <h2>New Meeting</h2>
@@ -190,9 +203,9 @@
         <p>Domain: <select name="domainSelect" id="domainSelect"></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="meetingAdditionalDetails"></textarea>
-        <p>Create Sub-Item</p>
+        <p>Create Sub-Item
         <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
-        <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button>
+        <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button></p>
         <br />
         <button class="type" id="saveMeeting" name="saveMeeting">Save</button>
       </form>
@@ -207,5 +220,11 @@
     <script>revealOnClick('communityEvent', 'communityEventDetails');</script>
     <script>revealOnClick('professionalEvent', 'professionalEventDetails');</script>
     <script>revealOnClick('socialEvent', 'socialEventDetails');</script>
+    <script>revealOnClick('readingFocus', 'readingFocusDetails');</script>
+    <script>revealOnClick('writingFocus', 'writingFocusDetails');</script>
+    <script>revealOnClick('projectFocus', 'projectFocusDetails');</script>
+    <script>revealOnClick('fitnessFocus', 'fitnessFocusDetails');</script>
+    <script>revealOnClick('personalMeeting', 'personalMeetingDetails');</script>
+    <script>revealOnClick('professionalMeeting', 'professionalMeetingDetails');</script>
   </body>
 </html>
