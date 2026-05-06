@@ -86,7 +86,6 @@
         <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
         <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button>
         </p>
-        <br />
         <button class="type" id="saveAppointment" name="saveAppointment">Save</button>
       </form>
       <form id="form-event" class="dynamic-form" style="display: none;">
@@ -120,7 +119,6 @@
         <p>Create Sub-Item
         <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
         <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button></p>
-        <br />
         <button class="type" id="saveEvent" name="saveEvent">Save</button>
       </form>
       <form id="form-focus" class="dynamic-form" style="display: none;">
@@ -158,7 +156,6 @@
         <p>Create Sub-Item
         <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
         <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button></p>
-        <br />
         <button class="type" id="saveFocus" name="saveFocus">Save</button>
       </form>
       <form id="form-job" class="dynamic-form" style="display: none;">
@@ -173,7 +170,6 @@
         <p>Create Sub-Item
         <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
         <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button></p>
-        <br />
         <button class="type" id="saveJob" name="saveJob">Save</button>
       </form>
       <form id="form-meeting" class="dynamic-form" style="display: none;">
@@ -206,7 +202,6 @@
         <p>Create Sub-Item
         <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
         <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button></p>
-        <br />
         <button class="type" id="saveMeeting" name="saveMeeting">Save</button>
       </form>
     </div>
@@ -226,5 +221,6 @@
     <script>revealOnClick('fitnessFocus', 'fitnessFocusDetails');</script>
     <script>revealOnClick('personalMeeting', 'personalMeetingDetails');</script>
     <script>revealOnClick('professionalMeeting', 'professionalMeetingDetails');</script>
+    <script>attachEventSaveHandlers();</script>
   </body>
 </html>
