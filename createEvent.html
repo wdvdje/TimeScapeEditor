@@ -46,7 +46,7 @@
           <button id="professionalServiceAppointment" type="button" class="type" aria-controls="professionalServiceDetails">Professional Service</button>
         <div id="medicalDetails" class="hidden">
           <p>Icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 6H5.2C4.0799 6 3.51984 6 3.09202 6.21799C2.71569 6.40973 2.40973 6.71569 2.21799 7.09202C2 7.51984 2 8.0799 2 9.2V17.8C2 18.9201 2 19.4802 2.21799 19.908C2.40973 20.2843 2.71569 20.5903 3.09202 20.782C3.51984 21 4.0799 21 5.2 21H18.8C19.9201 21 20.4802 21 20.908 20.782C21.2843 20.5903 21.5903 20.2843 21.782 19.908C22 19.4802 22 18.9201 22 17.8V9.2C22 8.07989 22 7.51984 21.782 7.09202C21.5903 6.71569 21.2843 6.40973 20.908 6.21799C20.4802 6 19.9201 6 18.8 6H17M2 10H4M20 10H22M2 14H4M20 14H22M12 6V10M10 8H14M17 21V6.2C17 5.0799 17 4.51984 16.782 4.09202C16.5903 3.71569 16.2843 3.40973 15.908 3.21799C15.4802 3 14.9201 3 13.8 3H10.2C9.07989 3 8.51984 3 8.09202 3.21799C7.71569 3.40973 7.40973 3.71569 7.21799 4.09202C7 4.51984 7 5.0799 7 6.2V21H17ZM14 21V17C14 15.8954 13.1046 15 12 15C10.8954 15 10 15.8954 10 17V21H14Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg></p>
-          <p>Care Type: <select class="spec"><option>Primary Care</option><option>Urgent Care</option></select></p>
+          <p>Care Type: <select class="spec" id="careTypeMedical" name="careTypeMedical"><option>Primary Care</option><option>Urgent Care</option></select></p>
           <p>Care Provider: <input type="text" class="spec" id="careProviderMedical" name="careProviderMedical"></p>
           <p>Cost Estimate: $<input type="number" min="0" step="0.01" class="spec" id="costEstimateMedical" name="costEstimateMedical" placeholder="00.00"></p>
         </div>
@@ -58,27 +58,27 @@
         </div>
         <div id="psychologicalDetails" class="hidden">
           <p>Icon:</p>
-          <p>Care Type:</p>
-          <p>Care Provider:</p>
-          <p>Reason for visit:</p>
+          <p>Care Type: <select class="spec" id="careTypePsychological" name="careTypePsychological"><option>Therapy</option><option>Psychiatry</option></select></p>
+          <p>Care Provider: <input type="text" class="spec" id="careProviderPsychological" name="careProviderPsychological"></p>
+          <p>Reason for Visit: <input type="text" class="spec" id="reasonForVisitPsychological" name="reasonForVisitPsychological"></p>
         </div>
         <div id="personalCareDetails" class="hidden">
           <p>Icon:</p>
-          <p>Service Type:</p>
-          <p>Service Provider:</p>
-          <p>Service Cost:</p>
+          <p>Service Type: <select class="spec" id="serviceTypePersonalCare" name="serviceTypePersonalCare"><option>Haircut</option></select></p>
+          <p>Service Provider: <input type="text" class="spec" id="serviceProviderPersonalCare" name="serviceProviderPersonalCare"></p>
+          <p>Service Cost: $<input type="number" min="0" step="0.01" class="spec" id="costEstimatePersonalCare" name="costEstimatePersonalCare" placeholder="00.00"></p>
         </div>
         <div id="personalServiceDetails" class="hidden">
           <p>Icon:</p>
-          <p>Service Type:</p>
-          <p>Service Provider:</p>
-          <p>Service Cost:</p>
+          <p>Service Type: <select class="spec" id="serviceTypePersonalService" name="serviceTypePersonalService"><option>Cleaning</option><option>Repair</option><option>Delivery</option></select></p>
+          <p>Service Provider: <input type="text" class="spec" id="serviceProviderPersonalService" name="serviceProviderPersonalService"></p>
+          <p>Service Cost: $<input type="number" min="0" step="0.01" class="spec" id="costEstimatePersonalService" name="costEstimatePersonalService" placeholder="00.00"></p>
         </div>
         <div id="professionalServiceDetails" class="hidden">
           <p>Icon:</p>
-          <p>Service Type: <select><option>Professional Development</option><option>Mixer/Gathering</option></select></p>
-          <p>Service Provider: </p>
-          <p>Service Cost:</p>
+          <p>Service Type: <select class="spec" id="serviceTypeProfessionalService" name="serviceTypeProfessionalService"><option>Professional Development</option><option>Mixer/Gathering</option></select></p>
+          <p>Service Provider: <input type="text" class="spec" id="serviceProviderProfessionalService" name="serviceProviderProfessionalService"></p>
+          <p>Service Cost: $<input type="number" min="0" step="0.01" class="spec" id="costEstimateProfessionalService" name="costEstimateProfessionalService" placeholder="00.00"></p>
         </div>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="appointmentAdditionalDetails"></textarea>
@@ -115,7 +115,11 @@
         <input type="text" class="main" id="focusTitle" name="focusTitle" placeholder="Focus Title">
         <p>Date: <input type="date" class="spec" id="focusDate" name="focusDate">.</p>
         <h2>Focus Details</h2>
-        <p>Focus Type:</p>
+        <p>Focus Type: 
+          <button type="button" id="readingFocus" name="readingFocus">Reading</button>
+          <button type="button" id="writingFocus" name="writingFocus">Writing</button>
+          <button type="button" id="projectFocus" name="projectFocus">Project</button>
+        </p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="focusAdditionalDetails"></textarea>
         <button class="spec">Save</button>
@@ -141,7 +145,7 @@
     <script>revealOnClick('psychologicalAppointment', 'psychologicalDetails');</script>
     <script>revealOnClick('personalCareAppointment', 'personalCareDetails');</script>
     <script>revealOnClick('personalServiceAppointment', 'personalServiceDetails');</script>
-    <script>revealOnClick('professionalServiceAppointment', 'medicalDetails');</script>
+    <script>revealOnClick('professionalServiceAppointment', 'professionalServiceDetails');</script>
     <script>revealOnClick('communityEvent', 'communityEventDetails');</script>
     <script>revealOnClick('professionalEvent', 'professionalEventDetails');</script>
     <script>revealOnClick('socialEvent', 'socialEventDetails');</script>
