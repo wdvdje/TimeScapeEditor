@@ -92,7 +92,7 @@ input.spec {
   outline: none;
 }
 input.spec:focus {
-    border: 2px solid #4CAF50;
+    border: 2px solid blue;
     box-shadow: 0 0 8px blue;
 }
 .hidden {
@@ -130,3 +130,13 @@ table.itemsTable thead th {
 table.itemsTable thead th:first-child {
   border-left: none;
 }
+button.type {
+color: rgb(255, 255, 255); font-size: 14px; line-height: 16px; padding: 6px; border-radius: 10px; font-family: "Source Sans 3", sans-serif; font-weight: normal; text-decoration: none; font-style: normal; font-variant: normal; text-transform: none; border: blue; background: blue; display: inline-block;
+}
+.type:hover {
+background: #1C6EA4;
+box-shadow: 0 0 8px blue;
+cursor: pointer;
+}
+.type:active {
+background: #FFFFFF; }
