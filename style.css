@@ -104,6 +104,7 @@ table.itemsTable {
   background-color: #F0F0F0;
   width: 100%;
   text-align: center;
+  border-spacing: 0px;
 }
 table.itemsTable td, table.itemsTable th {
   border: 5px solid #D3D3D3;
