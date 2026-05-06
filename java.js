@@ -63,12 +63,21 @@ function returnType(typesContainerId = 'eventTypes', formAreaId = 'area-form') {
   document.getElementById(typesContainerId).style.display = 'flex';
 }
 
-// reveal a hidden element when a button is clicked
+// reveal a hidden element when a button is clicked;
+// only one target per group is shown at a time
+const _revealOnClickRegistry = [];
 function revealOnClick(buttonId, targetId) {
   const button = document.getElementById(buttonId);
   const target = document.getElementById(targetId);
   button.setAttribute('aria-expanded', 'false');
+  _revealOnClickRegistry.push({ button, target });
   button.addEventListener('click', () => {
+    _revealOnClickRegistry.forEach(entry => {
+      if (entry.target !== target) {
+        entry.target.classList.add('hidden');
+        entry.button.setAttribute('aria-expanded', 'false');
+      }
+    });
     target.classList.remove('hidden');
     button.setAttribute('aria-expanded', 'true');
   });
