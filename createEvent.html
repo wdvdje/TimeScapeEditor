@@ -34,7 +34,7 @@
         <p>Date: <input type="date" class="spec" id="appointmentDate" name="appointmentDate">.</p>
       	<p>Start Time: <input type="time" class="spec" id="appointmentStartTime" name="appointmentStartTime">. End Time: <input type="time" class="spec" id="appointmentEndTime" name="appointmentEndTime">.</p>
         <p>Location: <input type="text" class="spec" id="appointmentLocation" name="appointmentLocation"></p>
-        <p>Repeat: <select class="type"><option>never</option><options>every day</options></select></p>
+        <p>Repeat: <select class="type"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <h2>Appointment Details</h2>
         <p>Domain: <select name="domainSelect" id="domainSelect"></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
         <p>Appointment Type: 
@@ -87,6 +87,10 @@
       <form id="form-event" class="dynamic-form" style="display: none;">
         <h2>New Event</h2>
         <input type="text" class="main" id="eventTitle" name="eventTitle" placeholder="Event Title">
+        <p>Date: <input type="date" class="spec" id="eventDate" name="eventDate">.</p>
+        <p>Start Time: <input type="time" class="spec" id="eventStartTime" name="eventStartTime">. End Time: <input type="time" class="spec" id="eventEndTime" name="eventEndTime">.</p>
+        <p>Location: <input type="text" class="spec" id="eventLocation" name="eventLocation"></p>
+        <p>Repeat: <select class="type"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <h2>Event Details</h2>
           <p>Event Type:
             <button type="button" id="communityEvent" class="type" aria-controls="communityEventDetails">Community</button>
@@ -96,7 +100,7 @@
           <div id="communityEventDetails" class="hidden">
             <p>Icon:</p>
             <p>Organizer: <input type="text" class="spec" id="communityEventOrganizer" name="communityEventOrganizer"></p>
-            <p>Event Link: <input type="url" id="communityEventLink"> name="communityEventLink"</p>
+            <p>Event Link: <input type="url" id="communityEventLink" name="communityEventLink"></p>
           </div>
           <div id="professionalEventDetails" class="hidden">
             <p>Icon:</p>
@@ -114,6 +118,9 @@
         <h2>New Focus</h2>
         <input type="text" class="main" id="focusTitle" name="focusTitle" placeholder="Focus Title">
         <p>Date: <input type="date" class="spec" id="focusDate" name="focusDate">.</p>
+        <p>Start Time: <input type="time" class="spec" id="focusStartTime" name="focusStartTime">. End Time: <input type="time" class="spec" id="focusEndTime" name="focusEndTime">.</p>
+        <p>Location: <input type="text" class="spec" id="focusLocation" name="focusLocation"></p>
+        <p>Repeat: <select class="type"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <h2>Focus Details</h2>
         <p>Focus Type: 
           <button type="button" id="readingFocus" name="readingFocus">Reading</button>
@@ -128,6 +135,10 @@
       <form id="form-job" class="dynamic-form" style="display: none;">
         <h2>New Job</h2>
         <input type="text" class="main" id="jobTitle" name="jobTitle" placeholder="Job Title">
+        <p>Date: <input type="date" class="spec" id="jobDate" name="jobDate">.</p>
+        <p>Start time: <input type="time" class="spec" id="jobStartTime" name="jobStartTime">. End time: <input type="time" class="spec" id="jobEndTime" name="jobEndTime">.</p>
+        <p>Location: <input type="text" class="spec" id="jobLocation" name="jobLocation"></p>
+        <p>Repeat: <select class="type"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="jobAdditionalDetails"></textarea>
         <button class="spec">Save</button>
@@ -138,7 +149,7 @@
         <p>Date: <input type="date" class="spec" id="meetingDate" name="meetingDate">.</p>
         <p>Start Time: <input type="time" class="spec" id="meetingStartTime" name="meetingStartTime">. End Time: <input type="time" class="spec" id="meetingEndTime" name="meetingEndTime">.</p>
         <p>Location: <input type="text" class="spec" id="meetingLocation" name="meetingLocation"></p>
-        <p>Repeat: <select class="type"><option>never</option><options>every day</options></select></p>
+        <p>Repeat: <select class="type"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <h2>Meeting Details</h2>
         <p>Meeting Type: 
           <button type="button" id="personalMeeting" name="personalMeeting">Personal</button>
