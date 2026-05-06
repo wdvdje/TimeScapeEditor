@@ -34,6 +34,7 @@
         <p>Date: <input type="date" class="spec" id="appointmentDate" name="appointmentDate">.</p>
       	<p>Start Time: <input type="time" class="spec" id="appointmentStartTime" name="appointmentStartTime">. End Time: <input type="time" class="spec" id="appointmentEndTime" name="appointmentEndTime">.</p>
         <p>Location: <input type="text" class="spec" id="appointmentLocation" name="appointmentLocation"></p>
+        <p>Repeat: <select class="type"><option>never</option><options>every day</options></select></p>
         <h2>Appointment Details</h2>
         <p>Domain: <select name="domainSelect" id="domainSelect"></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
         <p>Appointment Type: 
@@ -89,12 +90,13 @@
         <h2>Event Details</h2>
           <p>Event Type:
             <button type="button" id="communityEvent" class="type" aria-controls="communityEventDetails">Community</button>
-            <button type="button" id="professionalEvent" class="type">Professional</button>
-            <button type="button" id="socialEvent" class="type">Social</button>
+            <button type="button" id="professionalEvent" class="type" aria-controls="professionalEventDetails">Professional</button>
+            <button type="button" id="socialEvent" class="type" aria-controls="socialEventDetails">Social</button>
           </p>
           <div id="communityEventDetails" class="hidden">
             <p>Icon:</p>
             <p>Organizer: <input type="text" class="spec" id="communityEventOrganizer" name="communityEventOrganizer"></p>
+            <p>Event Link: <input type="url" id="communityEventLink"> name="communityEventLink"</p>
           </div>
           <div id="professionalEventDetails" class="hidden">
             <p>Icon:</p>
