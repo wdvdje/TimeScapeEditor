@@ -37,12 +37,12 @@
         <h2>Appointment Details</h2>
         <p>Domain: <select name="domainSelect" id="domainSelect"></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
         <p>Appointment Type: 
-          <button id="medicalAppointment" type="button" aria-controls="medicalDetails">Medical</button>
-          <button id="interviewAppointment" type="button" aria-controls="interviewDetails">Interview</button>
-          <button id="psychologicalAppointment" type="button" aria-controls="psychologicalDetails">Psychological</button>
-          <button id="personalCareAppointment" type="button" aria-controls="personalCareDetails">Personal Care</button>
-          <button id="personalServiceAppointment" type="button" aria-controls="personalServiceDetails">Personal Service</button>
-          <button id="professionalServiceAppointment" type="button" aria-controls="professionalServiceDetails">Professional Service</button>
+          <button id="medicalAppointment" type="button" class="type" aria-controls="medicalDetails">Medical</button>
+          <button id="interviewAppointment" type="button" class="type" aria-controls="interviewDetails">Interview</button>
+          <button id="psychologicalAppointment" type="button" class="type" aria-controls="psychologicalDetails">Psychological</button>
+          <button id="personalCareAppointment" type="button" class="type" aria-controls="personalCareDetails">Personal Care</button>
+          <button id="personalServiceAppointment" type="button" class="type" aria-controls="personalServiceDetails">Personal Service</button>
+          <button id="professionalServiceAppointment" type="button" class="type" aria-controls="professionalServiceDetails">Professional Service</button>
         <div id="medicalDetails" class="hidden">
           <p>Icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 6H5.2C4.0799 6 3.51984 6 3.09202 6.21799C2.71569 6.40973 2.40973 6.71569 2.21799 7.09202C2 7.51984 2 8.0799 2 9.2V17.8C2 18.9201 2 19.4802 2.21799 19.908C2.40973 20.2843 2.71569 20.5903 3.09202 20.782C3.51984 21 4.0799 21 5.2 21H18.8C19.9201 21 20.4802 21 20.908 20.782C21.2843 20.5903 21.5903 20.2843 21.782 19.908C22 19.4802 22 18.9201 22 17.8V9.2C22 8.07989 22 7.51984 21.782 7.09202C21.5903 6.71569 21.2843 6.40973 20.908 6.21799C20.4802 6 19.9201 6 18.8 6H17M2 10H4M20 10H22M2 14H4M20 14H22M12 6V10M10 8H14M17 21V6.2C17 5.0799 17 4.51984 16.782 4.09202C16.5903 3.71569 16.2843 3.40973 15.908 3.21799C15.4802 3 14.9201 3 13.8 3H10.2C9.07989 3 8.51984 3 8.09202 3.21799C7.71569 3.40973 7.40973 3.71569 7.21799 4.09202C7 4.51984 7 5.0799 7 6.2V21H17ZM14 21V17C14 15.8954 13.1046 15 12 15C10.8954 15 10 15.8954 10 17V21H14Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg></p>
           <p>Care Type: <select class="spec"><option>Primary Care</option><option>Urgent Care</option></select></p>
@@ -81,16 +81,16 @@
         </div>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="appointmentAdditionalDetails"></textarea>
-        <button class="spec">Save</button>
+        <button class="type">Save</button>
       </form>
       <form id="form-event" class="dynamic-form" style="display: none;">
         <h2>New Event</h2>
         <input type="text" class="main" id="eventTitle" name="eventTitle" placeholder="Event Title">
         <h2>Event Details</h2>
           <p>Event Type:
-            <button type="button" id="communityEvent" aria-controls="communityEventDetails">Community</button>
-            <button type="button" id="professionalEvent">Professional</button>
-            <button type="button" id="socialEvent">Social</button>
+            <button type="button" id="communityEvent" class="type" aria-controls="communityEventDetails">Community</button>
+            <button type="button" id="professionalEvent" class="type">Professional</button>
+            <button type="button" id="socialEvent" class="type">Social</button>
           </p>
           <div id="communityEventDetails" class="hidden">
             <p>Icon:</p>
