@@ -17,6 +17,12 @@
       <button class="formbutton" onclick="formSwap('routine', 'reminderTypes', 'reminder-area-form')">
         <p>Routine</p>
       </button>
+      <button class="formbutton" onclick="formSwap('chore', 'reminderTypes', 'reminder-area-form')">
+        <p>Chore</p>
+      </button>
+      <button class="formbutton" onclick="formSwap('oneTime', 'reminderTypes', 'reminder-area-form')">
+        <p>One-Time</p>
+      </button>
     </div>
     <div id="reminder-area-form" style="display: none;">
       <form id="form-daily" class="dynamic-form" style="display: none;">
@@ -24,7 +30,7 @@
         <input type="text" class="main" id="dailyTitle" name="dailyTitle" placeholder="Reminder Title">
         <p>Date: <input type="date" class="spec" id="dailyDate" name="dailyDate">.</p>
         <p>Time: <input type="time" class="spec" id="dailyTime" name="dailyTime">.</p>
-        <p>Additional Details:</p>
+        <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="dailyAdditionalDetails">
         <button class="spec">Save</button>
       </form>
@@ -39,8 +45,32 @@
           <option value="monthly">Monthly</option>
           <option value="yearly">Yearly</option>
         </select></p>
-        <p>Additional Details:</p>
+        <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="routineAdditionalDetails">
+        <button class="spec">Save</button>
+      </form>
+      <form id="form-chore" class="dynamic-form" style="display: none;">
+        <h2>New Chore</h2>
+        <input type="text" class="main" id="choreTitle" name="choreTitle" placeholder="Chore Title">
+        <p>Start Date: <input type="date" class="spec" id="choreStartDate" name="choreStartDate">.</p>
+        <p>Time: <input type="time" class="spec" id="choreTime" name="choreTime">.</p>
+        <p>Repeat: <select class="spec" id="choreFrequency" name="choreFrequency">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
+        </select></p>
+        <h2>Additional Details:</h2>
+        <input type="textarea" class="spec" name="choreAdditionalDetails">
+        <button class="spec">Save</button>
+      </form>
+      <form id="form-oneTime" class="dynamic-form" style="display: none;">
+        <h2>New One-Time Reminder</h2>
+        <input type="text" class="main" id="oneTimeTitle" name="oneTimeTitle" placeholder="Reminder Title">
+        <p>Date: <input type="date" class="spec" id="oneTimeDate" name="oneTimeDate">.</p>
+        <p>Time: <input type="time" class="spec" id="oneTimeTime" name="oneTimeTime">.</p>
+        <h2>Additional Details:</h2>
+        <input type="textarea" class="spec" name="oneTimeAdditionalDetails">
         <button class="spec">Save</button>
       </form>
       <button class="formbutton" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
