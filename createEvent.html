@@ -82,6 +82,7 @@
         </div>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="appointmentAdditionalDetails"></textarea>
+        <p>Create Sub-Item</p>
         <button class="type">Save</button>
       </form>
       <form id="form-event" class="dynamic-form" style="display: none;">
@@ -112,6 +113,7 @@
           </div>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="eventAdditionalDetails"></textarea>
+        <p>Create Sub-Item</p>
         <button class="spec">Save</button>
       </form>
       <form id="form-focus" class="dynamic-form" style="display: none;">
@@ -123,13 +125,30 @@
         <p>Repeat: <select class="type"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <h2>Focus Details</h2>
         <p>Focus Type: 
-          <button type="button" id="readingFocus" name="readingFocus">Reading</button>
-          <button type="button" id="writingFocus" name="writingFocus">Writing</button>
-          <button type="button" id="projectFocus" name="projectFocus">Project</button>
-          <button type="button" id="fitnessFocus" name="fitnessFocus">Fitness</button>
+          <button type="button" class="type" id="readingFocus" name="readingFocus">Reading</button>
+          <button type="button" class="type" id="writingFocus" name="writingFocus">Writing</button>
+          <button type="button" class="type" id="projectFocus" name="projectFocus">Project</button>
+          <button type="button" class="type" id="fitnessFocus" name="fitnessFocus">Fitness</button>
         </p>
+        <div id="readingFocusDetails" class="hidden">
+          <p>Icon:</p>
+          <p>Material: <input type="text" class="spec" id="materialReadingFocus" name="materialReadingFocus"></p>
+        </div>
+        <div id="writingFocusDetails" class="hidden">
+          <p>Icon:</p>
+          <p>Topic: <input type="text" class="spec" id="topicWritingFocus" name="topicWritingFocus"></p>
+        </div>
+        <div id="projectFocusDetails" class="hidden">
+          <p>Icon:</p>
+          <p>Project: <input type="text" class="spec" id="projectProjectFocus" name="projectProjectFocus"></p>
+        </div>
+        <div id="fitnessFocusDetails" class="hidden">
+          <p>Icon:</p>
+          <p>Fitness: <input type="text" class="spec" id="fitnessFitnessFocus" name="fitnessFitnessFocus"></p>
+        </div>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="focusAdditionalDetails"></textarea>
+        <p>Create Sub-Item</p>
         <button class="spec">Save</button>
       </form>
       <form id="form-job" class="dynamic-form" style="display: none;">
@@ -141,6 +160,7 @@
         <p>Repeat: <select class="type"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="jobAdditionalDetails"></textarea>
+        <p>Create Sub-Item</p>
         <button class="spec">Save</button>
       </form>
       <form id="form-meeting" class="dynamic-form" style="display: none;">
@@ -152,13 +172,29 @@
         <p>Repeat: <select class="type"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <h2>Meeting Details</h2>
         <p>Meeting Type: 
-          <button type="button" id="personalMeeting" name="personalMeeting">Personal</button>
-          <button type="button" id="professionalMeeting" name="professionalMeeting">Professional</button>
+          <button type="button" class="type" id="personalMeeting" name="personalMeeting">Personal</button>
+          <button type="button" class="type" id="professionalMeeting" name="professionalMeeting">Professional</button>
         </p>
+        <div id="personalMeetingDetails" class="hidden">
+          <p>Icon:</p>
+          <p>Organizer: <input type="text" class="spec" id="organizerPersonalMeeting" name="organizerPersonalMeeting"></p>
+          <p>Meeting Purpose: <input type="text" class="spec" id="purposePersonalMeeting" name="purposePersonalMeeting"></p>
+          <p>Meeting Link: <input type="url" id="linkPersonalMeeting" name="linkPersonalMeeting"></p>
+        </div>
+        <div id="professionalMeetingDetails" class="hidden">
+          <p>Icon:</p>
+          <p>Organizer: <input type="text" class="spec" id="organizerProfessionalMeeting" name="organizerProfessionalMeeting"></p>
+          <p>Meeting Purpose: <input type="text" class="spec" id="purposeProfessionalMeeting" name="purposeProfessionalMeeting"></p>
+          <p>Meeting Link: <input type="url" id="linkProfessionalMeeting" name="linkProfessionalMeeting"></p>
+        </div>
         <p>Domain: <select name="domainSelect" id="domainSelect"></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="meetingAdditionalDetails"></textarea>
-        <button class="spec">Save</button>
+        <p>Create Sub-Item</p>
+        <button class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
+        <button class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button>
+        <br />
+        <button class="type" id="saveMeeting" name="saveMeeting">Save</button>
       </form>
     </div>
     <script src="java.js"></script>
