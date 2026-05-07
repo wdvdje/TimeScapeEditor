@@ -547,7 +547,12 @@ function attachEventSaveHandlers() {
             createdAt: original && original.createdAt ? original.createdAt : eventObj.createdAt,
           });
         }
-        window.location.href = 'manageEvents.html';
+        if (window.opener && !window.opener.closed) {
+          window.opener.renderManageEventsTable();
+          window.close();
+        } else {
+          window.location.href = 'manageEvents.html';
+        }
       } else {
         saveEventToStorage(eventObj);
         console.log('Event saved:', eventObj);
@@ -871,6 +876,18 @@ function renderManageEventsTable() {
 
 renderManageEventsTable();
 
+function openEditPopup(url) {
+  const width = 600;
+  const height = 700;
+  const left = (screen.width / 2) - (width / 2);
+  const top = (screen.height / 2) - (height / 2);
+  window.open(
+    url,
+    'Edit_Event',
+    'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbars=yes'
+  );
+}
+
 async function startEventEditFlow(eventId, eventDate) {
   const storedEvent = loadEventById(eventId);
   if (!storedEvent) return;
@@ -887,12 +904,12 @@ async function startEventEditFlow(eventId, eventDate) {
       showCancelButton: true,
     });
     if (result.isConfirmed) {
-      window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}&editDate=${encodeURIComponent(eventDate)}&editScope=single`;
+      openEditPopup(`createEvent.html?editId=${encodeURIComponent(eventId)}&editDate=${encodeURIComponent(eventDate)}&editScope=single`);
     } else if (result.isDenied) {
-      window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}&editScope=all`;
+      openEditPopup(`createEvent.html?editId=${encodeURIComponent(eventId)}&editScope=all`);
     }
   } else {
-    window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}&editScope=all`;
+    openEditPopup(`createEvent.html?editId=${encodeURIComponent(eventId)}&editScope=all`);
   }
 }
 
