@@ -25,11 +25,14 @@
     <form id="form-assignment" class="dynamic-form" style="display: none;">
       <h2>New Assignment</h2>
       <input type="text" class="main" id="assignmentTitle" name="assignmentTitle" placeholder="Assignment Title">
-      <p>Start Date: <input type="date" class="spec" id="assignmentStartDate" name="assignmentStartDate">.</p>
-      <p>Due Date: <input type="date" class="spec" id="assignmentDueDate" name="assignmentDueDate">.</p>
+      <p>Start Date: <input type="date" class="spec" id="assignmentStartDate" name="assignmentStartDate">.
+        Due Date: <input type="date" class="spec" id="assignmentDueDate" name="assignmentDueDate">.
+      </p>
       <p><input type="checkbox" class="spec" id="assignmentRemindTime" name="assignmentRemindTime"> Remind at a Time? <input type="time" class="spec" id="assignmentDueTime" name="assignmentDueTime" style="display: none;"></p>
+      <h2>Assignment Details</h2>
+      <p>Domain: <select></select> Bucket: <select></select></p>
       <h2>Additional Details:</h2>
-      <input type="textarea" class="spec" name="assignmentAdditionalDetails">
+      <input type="textarea" class="spec" style="width: 100%; height: 75px;" name="assignmentAdditionalDetails">
       <p>Create sub-items:
         <button type="button" class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
         <button type="button" class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button>
@@ -39,11 +42,14 @@
     <form id="form-chore" class="dynamic-form" style="display: none;">
       <h2>New Chore</h2>
       <input type="text" class="main" id="choreTitle" name="choreTitle" placeholder="Chore Title">
-      <p>Start Date: <input type="date" class="spec" id="choreStartDate" name="choreStartDate">.</p>
-      <p>Due Date: <input type="date" class="spec" id="choreDueDate" name="choreDueDate">.</p>
+      <p>Start Date: <input type="date" class="spec" id="choreStartDate" name="choreStartDate">.
+        Due Date: <input type="date" class="spec" id="choreDueDate" name="choreDueDate">.
+      </p>
       <p><input type="checkbox" class="spec" id="choreRemindTime" name="choreRemindTime"> Remind at a Time? <input type="time" class="spec" id="choreDueTime" name="choreDueTime" style="display: none;"></p>
+      <h2>Chore Details</h2>
+      <p>Domain: <select></select> Bucket: <select></select></p>
       <h2>Additional Details:</h2>
-      <input type="textarea" class="spec" name="choreAdditionalDetails">
+      <input type="textarea" class="spec" style="width: 100%; height: 75px;" name="choreAdditionalDetails">
         <p>Create sub-items:
           <button type="button" class="type" id="createSubTaskChore" name="createSubTaskChore">Create Sub-Task</button>
           <button type="button" class="type" id="createSubReminderChore" name="createSubReminderChore">Create Sub-Reminder</button>
@@ -53,10 +59,14 @@
     <form id="form-task" class="dynamic-form" style="display: none;">
       <h2>New Task</h2>
       <input type="text" class="main" id="taskTitle" name="taskTitle" placeholder="Task Title">
-      <p>Start Date: <input type="date" class="spec" id="taskStartDate" name="taskStartDate">.</p>
-      <p>Due Date: <input type="date" class="spec" id="taskDueDate" name="taskDueDate">.</p>
+      <p>Start Date: <input type="date" class="spec" id="taskStartDate" name="taskStartDate">. 
+        Due Date: <input type="date" class="spec" id="taskDueDate" name="taskDueDate">.
+      </p>
+      <p><input type="checkbox" class="spec" id="taskRemindTime" name="taskRemindTime"> Remind at a Time? <input type="time" class="spec" id="taskDueTime" name="taskDueTime" style="display: none;"></p>
+      <h2>Task Details</h2>
+      <p>Domain: <select></select> Bucket: <select></select></p>
       <h2>Additional Details:</h2>
-      <input type="textarea" class="spec" name="taskAdditionalDetails">
+      <input type="textarea" class="spec" style="width: 100%; height: 75px;" name="taskAdditionalDetails">
         <p>Create sub-items:
           <button type="button" class="type" id="createSubTaskTask" name="createSubTaskTask">Create Sub-Task</button>
           <button type="button" class="type" id="createSubReminderTask" name="createSubReminderTask">Create Sub-Reminder</button>
