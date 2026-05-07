@@ -168,6 +168,17 @@ button.type.edit-cancel-button:hover {
   box-shadow: 0 0 8px #6b6b6b;
 }
 
+/* edit mode delete button */
+button.type.edit-delete-button {
+  background: #b13b3b;
+  border: 1px solid #b13b3b;
+}
+
+button.type.edit-delete-button:hover {
+  background: #8f2e2e;
+  box-shadow: 0 0 8px #b13b3b;
+}
+
 /* SweetAlert styling to match index visual language */
 .timescape-swal-popup {
   border: 4px solid blue;

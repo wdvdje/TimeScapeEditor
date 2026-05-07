@@ -133,6 +133,21 @@ function updateEventInStorage(updatedEvent) {
   localStorage.setItem(EVENTS_STORAGE_KEY, JSON.stringify(events));
 }
 
+/** Delete a stored event by id */
+function deleteEventById(id) {
+  const events = loadEventsFromStorage().filter((e) => e.id !== id);
+  localStorage.setItem(EVENTS_STORAGE_KEY, JSON.stringify(events));
+}
+
+/** Add an excluded date to a recurring event (single-occurrence delete) */
+function excludeRecurringDate(eventId, dateStr) {
+  const original = loadEventById(eventId);
+  if (!original || !dateStr) return;
+  const excluded = [...(original.excludedDates || [])];
+  if (!excluded.includes(dateStr)) excluded.push(dateStr);
+  updateEventInStorage({ ...original, excludedDates: excluded });
+}
+
 function getRepeatSelect(formEl) {
   if (!formEl) return null;
   return formEl.querySelector('[data-role="repeat-select"]') || formEl.querySelector('select.type');
@@ -545,15 +560,7 @@ function attachEventSaveHandlers() {
             createdAt: original && original.createdAt ? original.createdAt : eventObj.createdAt,
           });
         }
-        try {
-          if (window.opener && !window.opener.closed && typeof window.opener.renderManageEventsTable === 'function') {
-            window.opener.renderManageEventsTable();
-          }
-        } catch (e) { /* opener refresh failed; popup will still close */ }
-        window.close();
-        if (!window.closed) {
-          window.location.href = 'manageEvents.html';
-        }
+        closeEditWindowAndRefreshParent();
       } else {
         saveEventToStorage(eventObj);
         console.log('Event saved:', eventObj);
@@ -576,6 +583,71 @@ function cancelEventEdit() {
   if (!window.closed) {
     window.location.href = 'manageEvents.html';
   }
+}
+
+function closeEditWindowAndRefreshParent() {
+  try {
+    if (window.opener && !window.opener.closed && typeof window.opener.renderManageEventsTable === 'function') {
+      window.opener.renderManageEventsTable();
+    }
+  } catch (e) { /* ignore opener access issues */ }
+
+  window.close();
+  if (!window.closed) {
+    window.location.href = 'manageEvents.html';
+  }
+}
+
+async function deleteEventFromEditMode(formEl) {
+  if (!formEl) return;
+
+  const editId = formEl.dataset.editId;
+  const editDate = formEl.dataset.editDate || '';
+  const storedEvent = editId ? loadEventById(editId) : null;
+  if (!editId || !storedEvent) return;
+
+  const hasRepeat = storedEvent.repeat && storedEvent.repeat !== 'never';
+  if (hasRepeat) {
+    const result = await Swal.fire({
+      ...getSwalThemeOptions(),
+      title: 'Delete recurring event',
+      text: 'Delete just this occurrence or all occurrences?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'This occurrence',
+      denyButtonText: 'All occurrences',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      const targetDate = editDate || storedEvent.date;
+      excludeRecurringDate(editId, targetDate);
+      closeEditWindowAndRefreshParent();
+      return;
+    }
+
+    if (result.isDenied) {
+      deleteEventById(editId);
+      closeEditWindowAndRefreshParent();
+      return;
+    }
+
+    return;
+  }
+
+  const confirmDelete = await Swal.fire({
+    ...getSwalThemeOptions(),
+    title: 'Delete event?',
+    text: 'This cannot be undone.',
+    showCancelButton: true,
+    confirmButtonText: 'Delete',
+    cancelButtonText: 'Cancel',
+  });
+
+  if (!confirmDelete.isConfirmed) return;
+
+  deleteEventById(editId);
+  closeEditWindowAndRefreshParent();
 }
 
 function populateFormFromEvent(formEl, eventObj, overrideDate) {
@@ -648,6 +720,18 @@ function initEditMode() {
     backButton.classList.add('edit-cancel-button');
     backButton.removeAttribute('onclick');
     backButton.addEventListener('click', cancelEventEdit);
+
+    const saveButton = formEl.querySelector('button[type="submit"]');
+    if (saveButton) {
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.className = 'type edit-delete-button';
+      deleteButton.textContent = 'Delete';
+      deleteButton.addEventListener('click', async () => {
+        await deleteEventFromEditMode(formEl);
+      });
+      formEl.insertBefore(deleteButton, saveButton);
+    }
   }
 
   formEl.dataset.editId = editId;
