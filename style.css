@@ -140,3 +140,32 @@ cursor: pointer;
 }
 .type:active {
 background: #FFFFFF; }
+
+/* edit mode cancel button */
+button.type.edit-cancel-button {
+  background: #6b6b6b;
+  border: 1px solid #6b6b6b;
+}
+
+button.type.edit-cancel-button:hover {
+  background: #555555;
+  box-shadow: 0 0 8px #6b6b6b;
+}
+
+/* SweetAlert styling to match index visual language */
+.timescape-swal-popup {
+  border: 4px solid blue;
+  border-radius: 16px;
+  font-family: "Source Sans 3", sans-serif;
+}
+
+.timescape-swal-title {
+  color: blue;
+  font-family: "Source Sans 3", sans-serif;
+  font-weight: 700;
+}
+
+.timescape-swal-content {
+  font-family: "Source Sans 3", sans-serif;
+  color: #222222;
+}

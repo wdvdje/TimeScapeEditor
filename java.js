@@ -6,15 +6,27 @@ if ('serviceWorker' in navigator) {
 }
 
 // items dialogues
+function getSwalThemeOptions() {
+  return {
+    icon: 'question',
+    confirmButtonColor: 'blue',
+    cancelButtonColor: 'grey',
+    denyButtonColor: 'blue',
+    customClass: {
+      popup: 'timescape-swal-popup',
+      title: 'timescape-swal-title',
+      htmlContainer: 'timescape-swal-content',
+    },
+  };
+}
+
 function itemsOptions(createLink, manageLink, item) {
     Swal.fire({
+        ...getSwalThemeOptions(),
         title: `${item} Editor`,
         html: `<p>Create or manage ${item.toLowerCase()}.</p>`,
         showDenyButton: true,
         showCancelButton: true,
-        confirmButtonColor: 'blue',
-        cancelButtonColor: 'grey',
-        denyButtonColor: 'blue',
         confirmButtonText: 'Create',
         cancelButtonText: 'Cancel',
         denyButtonText: 'Manage',
@@ -551,6 +563,14 @@ function findSubtypeDetailDiv(formEl, eventType) {
   return null;
 }
 
+function cancelEventEdit() {
+  // If this page is a popup, close it; otherwise return to the manager page.
+  window.close();
+  if (!window.closed) {
+    window.location.href = 'manageEvents.html';
+  }
+}
+
 function populateFormFromEvent(formEl, eventObj, overrideDate) {
   if (!formEl || !eventObj) return;
   const c = eventObj.eventCategory || '';
@@ -613,6 +633,14 @@ function initEditMode() {
   formSwap(storedEvent.eventCategory);
   const formEl = document.getElementById('form-' + storedEvent.eventCategory);
   if (!formEl) return;
+
+  const backButton = formEl.querySelector('button[onclick*="returnType"]');
+  if (backButton) {
+    backButton.textContent = 'Cancel';
+    backButton.classList.add('edit-cancel-button');
+    backButton.removeAttribute('onclick');
+    backButton.addEventListener('click', cancelEventEdit);
+  }
 
   formEl.dataset.editId = editId;
   if (editDate) formEl.dataset.editDate = editDate;
@@ -842,6 +870,7 @@ async function startEventEditFlow(eventId, eventDate) {
   const hasRepeat = storedEvent.repeat && storedEvent.repeat !== 'never';
   if (hasRepeat) {
     const result = await Swal.fire({
+      ...getSwalThemeOptions(),
       title: 'Edit recurring event',
       text: 'Edit just this occurrence or all occurrences?',
       icon: 'question',
@@ -875,6 +904,7 @@ function attachManageEventsHandlers() {
 
       const detailsText = (storedEvent.additionalDetails || '').trim() || 'No additional details provided.';
       const result = await Swal.fire({
+        ...getSwalThemeOptions(),
         title: 'Additional Details',
         text: detailsText,
         showCancelButton: true,
