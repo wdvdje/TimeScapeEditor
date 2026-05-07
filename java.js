@@ -182,12 +182,10 @@ function updateRepeatUntilVisibility(formEl) {
   const showUntil = repeatSelect.value && repeatSelect.value !== 'never';
   repeatUntilContainer.style.display = showUntil ? 'block' : 'none';
   repeatUntilInput.disabled = !showUntil;
-  repeatUntilInput.required = showUntil;
+  repeatUntilInput.required = false; // optional — empty means no upper bound (expands to MAX_RECURRING_OCCURRENCES)
 
   if (!showUntil) {
     repeatUntilInput.value = '';
-  } else if (!repeatUntilInput.value) {
-    repeatUntilInput.value = repeatUntilInput.min || '';
   }
 }
 
@@ -547,10 +545,13 @@ function attachEventSaveHandlers() {
             createdAt: original && original.createdAt ? original.createdAt : eventObj.createdAt,
           });
         }
-        if (window.opener && !window.opener.closed) {
-          window.opener.renderManageEventsTable();
-          window.close();
-        } else {
+        try {
+          if (window.opener && !window.opener.closed && typeof window.opener.renderManageEventsTable === 'function') {
+            window.opener.renderManageEventsTable();
+          }
+        } catch (e) { /* opener refresh failed; popup will still close */ }
+        window.close();
+        if (!window.closed) {
           window.location.href = 'manageEvents.html';
         }
       } else {
@@ -597,7 +598,7 @@ function populateFormFromEvent(formEl, eventObj, overrideDate) {
     repeatSelect.value = eventObj.repeat || 'never';
     updateRepeatUntilVisibility(formEl);
     const untilInput = getRepeatUntilInput(formEl);
-    if (untilInput && eventObj.repeatUntil) untilInput.value = eventObj.repeatUntil;
+    if (untilInput) untilInput.value = eventObj.repeatUntil || ''; // always restore original (including empty)
   }
 
   const domainSel = formEl.querySelector('[name="domainSelect"]');
