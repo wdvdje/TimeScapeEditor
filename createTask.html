@@ -31,6 +31,11 @@
       <p><input type="checkbox" class="spec" id="assignmentRemindTime" name="assignmentRemindTime"> Remind at a Time? <input type="time" class="spec" id="assignmentDueTime" name="assignmentDueTime" style="display: none;"></p>
       <h2>Assignment Details</h2>
       <p>Domain: <select></select> Bucket: <select></select></p>
+      <p>
+        Assignment Type:
+        <button type="button" class="type" id="assignmentTypeWork" name="assignmentTypeWork">Work</button>
+        <button type="button" class="type" id="assignmentTypePersonal" name="assignmentTypePersonal">Personal</button>
+      </p>
       <h2>Additional Details:</h2>
       <input type="textarea" class="spec" style="width: 100%; height: 75px;" name="assignmentAdditionalDetails">
       <p>Create sub-items:
@@ -48,13 +53,18 @@
       <p><input type="checkbox" class="spec" id="choreRemindTime" name="choreRemindTime"> Remind at a Time? <input type="time" class="spec" id="choreDueTime" name="choreDueTime" style="display: none;"></p>
       <h2>Chore Details</h2>
       <p>Domain: <select></select> Bucket: <select></select></p>
+      <p>
+        Chore Type:
+        <button type="button" class="type" id="choreTypeHousehold" name="choreTypeHousehold">Household</button>
+        <button type="button" class="type" id="choreTypeMaintenance" name="choreTypeMaintenance">Maintenance</button>
+      </p>
       <h2>Additional Details:</h2>
       <input type="textarea" class="spec" style="width: 100%; height: 75px;" name="choreAdditionalDetails">
         <p>Create sub-items:
           <button type="button" class="type" id="createSubTaskChore" name="createSubTaskChore">Create Sub-Task</button>
           <button type="button" class="type" id="createSubReminderChore" name="createSubReminderChore">Create Sub-Reminder</button>
         </p>
-      <button class="spec">Save</button>
+      <button class="type" id="saveChore" name="saveChore">Save</button>
     </form>
     <form id="form-task" class="dynamic-form" style="display: none;">
       <h2>New Task</h2>
