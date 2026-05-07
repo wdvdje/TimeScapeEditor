@@ -518,8 +518,8 @@ function attachEventSaveHandlers() {
 
       if (editId) {
         e.preventDefault();
+        const original = loadEventById(editId);
         if (editDate) {
-          const original = loadEventById(editId);
           if (original) {
             const excluded = [...(original.excludedDates || [])];
             if (!excluded.includes(editDate)) excluded.push(editDate);
@@ -527,7 +527,12 @@ function attachEventSaveHandlers() {
           }
           saveEventToStorage({ ...eventObj, id: generateEventId(), repeat: 'never', repeatUntil: '', excludedDates: [] });
         } else {
-          updateEventInStorage({ ...eventObj, id: editId });
+          updateEventInStorage({
+            ...eventObj,
+            id: editId,
+            excludedDates: original && Array.isArray(original.excludedDates) ? original.excludedDates : [],
+            createdAt: original && original.createdAt ? original.createdAt : eventObj.createdAt,
+          });
         }
         window.location.href = 'manageEvents.html';
       } else {
