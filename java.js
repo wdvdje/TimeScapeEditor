@@ -656,6 +656,16 @@ function prettifyFieldName(fieldName) {
     .trim();
 }
 
+function getLinkLabel(fieldName) {
+  const key = String(fieldName || '').toLowerCase();
+  if (key.includes('provider') && key.includes('link')) return 'Provider Link';
+  if (key.includes('organization') && key.includes('link')) return 'Organization Link';
+  if (key.includes('meeting') && key.includes('link')) return 'Meeting Link';
+  if (key.includes('event') && key.includes('link')) return 'Event Link';
+  if (key.includes('link') || key.includes('url') || key.includes('website')) return 'Link';
+  return '';
+}
+
 function createTextLine(value, boldValue = false) {
   const line = document.createElement('div');
   if (boldValue) {
@@ -680,7 +690,7 @@ function renderTypeDetails(container, typeDetails) {
       anchor.href = val;
       anchor.target = '_blank';
       anchor.rel = 'noopener noreferrer';
-      anchor.textContent = label || 'Link';
+      anchor.textContent = getLinkLabel(key) || label || 'Link';
       line.appendChild(anchor);
     } else {
       line.appendChild(document.createTextNode((label ? label + ': ' : '')));
@@ -695,6 +705,7 @@ function renderTypeDetails(container, typeDetails) {
 function renderEventRow(eventObj) {
   const row = document.createElement('tr');
   const repeatValue = (eventObj.repeat || '').trim();
+  const eventIdForActions = eventObj.sourceEventId || eventObj.id;
 
   const iconCell = document.createElement('td');
   if (eventObj.icon && /<svg[\s\S]*<\/svg>/.test(eventObj.icon)) {
@@ -704,7 +715,7 @@ function renderEventRow(eventObj) {
 
   const titleCell = document.createElement('td');
   titleCell.appendChild(createTextLine(eventObj.title || '(Untitled Event)', true));
-  titleCell.dataset.eventId = eventObj.sourceEventId || eventObj.id;
+  titleCell.dataset.eventId = eventIdForActions;
   titleCell.dataset.eventDate = eventObj.date;
   titleCell.style.cursor = 'pointer';
   row.appendChild(titleCell);
@@ -757,11 +768,13 @@ function renderEventRow(eventObj) {
   row.appendChild(detailsCell);
 
   const additionalCell = document.createElement('td');
-  if (eventObj.additionalDetails) {
-    additionalCell.appendChild(createTextLine(eventObj.additionalDetails));
-  } else {
-    additionalCell.appendChild(createTextLine('Additional Details'));
-  }
+  const additionalDetailsTrigger = document.createElement('a');
+  additionalDetailsTrigger.href = '#';
+  additionalDetailsTrigger.textContent = 'Additional Details';
+  additionalDetailsTrigger.dataset.action = 'show-additional-details';
+  additionalDetailsTrigger.dataset.eventId = eventIdForActions;
+  additionalDetailsTrigger.dataset.eventDate = eventObj.date;
+  additionalCell.appendChild(additionalDetailsTrigger);
   const subtasksLine = document.createElement('div');
   const subtasksStrong = document.createElement('strong');
   subtasksStrong.textContent = '0';
@@ -818,36 +831,63 @@ function renderManageEventsTable() {
 
 renderManageEventsTable();
 
+async function startEventEditFlow(eventId, eventDate) {
+  const storedEvent = loadEventById(eventId);
+  if (!storedEvent) return;
+  const hasRepeat = storedEvent.repeat && storedEvent.repeat !== 'never';
+  if (hasRepeat) {
+    const result = await Swal.fire({
+      title: 'Edit recurring event',
+      text: 'Edit just this occurrence or all occurrences?',
+      icon: 'question',
+      showDenyButton: true,
+      confirmButtonText: 'This occurrence',
+      denyButtonText: 'All occurrences',
+      showCancelButton: true,
+    });
+    if (result.isConfirmed) {
+      window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}&editDate=${encodeURIComponent(eventDate)}`;
+    } else if (result.isDenied) {
+      window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}`;
+    }
+  } else {
+    window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}`;
+  }
+}
+
 function attachManageEventsHandlers() {
   const tableBody = document.getElementById('eventsTableBody');
   if (!tableBody) return;
 
   tableBody.addEventListener('click', async (e) => {
+    const additionalDetailsTrigger = e.target.closest('[data-action="show-additional-details"]');
+    if (additionalDetailsTrigger) {
+      e.preventDefault();
+      const eventId = additionalDetailsTrigger.dataset.eventId;
+      const eventDate = additionalDetailsTrigger.dataset.eventDate;
+      const storedEvent = loadEventById(eventId);
+      if (!storedEvent) return;
+
+      const detailsText = (storedEvent.additionalDetails || '').trim() || 'No additional details provided.';
+      const result = await Swal.fire({
+        title: 'Additional Details',
+        text: detailsText,
+        showCancelButton: true,
+        confirmButtonText: 'Edit',
+        cancelButtonText: 'Close',
+      });
+
+      if (result.isConfirmed) {
+        await startEventEditFlow(eventId, eventDate);
+      }
+      return;
+    }
+
     const titleCell = e.target.closest('td[data-event-id]');
     if (!titleCell) return;
     const eventId = titleCell.dataset.eventId;
     const eventDate = titleCell.dataset.eventDate;
-    const storedEvent = loadEventById(eventId);
-    if (!storedEvent) return;
-    const hasRepeat = storedEvent.repeat && storedEvent.repeat !== 'never';
-    if (hasRepeat) {
-      const result = await Swal.fire({
-        title: 'Edit recurring event',
-        text: 'Edit just this occurrence or all occurrences?',
-        icon: 'question',
-        showDenyButton: true,
-        confirmButtonText: 'This occurrence',
-        denyButtonText: 'All occurrences',
-        showCancelButton: true,
-      });
-      if (result.isConfirmed) {
-        window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}&editDate=${encodeURIComponent(eventDate)}`;
-      } else if (result.isDenied) {
-        window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}`;
-      }
-    } else {
-      window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}`;
-    }
+    await startEventEditFlow(eventId, eventDate);
   });
 }
 attachRepeatFieldHandlers();
