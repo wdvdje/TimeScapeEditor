@@ -1,4 +1,4 @@
-const CACHE_NAME = 'timescapeeditor-v6';
+const CACHE_NAME = 'timescapeeditor-v7';
 
 const STATIC_ASSETS = [
   '/TimeScapeEditor/',
@@ -76,7 +76,16 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
           return response;
         })
-        .catch(() => caches.match(request))
+        .catch(() => {
+          // For HTML navigation with query strings (e.g. createEvent.html?editId=...),
+          // the exact URL won't be cached — fall back to the path-only cached version.
+          return caches.match(request).then((cached) => {
+            if (cached) return cached;
+            const pathOnly = new URL(request.url);
+            pathOnly.search = '';
+            return caches.match(pathOnly.toString());
+          });
+        })
     );
   } else if (isSameOrigin) {
     // Cache-first for icons and other static assets that rarely change

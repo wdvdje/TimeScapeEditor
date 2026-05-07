@@ -743,9 +743,10 @@ function renderEventRow(eventObj) {
   locationLine.appendChild(locationStrong);
   logisticsCell.appendChild(locationLine);
   const repeatLine = document.createElement('div');
-  repeatLine.appendChild(document.createTextNode('Repeats: '));
+  const hasEveryPrefix = repeatValue.toLowerCase().startsWith('every ');
+  repeatLine.appendChild(document.createTextNode(hasEveryPrefix ? 'every ' : 'Repeats: '));
   const repeatStrong = document.createElement('strong');
-  repeatStrong.textContent = repeatValue || 'never';
+  repeatStrong.textContent = hasEveryPrefix ? repeatValue.slice('every '.length) : (repeatValue || 'never');
   repeatLine.appendChild(repeatStrong);
   logisticsCell.appendChild(repeatLine);
   row.appendChild(logisticsCell);
