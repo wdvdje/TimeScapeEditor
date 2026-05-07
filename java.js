@@ -278,23 +278,22 @@ function buildMeetingEvent() {
 }
 
 /**
- * Wire each Save button on createEvent.html to its builder and storage call.
+ * Wire each event form submit to its builder and storage call.
  * Call this once at the bottom of createEvent.html.
  */
 function attachEventSaveHandlers() {
   const saveMap = {
-    saveAppointment: buildAppointmentEvent,
-    saveEvent:       buildEventEvent,
-    saveFocus:       buildFocusEvent,
-    saveJob:         buildJobEvent,
-    saveMeeting:     buildMeetingEvent,
+    'form-appointment': buildAppointmentEvent,
+    'form-event': buildEventEvent,
+    'form-focus': buildFocusEvent,
+    'form-job': buildJobEvent,
+    'form-meeting': buildMeetingEvent,
   };
 
-  Object.entries(saveMap).forEach(([btnId, buildFn]) => {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
+  Object.entries(saveMap).forEach(([formId, buildFn]) => {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    form.addEventListener('submit', () => {
       const eventObj = buildFn();
       saveEventToStorage(eventObj);
       console.log('Event saved:', eventObj);

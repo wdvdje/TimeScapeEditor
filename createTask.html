@@ -42,7 +42,8 @@
         <button type="button" class="type" id="createSubTask" name="createSubTask">Create Sub-Task</button>
         <button type="button" class="type" id="createSubReminder" name="createSubReminder">Create Sub-Reminder</button>
       </p>
-      <button class="spec">Save</button>
+      <button type="button" class="type" onclick="returnType('taskTypes', 'task-area-form')">Back</button>
+      <button type="submit" class="type">Save</button>
     </form>
     <form id="form-chore" class="dynamic-form" style="display: none;">
       <h2>New Chore</h2>
@@ -64,7 +65,8 @@
           <button type="button" class="type" id="createSubTaskChore" name="createSubTaskChore">Create Sub-Task</button>
           <button type="button" class="type" id="createSubReminderChore" name="createSubReminderChore">Create Sub-Reminder</button>
         </p>
-      <button class="type" id="saveChore" name="saveChore">Save</button>
+      <button type="button" class="type" onclick="returnType('taskTypes', 'task-area-form')">Back</button>
+      <button type="submit" class="type" id="saveChore" name="saveChore">Save</button>
     </form>
     <form id="form-task" class="dynamic-form" style="display: none;">
       <h2>New Task</h2>
@@ -81,9 +83,9 @@
           <button type="button" class="type" id="createSubTaskTask" name="createSubTaskTask">Create Sub-Task</button>
           <button type="button" class="type" id="createSubReminderTask" name="createSubReminderTask">Create Sub-Reminder</button>
         </p>
-      <button class="type" id="saveTask" name="saveTask">Save</button>
+      <button type="button" class="type" onclick="returnType('taskTypes', 'task-area-form')">Back</button>
+      <button type="submit" class="type" id="saveTask" name="saveTask">Save</button>
     </form>
-    <button class="formbutton" onclick="returnType('taskTypes', 'task-area-form')">Back</button>
   </div>
   <script src="java.js"></script>
 </body>
