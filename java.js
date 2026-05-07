@@ -526,12 +526,13 @@ function attachEventSaveHandlers() {
     form.addEventListener('submit', (e) => {
       const editId = form.dataset.editId;
       const editDate = form.dataset.editDate;
+      const editScope = form.dataset.editScope || (editDate ? 'single' : 'all');
       const eventObj = buildFn();
 
       if (editId) {
         e.preventDefault();
         const original = loadEventById(editId);
-        if (editDate) {
+        if (editScope === 'single' && editDate) {
           if (original) {
             const excluded = [...(original.excludedDates || [])];
             if (!excluded.includes(editDate)) excluded.push(editDate);
@@ -629,6 +630,7 @@ function initEditMode() {
   if (!storedEvent) return;
 
   const editDate = params.get('editDate') || null;
+  const editScope = params.get('editScope') || (editDate ? 'single' : 'all');
 
   formSwap(storedEvent.eventCategory);
   const formEl = document.getElementById('form-' + storedEvent.eventCategory);
@@ -643,11 +645,16 @@ function initEditMode() {
   }
 
   formEl.dataset.editId = editId;
-  if (editDate) formEl.dataset.editDate = editDate;
+  formEl.dataset.editScope = editScope;
+  if (editDate) {
+    formEl.dataset.editDate = editDate;
+  } else {
+    delete formEl.dataset.editDate;
+  }
 
   populateFormFromEvent(formEl, storedEvent, editDate);
 
-  if (editDate) {
+  if (editScope === 'single' && editDate) {
     const repeatSel = getRepeatSelect(formEl);
     if (repeatSel) {
       repeatSel.value = 'never';
@@ -880,12 +887,12 @@ async function startEventEditFlow(eventId, eventDate) {
       showCancelButton: true,
     });
     if (result.isConfirmed) {
-      window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}&editDate=${encodeURIComponent(eventDate)}`;
+      window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}&editDate=${encodeURIComponent(eventDate)}&editScope=single`;
     } else if (result.isDenied) {
-      window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}`;
+      window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}&editScope=all`;
     }
   } else {
-    window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}`;
+    window.location.href = `createEvent.html?editId=${encodeURIComponent(eventId)}&editScope=all`;
   }
 }
 
