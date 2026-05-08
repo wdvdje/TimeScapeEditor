@@ -25,15 +25,23 @@
             <div id="personalType1Options" style="display: none;">
                 <p>
                 Project Type:
-                <button type="button" class="type" id="personalType1Option1" name="personalType1Option1">Project Option 1</button>
-                <button type="button" class="type" id="personalType1Option2" name="personalType1Option2">Project Option 2</button>
+                <select id="personalType1Option" name="personalType1Option">
+                    <option value="">Select an option</option>
+                    <option value="option1">Project Option 1</option>
+                    <option value="option2">Project Option 2</option>
+                </select>
                 </p>
+                <p>Project Description:</p>
+                <textarea id="personalType1Description" style="width: 100%; height: 50px;" class="spec" name="personalType1Description" placeholder="Enter project description here..."></textarea>
             </div>
             <div id="personalType2Options" style="display: none;">
                 <p>
                 Tag Type:
-                <button type="button" class="type" id="personalType2Option1" name="personalType2Option1">Tag Option 1</button>
-                <button type="button" class="type" id="personalType2Option2" name="personalType2Option2">Tag Option 2</button>
+                <select id="personalType2Option" name="personalType2Option">
+                    <option value="">Select an option</option>
+                    <option value="option1">Tag Option 1</option>
+                    <option value="option2">Tag Option 2</option>
+                </select>
                 </p>
             </div>
         </div>
@@ -46,15 +54,23 @@
             <div id="householdType1Options" style="display: none;">
                 <p>
                 Project Type:
-                <button type="button" class="type" id="householdType1Option1" name="householdType1Option1">Project Option 1</button>
-                <button type="button" class="type" id="householdType1Option2" name="householdType1Option2">Project Option 2</button>
+                <select id="householdType1Option" name="householdType1Option">
+                    <option value="">Select an option</option>
+                    <option value="option1">Project Option 1</option>
+                    <option value="option2">Project Option 2</option>
+                </select>
                 </p>
+                <p>Project Description:</p>
+                <textarea id="householdType1Description" style="width: 100%; height: 50px;" class="spec" name="householdType1Description" placeholder="Enter project description here..."></textarea>
             </div>
             <div id="householdType2Options" style="display: none;">
                 <p>
                 Tag Type:
-                <button type="button" class="type" id="householdType2Option1" name="householdType2Option1">Tag Option 1</button>
-                <button type="button" class="type" id="householdType2Option2" name="householdType2Option2">Tag Option 2</button>
+                <select id="householdType2Option" name="householdType2Option">
+                    <option value="">Select an option</option>
+                    <option value="option1">Tag Option 1</option>
+                    <option value="option2">Tag Option 2</option>
+                </select>
                 </p>
             </div>
         </div>
@@ -71,16 +87,29 @@
                 <button type="button" class="type" id="jobsType0Option2" name="jobsType0Option2">Job Option 2</button>
             </div>
             <div id="jobsType1Options" style="display: none;">
-                <p>Project Type:</p>
-                <button type="button" class="type" id="jobsType1Option1" name="jobsType1Option1">Project Option 1</button>
-                <button type="button" class="type" id="jobsType1Option2" name="jobsType1Option2">Project Option 2</button>
+                <p>
+                Project Type:
+                <select id="jobsType1Option" name="jobsType1Option">
+                    <option value="">Select an option</option>
+                    <option value="option1">Project Option 1</option>
+                    <option value="option2">Project Option 2</option>
+                </select>
+                </p>
+                <p>Project Description:</p>
+                <textarea id="jobsType1Description" style="width: 100%; height: 50px;" class="spec" name="jobsType1Description" placeholder="Enter project description here..."></textarea>
             </div>
             <div id="jobsType2Options" style="display: none;">
-                <p>Tag Type:</p>
-                <button type="button" class="type" id="jobsType2Option1" name="jobsType2Option1">Tag Option 1</button>
-                <button type="button" class="type" id="jobsType2Option2" name="jobsType2Option2">Tag Option 2</button>  
+                <p>
+                Tag Type:
+                <select id="jobsType2Option" name="jobsType2Option">
+                    <option value="">Select an option</option>
+                    <option value="option1">Tag Option 1</option>
+                    <option value="option2">Tag Option 2</option>
+                </select>
+                </p>
             </div>
         </div>
+        <button type="submit" class="type">Create Bucket</button>
     </form>
     <script src="java.js"></script>
     <script>revealOnClick("personalType1", "personalType1Options");</script>
