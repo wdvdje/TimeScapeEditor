@@ -930,6 +930,19 @@ function renderManageBuckets(domain) {
 }
 
 function _openBucketCardSwal(bucket) {
+  if (!window.Swal || typeof window.Swal.fire !== 'function') {
+    const shouldEdit = window.confirm(
+      `${bucket.title}\n\nWould you like to edit this bucket?\nSelect Cancel to view a report placeholder.`
+    );
+
+    if (shouldEdit) {
+      openEditBucketPopup(bucket.id);
+    } else {
+      window.alert('Bucket reports will be available in a future update.');
+    }
+    return;
+  }
+
   Swal.fire({
     ...getSwalThemeOptions(),
     title: bucket.title,
