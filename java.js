@@ -68,6 +68,188 @@ function itemsOptions(createLink, manageLink, item) {
 }
 
 /**
+ * Open createBucket.html in edit mode for an existing bucket.
+ * Uses a per-bucket window name so each bucket gets its own popup slot.
+ * @param {string} bucketId
+ */
+function openEditBucketPopup(bucketId) {
+  const width = 600;
+  const height = 700;
+  const left = (screen.width / 2) - (width / 2);
+  const top  = (screen.height / 2) - (height / 2);
+  const url  = 'createBucket.html?id=' + encodeURIComponent(bucketId);
+  window.open(
+    url,
+    'Edit_Bucket_' + bucketId,
+    'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbars=yes'
+  );
+}
+
+/** Close this bucket popup and tell the opener to re-render its bucket grid. */
+function closeBucketWindowAndRefresh(domain) {
+  try {
+    if (window.opener && !window.opener.closed && typeof window.opener.renderManageBuckets === 'function') {
+      window.opener.renderManageBuckets(domain);
+    }
+  } catch (_) { /* cross-origin safety */ }
+  window.close();
+}
+
+/**
+ * Pre-fill createBucketForm from a stored bucket object (edit mode).
+ * Triggers the correct revealOnClick section and restores icon selection.
+ */
+function prefillBucketForm(bucket) {
+  const form = document.getElementById('createBucketForm');
+  if (!form || !bucket) return;
+
+  // Store edit id on the form so save handler knows it's an update
+  form.dataset.editId = bucket.id;
+  form.dataset.editDomain = bucket.domain;
+
+  // Title
+  const titleEl = document.getElementById('bucketTitle');
+  if (titleEl) titleEl.value = bucket.title || '';
+
+  // Map kind+domain to the button that triggers the section reveal
+  const kindButtonMap = {
+    personal:  { project: 'personalType1',  tag: 'personalType2'  },
+    household: { project: 'householdType1', tag: 'householdType2' },
+    jobs:      { job: 'jobsType0', project: 'jobsType1', tag: 'jobsType2' },
+  };
+  const btnId = (kindButtonMap[bucket.domain] || {})[bucket.bucketKind];
+  if (btnId) {
+    const btn = document.getElementById(btnId);
+    if (btn) btn.click(); // triggers revealOnClick to show the right options panel
+  }
+
+  // Subtype option — select or hidden input
+  const optionInputMap = {
+    personalType1Options:  'personalType1Option',
+    personalType2Options:  'personalType2Option',
+    householdType1Options: 'householdType1Option',
+    householdType2Options: 'householdType2Option',
+    jobsType0Options:      'jobsType0Option',
+    jobsType1Options:      'jobsType1Option',
+    jobsType2Options:      'jobsType2Option',
+  };
+  const sectionSuffixMap = {
+    personal:  { project: 'personalType1Options',  tag: 'personalType2Options'  },
+    household: { project: 'householdType1Options', tag: 'householdType2Options' },
+    jobs:      { job: 'jobsType0Options', project: 'jobsType1Options', tag: 'jobsType2Options' },
+  };
+  const optionSectionId = (sectionSuffixMap[bucket.domain] || {})[bucket.bucketKind];
+  if (optionSectionId) {
+    const optionInputId = optionInputMap[optionSectionId];
+    const optionEl = document.getElementById(optionInputId);
+    if (optionEl) {
+      optionEl.value = bucket.subtypeOption || '';
+      // If it's a <select>, set it directly; if hidden with job buttons, activate the right button
+      if (optionEl.tagName === 'SELECT') {
+        optionEl.value = bucket.subtypeOption || '';
+      } else if (bucket.domain === 'jobs' && bucket.bucketKind === 'job') {
+        // Re-activate the matching data-value button
+        document.querySelectorAll('#jobsType0Options button[data-value]').forEach((b) => {
+          b.classList.toggle('active', b.dataset.value === bucket.subtypeOption);
+        });
+      }
+    }
+  }
+
+  // Description
+  const descInputMap = {
+    personalType1Options:  'personalType1Description',
+    householdType1Options: 'householdType1Description',
+    jobsType1Options:      'jobsType1Description',
+  };
+  if (optionSectionId && descInputMap[optionSectionId]) {
+    const descEl = document.getElementById(descInputMap[optionSectionId]);
+    if (descEl) descEl.value = bucket.description || '';
+  }
+
+  // Icon overwrite radios + hidden icon input + preview
+  const iconRadioMap = {
+    personalType1Options:  'personalIconOverwrite',
+    personalType2Options:  'personalTagIconOverwrite',
+    householdType1Options: 'householdIconOverwrite',
+    householdType2Options: 'householdTagIconOverwrite',
+    jobsType0Options:      'jobsJobIconOverwrite',
+    jobsType1Options:      'jobsIconOverwrite',
+    jobsType2Options:      'jobsTagIconOverwrite',
+  };
+  const iconInputMap = {
+    personalType1Options:  'personalProjectIconId',
+    personalType2Options:  'personalTagIconId',
+    householdType1Options: 'householdProjectIconId',
+    householdType2Options: 'householdTagIconId',
+    jobsType0Options:      'jobsJobIconId',
+    jobsType1Options:      'jobsProjectIconId',
+    jobsType2Options:      'jobsTagIconId',
+  };
+  const iconPreviewMap = {
+    personalType1Options:  'personalProjectIconPreview',
+    personalType2Options:  'personalTagIconPreview',
+    householdType1Options: 'householdProjectIconPreview',
+    householdType2Options: 'householdTagIconPreview',
+    jobsType0Options:      'jobsJobIconPreview',
+    jobsType1Options:      'jobsProjectIconPreview',
+    jobsType2Options:      'jobsTagIconPreview',
+  };
+
+  if (optionSectionId) {
+    const radioName = iconRadioMap[optionSectionId];
+    const value     = bucket.iconOverrideEnabled ? 'yes' : 'no';
+    if (radioName) {
+      const radio = form.querySelector(`input[type="radio"][name="${radioName}"][value="${value}"]`);
+      if (radio) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change'));
+      }
+    }
+    if (bucket.iconOverrideEnabled && bucket.iconId) {
+      const iconInputEl = document.getElementById(iconInputMap[optionSectionId]);
+      if (iconInputEl) iconInputEl.value = bucket.iconId;
+      const previewEl = document.getElementById(iconPreviewMap[optionSectionId]);
+      if (previewEl) {
+        const svg = getIconSvgById(bucket.iconId);
+        const entry = ICON_LIBRARY.find((i) => i.id === bucket.iconId);
+        previewEl.innerHTML = svg + (entry ? ' <span>' + entry.label + '</span>' : '');
+      }
+    }
+  }
+
+  // Update submit button label and reveal Delete button
+  const submitBtn = form.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.textContent = 'Save Changes';
+  const deleteBtn = document.getElementById('deleteBucketBtn');
+  if (deleteBtn) deleteBtn.style.display = '';
+}
+
+/** Swal-confirmed delete from edit mode — removes bucket, refreshes opener, closes popup. */
+async function deleteBucketFromEditMode() {
+  const form = document.getElementById('createBucketForm');
+  if (!form) return;
+  const bucketId = form.dataset.editId;
+  const domain   = form.dataset.editDomain;
+  if (!bucketId) return;
+
+  const result = await Swal.fire({
+    ...getSwalThemeOptions(),
+    title: 'Delete bucket?',
+    text: 'This cannot be undone.',
+    showCancelButton: true,
+    confirmButtonText: 'Delete',
+    cancelButtonText: 'Cancel',
+    icon: 'warning',
+  });
+
+  if (result.isConfirmed) {
+    deleteBucketById(bucketId);
+    closeBucketWindowAndRefresh(domain);
+  }
+}
+
+/**
  * Open createBucket.html as a centred child popup.
  * @param {string} domain - 'personal' | 'household' | 'jobs'
  */
@@ -97,7 +279,11 @@ function initCreateBucket() {
   initCreateBucket._initialized = true;
 
   const params = new URLSearchParams(window.location.search);
-  const domain = (params.get('domain') || '').toLowerCase().trim();
+  const editId = params.get('id') || '';
+  const editBucket = editId ? loadBucketById(editId) : null;
+  const domain = editBucket
+    ? editBucket.domain
+    : (params.get('domain') || '').toLowerCase().trim();
   const domainLabelMap = {
     personal: 'Personal',
     household: 'Household',
@@ -159,6 +345,17 @@ function initCreateBucket() {
   });
 
   _attachIconPickerModalHandlers();
+
+  // Edit mode: pre-fill form after all handlers are wired
+  if (editBucket) {
+    prefillBucketForm(editBucket);
+  }
+
+  // Wire the Delete button (only visible in edit mode)
+  const deleteBtn = document.getElementById('deleteBucketBtn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', deleteBucketFromEditMode);
+  }
 }
 
 function setupIconOverwriteToggle(radioName, containerId) {
@@ -656,17 +853,21 @@ function attachBucketSaveHandler() {
     const bucketObj = buildBucketFromForm();
     if (!bucketObj) return; // validation already alerted the user
 
-    saveBucketToStorage(bucketObj);
-    console.log('Bucket saved:', bucketObj);
+    const editId = form.dataset.editId;
+    if (editId) {
+      // Edit mode: preserve original id and createdAt
+      const original = loadBucketById(editId);
+      updateBucketInStorage({
+        ...bucketObj,
+        id: editId,
+        createdAt: original ? original.createdAt : bucketObj.createdAt,
+        updatedAt: new Date().toISOString(),
+      });
+    } else {
+      saveBucketToStorage(bucketObj);
+    }
 
-    // Refresh opener manage page if it has renderManageBuckets
-    try {
-      if (window.opener && !window.opener.closed && typeof window.opener.renderManageBuckets === 'function') {
-        window.opener.renderManageBuckets(bucketObj.domain);
-      }
-    } catch (_) { /* cross-origin safety */ }
-
-    window.close();
+    closeBucketWindowAndRefresh(bucketObj.domain);
   });
 }
 
@@ -723,6 +924,34 @@ function renderManageBuckets(domain) {
     card.appendChild(meta);
 
     container.appendChild(card);
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => _openBucketCardSwal(bucket));
+  });
+}
+
+function _openBucketCardSwal(bucket) {
+  Swal.fire({
+    ...getSwalThemeOptions(),
+    title: bucket.title,
+    text: 'What would you like to do?',
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Edit Bucket',
+    denyButtonText: 'View Report',
+    cancelButtonText: 'Cancel',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      openEditBucketPopup(bucket.id);
+    } else if (result.isDenied) {
+      Swal.fire({
+        ...getSwalThemeOptions(),
+        title: 'Coming soon',
+        text: 'Bucket reports will be available in a future update.',
+        icon: 'info',
+        confirmButtonText: 'OK',
+        showCancelButton: false,
+      });
+    }
   });
 }
 
