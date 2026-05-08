@@ -91,6 +91,11 @@ function openCreateBucketPopup(domain) {
  * and reveals the matching domain section.
  */
 function initCreateBucket() {
+  if (initCreateBucket._initialized) {
+    return;
+  }
+  initCreateBucket._initialized = true;
+
   const params = new URLSearchParams(window.location.search);
   const domain = (params.get('domain') || '').toLowerCase().trim();
   const domainLabelMap = {
@@ -116,6 +121,32 @@ function initCreateBucket() {
     const section = document.getElementById(sectionId);
     if (section) section.style.display = 'block';
   }
+
+  setupIconOverwriteToggle('personalIconOverwrite', 'personalIconSelectContainer');
+}
+
+function setupIconOverwriteToggle(radioName, containerId) {
+  const radios = Array.from(document.querySelectorAll(`input[type="radio"][name="${radioName}"]`));
+  const container = document.getElementById(containerId);
+  if (!radios.length || !container) {
+    return;
+  }
+
+  const sync = () => {
+    const selected = radios.find((radio) => radio.checked);
+    container.style.display = selected && selected.value === 'yes' ? 'block' : 'none';
+  };
+
+  radios.forEach((radio) => {
+    if (radio.dataset.iconToggleBound === 'true') {
+      return;
+    }
+    radio.addEventListener('change', sync);
+    radio.addEventListener('input', sync);
+    radio.dataset.iconToggleBound = 'true';
+  });
+
+  sync();
 }
 
 // today's date
