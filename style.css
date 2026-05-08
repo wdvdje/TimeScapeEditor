@@ -191,6 +191,32 @@ table.itemsTable thead th {
 table.itemsTable thead th:first-child {
   border-left: none;
 }
+
+/* Instant title validation */
+.field-error {
+  border: 2px solid red !important;
+  outline-color: red !important;
+  border-radius: 4px;
+}
+
+/* Manager empty-state card */
+.empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 16px;
+  color: #444;
+  font-family: "Source Sans 3", sans-serif;
+}
+.empty-state-card p {
+  margin: 0;
+  font-size: 15px;
+  color: #555;
+}
+.empty-state-icon {
+  opacity: 0.6;
+}
 button.type {
 color: rgb(255, 255, 255); font-size: 14px; line-height: 16px; padding: 6px; border-radius: 10px; font-family: "Source Sans 3", sans-serif; font-weight: normal; text-decoration: none; font-style: normal; font-variant: normal; text-transform: none; border: blue; background: blue; display: inline-block;
 }

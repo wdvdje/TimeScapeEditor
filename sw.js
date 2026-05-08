@@ -1,4 +1,4 @@
-const CACHE_NAME = 'timescapeeditor-v12';
+const CACHE_NAME = 'timescapeeditor-v13';
 
 const STATIC_ASSETS = [
   '/TimeScapeEditor/',

@@ -33,6 +33,23 @@ function getSwalThemeOptions() {
   };
 }
 
+function showSaveToast(label) {
+  if (!window.Swal || typeof window.Swal.fire !== 'function') return;
+  Swal.fire({
+    toast: true,
+    position: 'bottom-end',
+    icon: 'success',
+    title: `${label} saved!`,
+    showConfirmButton: false,
+    timer: 2500,
+    timerProgressBar: true,
+    customClass: {
+      popup: 'timescape-swal-popup',
+      title: 'timescape-swal-title',
+    },
+  });
+}
+
 function itemsOptions(createLink, manageLink, item) {
     Swal.fire({
         ...getSwalThemeOptions(),
@@ -390,13 +407,36 @@ if (dateElement) {
   dateElement.textContent = today.toLocaleDateString('en-US', options);
 }
 
+// dashboard counts on index.html — scoped to today
+const _dashboardToday = new Date().toISOString().slice(0, 10);
+const eventCountEl = document.getElementById('event-count');
+if (eventCountEl) {
+  eventCountEl.textContent = getEventsForDisplay().filter(e => e.date === _dashboardToday).length;
+}
+const taskCountEl = document.getElementById('task-count');
+if (taskCountEl) {
+  taskCountEl.textContent = loadTasksFromStorage().filter(t =>
+    t.dueDate === _dashboardToday || (!t.dueDate && t.startDate === _dashboardToday)
+  ).length;
+}
+const reminderCountEl = document.getElementById('reminder-count');
+if (reminderCountEl) {
+  reminderCountEl.textContent = loadRemindersFromStorage().filter(r =>
+    r.date === _dashboardToday ||
+    (r.repeat && r.repeat !== 'never' && r.date && r.date <= _dashboardToday)
+  ).length;
+}
+
 // create form swap
 function formSwap(eventType, typesContainerId = 'eventTypes', formAreaId = 'area-form') {
   document.getElementById(typesContainerId).style.display = 'none';
   const formArea = document.getElementById(formAreaId);
   formArea.style.display = 'block';
   formArea.querySelectorAll('.dynamic-form').forEach(f => f.style.display = 'none');
-  document.getElementById('form-' + eventType.toLowerCase()).style.display = 'block';
+  const activeForm = document.getElementById('form-' + eventType.toLowerCase());
+  activeForm.style.display = 'block';
+  const firstInput = activeForm.querySelector('input.main');
+  if (firstInput) firstInput.focus();
 }
 function returnType(typesContainerId = 'eventTypes', formAreaId = 'area-form') {
   document.getElementById(formAreaId).style.display = 'none';
@@ -628,6 +668,51 @@ function updateEventInStorage(updatedEvent) {
 function deleteEventById(id) {
   const events = loadEventsFromStorage().filter((e) => e.id !== id);
   localStorage.setItem(EVENTS_STORAGE_KEY, JSON.stringify(events));
+}
+
+const TASKS_STORAGE_KEY = 'timescapeTasks';
+const REMINDERS_STORAGE_KEY = 'timescapeReminders';
+
+function generateItemId(prefix) {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function loadTasksFromStorage() {
+  try {
+    return JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTaskToStorage(taskObj) {
+  const tasks = loadTasksFromStorage();
+  tasks.push(taskObj);
+  localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+}
+
+function loadRemindersFromStorage() {
+  try {
+    return JSON.parse(localStorage.getItem(REMINDERS_STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveReminderToStorage(reminderObj) {
+  const reminders = loadRemindersFromStorage();
+  reminders.push(reminderObj);
+  localStorage.setItem(REMINDERS_STORAGE_KEY, JSON.stringify(reminders));
+}
+
+function deleteTaskFromStorage(id) {
+  const tasks = loadTasksFromStorage().filter(t => t.id !== id);
+  localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+}
+
+function deleteReminderFromStorage(id) {
+  const reminders = loadRemindersFromStorage().filter(r => r.id !== id);
+  localStorage.setItem(REMINDERS_STORAGE_KEY, JSON.stringify(reminders));
 }
 
 /** Add an excluded date to a recurring event (single-occurrence delete) */
@@ -1389,6 +1474,211 @@ function attachEventSaveHandlers() {
   });
 }
 
+function notifyMissingTitle(itemLabel) {
+  if (window.Swal && typeof window.Swal.fire === 'function') {
+    Swal.fire({
+      ...getSwalThemeOptions(),
+      title: `Missing ${itemLabel} title`,
+      text: `Please enter a ${itemLabel} title before saving.`,
+      icon: 'warning',
+      confirmButtonText: 'OK',
+      showCancelButton: false,
+    });
+  } else {
+    window.alert(`Please enter a ${itemLabel} title before saving.`);
+  }
+}
+
+function attachFieldErrorListeners(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  el.addEventListener('blur', () => {
+    if (!el.value.trim()) el.classList.add('field-error');
+  });
+  el.addEventListener('input', () => {
+    el.classList.remove('field-error');
+  });
+}
+
+function attachTaskSaveHandlers() {
+  if (!document.getElementById('taskTypes')) return;
+  if (attachTaskSaveHandlers._bound) return;
+  attachTaskSaveHandlers._bound = true;
+
+  const configMap = {
+    'form-assignment': {
+      kind: 'assignment',
+      titleId: 'assignmentTitle',
+      startDateId: 'assignmentStartDate',
+      dueDateId: 'assignmentDueDate',
+      dueTimeId: 'assignmentDueTime',
+      remindTimeId: 'assignmentRemindTime',
+      additionalName: 'assignmentAdditionalDetails',
+      domainId: 'domainSelectAssignment',
+      bucketId: 'bucketSelectAssignment',
+      label: 'task',
+    },
+    'form-chore': {
+      kind: 'chore',
+      titleId: 'choreTitle',
+      startDateId: 'choreStartDate',
+      dueDateId: 'choreDueDate',
+      dueTimeId: 'choreDueTime',
+      remindTimeId: 'choreRemindTime',
+      additionalName: 'choreAdditionalDetails',
+      domainId: 'domainSelectChore',
+      bucketId: 'bucketSelectChore',
+      label: 'task',
+    },
+    'form-task': {
+      kind: 'task',
+      titleId: 'taskTitle',
+      startDateId: 'taskStartDate',
+      dueDateId: 'taskDueDate',
+      dueTimeId: 'taskDueTime',
+      remindTimeId: 'taskRemindTime',
+      additionalName: 'taskAdditionalDetails',
+      domainId: 'domainSelectTask',
+      bucketId: 'bucketSelectTask',
+      label: 'task',
+    },
+  };
+
+  Object.entries(configMap).forEach(([formId, cfg]) => {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    attachFieldErrorListeners(cfg.titleId);
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const titleEl = document.getElementById(cfg.titleId);
+      const title = (titleEl ? titleEl.value : '').trim();
+      if (!title) {
+        titleEl && titleEl.classList.add('field-error');
+        notifyMissingTitle(cfg.label);
+        return;
+      }
+
+      const additionalEl = form.querySelector(`[name="${cfg.additionalName}"]`);
+      const taskObj = {
+        id: generateItemId('tsk'),
+        taskKind: cfg.kind,
+        title,
+        startDate: (document.getElementById(cfg.startDateId) || {}).value || '',
+        dueDate: (document.getElementById(cfg.dueDateId) || {}).value || '',
+        dueTime: (document.getElementById(cfg.dueTimeId) || {}).value || '',
+        remindAtTime: !!((document.getElementById(cfg.remindTimeId) || {}).checked),
+        domain: ((document.getElementById(cfg.domainId) || {}).value || '').toLowerCase(),
+        bucket: (document.getElementById(cfg.bucketId) || {}).value || '',
+        additionalDetails: additionalEl ? additionalEl.value.trim() : '',
+        createdAt: new Date().toISOString(),
+      };
+
+      saveTaskToStorage(taskObj);
+      showSaveToast(cfg.kind.charAt(0).toUpperCase() + cfg.kind.slice(1));
+      form.reset();
+      returnType('taskTypes', 'task-area-form');
+    });
+  });
+}
+
+function attachReminderSaveHandlers() {
+  if (!document.getElementById('reminderTypes')) return;
+  if (attachReminderSaveHandlers._bound) return;
+  attachReminderSaveHandlers._bound = true;
+
+  const configMap = {
+    'form-daily': {
+      kind: 'daily',
+      titleId: 'dailyTitle',
+      dateId: 'dailyDate',
+      timeId: 'dailyTime',
+      additionalName: 'dailyAdditionalDetails',
+      repeatValue: 'daily',
+      domainId: 'domainSelectDaily',
+      bucketId: 'bucketSelectDaily',
+      label: 'reminder',
+    },
+    'form-routine': {
+      kind: 'routine',
+      titleId: 'routineTitle',
+      dateId: 'routineStartDate',
+      timeId: 'routineTime',
+      additionalName: 'routineAdditionalDetails',
+      repeatSelectId: 'routineFrequency',
+      domainId: 'domainSelectRoutine',
+      bucketId: 'bucketSelectRoutine',
+      label: 'reminder',
+    },
+    'form-chore': {
+      kind: 'chore',
+      titleId: 'choreTitle',
+      dateId: 'choreStartDate',
+      timeId: 'choreTime',
+      additionalName: 'choreAdditionalDetails',
+      repeatSelectId: 'choreFrequency',
+      domainId: 'domainSelectChoreRem',
+      bucketId: 'bucketSelectChoreRem',
+      label: 'reminder',
+    },
+    'form-oneTime': {
+      kind: 'oneTime',
+      titleId: 'oneTimeTitle',
+      dateId: 'oneTimeDate',
+      timeId: 'oneTimeTime',
+      additionalName: 'oneTimeAdditionalDetails',
+      repeatValue: 'never',
+      domainId: 'domainSelectOneTime',
+      bucketId: 'bucketSelectOneTime',
+      label: 'reminder',
+    },
+  };
+
+  Object.entries(configMap).forEach(([formId, cfg]) => {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    attachFieldErrorListeners(cfg.titleId);
+    if (cfg.domainId && cfg.bucketId) {
+      populateBucketSelect(cfg.domainId, cfg.bucketId);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const titleEl = document.getElementById(cfg.titleId);
+      const title = (titleEl ? titleEl.value : '').trim();
+      if (!title) {
+        titleEl && titleEl.classList.add('field-error');
+        notifyMissingTitle(cfg.label);
+        return;
+      }
+
+      const additionalEl = form.querySelector(`[name="${cfg.additionalName}"]`);
+      const repeatEl = cfg.repeatSelectId ? document.getElementById(cfg.repeatSelectId) : null;
+      const reminderObj = {
+        id: generateItemId('rmn'),
+        reminderKind: cfg.kind,
+        title,
+        date: (document.getElementById(cfg.dateId) || {}).value || '',
+        time: (document.getElementById(cfg.timeId) || {}).value || '',
+        repeat: cfg.repeatValue || (repeatEl ? repeatEl.value : 'never'),
+        domain: ((document.getElementById(cfg.domainId) || {}).value || '').toLowerCase(),
+        bucket: (document.getElementById(cfg.bucketId) || {}).value || '',
+        additionalDetails: additionalEl ? additionalEl.value.trim() : '',
+        createdAt: new Date().toISOString(),
+      };
+
+      saveReminderToStorage(reminderObj);
+      showSaveToast(cfg.kind === 'oneTime' ? 'Reminder' : cfg.kind.charAt(0).toUpperCase() + cfg.kind.slice(1));
+      form.reset();
+      returnType('reminderTypes', 'reminder-area-form');
+    });
+  });
+}
+
 function findSubtypeDetailDiv(formEl, eventType) {
   if (!eventType || !formEl) return null;
   for (const div of formEl.querySelectorAll('div[id$="Details"]')) {
@@ -1750,6 +2040,284 @@ function getEventSortValue(eventObj) {
   return Number.isNaN(dt.getTime()) ? Number.MAX_SAFE_INTEGER : dt.getTime();
 }
 
+function resolveBucketLabel(bucketId) {
+  if (!bucketId) return '-';
+  const bucket = loadBucketById(bucketId);
+  return bucket ? bucket.title : bucketId;
+}
+
+function renderTaskRow(taskObj) {
+  const row = document.createElement('tr');
+
+  const iconCell = document.createElement('td');
+  row.appendChild(iconCell);
+
+  const titleCell = document.createElement('td');
+  titleCell.appendChild(createTextLine(taskObj.title || '(Untitled Task)', true));
+  titleCell.dataset.taskId = taskObj.id;
+  titleCell.style.cursor = 'pointer';
+  row.appendChild(titleCell);
+
+  const domainCell = document.createElement('td');
+  const domainLine = document.createElement('div');
+  domainLine.appendChild(document.createTextNode('Domain: '));
+  const domainStrong = document.createElement('strong');
+  domainStrong.textContent = taskObj.domain || '-';
+  domainLine.appendChild(domainStrong);
+  const bucketLine = document.createElement('div');
+  bucketLine.appendChild(document.createTextNode('Bucket: '));
+  const bucketStrong = document.createElement('strong');
+  bucketStrong.textContent = resolveBucketLabel(taskObj.bucket);
+  bucketLine.appendChild(bucketStrong);
+  domainCell.appendChild(domainLine);
+  domainCell.appendChild(bucketLine);
+  row.appendChild(domainCell);
+
+  const logisticsCell = document.createElement('td');
+  logisticsCell.appendChild(createTextLine(`Start: ${formatDateForDisplay(taskObj.startDate)}`));
+  logisticsCell.appendChild(createTextLine(`Due: ${formatDateForDisplay(taskObj.dueDate)}`));
+  logisticsCell.appendChild(createTextLine(`Time: ${formatTimeForDisplay(taskObj.dueTime)}`));
+  row.appendChild(logisticsCell);
+
+  const detailsCell = document.createElement('td');
+  detailsCell.appendChild(createTextLine((taskObj.taskKind || 'task').replace(/^\w/, (ch) => ch.toUpperCase())));
+  detailsCell.appendChild(createTextLine(taskObj.remindAtTime ? 'Reminder at time: Yes' : 'Reminder at time: No'));
+  row.appendChild(detailsCell);
+
+  const additionalCell = document.createElement('td');
+  additionalCell.appendChild(createTextLine(taskObj.additionalDetails || '-'));
+  row.appendChild(additionalCell);
+
+  return row;
+}
+
+function renderReminderRow(reminderObj) {
+  const row = document.createElement('tr');
+
+  const iconCell = document.createElement('td');
+  row.appendChild(iconCell);
+
+  const titleCell = document.createElement('td');
+  titleCell.appendChild(createTextLine(reminderObj.title || '(Untitled Reminder)', true));
+  titleCell.dataset.reminderId = reminderObj.id;
+  titleCell.style.cursor = 'pointer';
+  row.appendChild(titleCell);
+
+  const domainCell = document.createElement('td');
+  const rDomainLine = document.createElement('div');
+  rDomainLine.appendChild(document.createTextNode('Domain: '));
+  const rDomainStrong = document.createElement('strong');
+  rDomainStrong.textContent = reminderObj.domain
+    ? reminderObj.domain.replace(/^\w/, c => c.toUpperCase())
+    : '-';
+  rDomainLine.appendChild(rDomainStrong);
+  const rBucketLine = document.createElement('div');
+  rBucketLine.appendChild(document.createTextNode('Bucket: '));
+  const rBucketStrong = document.createElement('strong');
+  rBucketStrong.textContent = resolveBucketLabel(reminderObj.bucket);
+  rBucketLine.appendChild(rBucketStrong);
+  domainCell.appendChild(rDomainLine);
+  domainCell.appendChild(rBucketLine);
+  row.appendChild(domainCell);
+
+  const logisticsCell = document.createElement('td');
+  logisticsCell.appendChild(createTextLine(`Date: ${formatDateForDisplay(reminderObj.date)}`));
+  logisticsCell.appendChild(createTextLine(`Time: ${formatTimeForDisplay(reminderObj.time)}`));
+  logisticsCell.appendChild(createTextLine(`Repeat: ${reminderObj.repeat || 'never'}`));
+  row.appendChild(logisticsCell);
+
+  const detailsCell = document.createElement('td');
+  detailsCell.appendChild(createTextLine((reminderObj.reminderKind || 'reminder').replace(/^\w/, (ch) => ch.toUpperCase())));
+  row.appendChild(detailsCell);
+
+  const additionalCell = document.createElement('td');
+  additionalCell.appendChild(createTextLine(reminderObj.additionalDetails || '-'));
+  row.appendChild(additionalCell);
+
+  return row;
+}
+
+function renderTableEmptyState(tableBody, message, createLabel, createHref) {
+  const row = document.createElement('tr');
+  const cell = document.createElement('td');
+  cell.colSpan = 6;
+  const card = document.createElement('div');
+  card.className = 'empty-state-card';
+  const iconDiv = document.createElement('div');
+  iconDiv.className = 'empty-state-icon';
+  iconDiv.innerHTML = '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#0000FF" stroke-width="1.5"/><path d="M3 9h18" stroke="#0000FF" stroke-width="1.5"/><path d="M8 3v4M16 3v4" stroke="#0000FF" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  card.appendChild(iconDiv);
+  const msg = document.createElement('p');
+  msg.textContent = message;
+  card.appendChild(msg);
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'type';
+  btn.textContent = createLabel;
+  btn.addEventListener('click', () => { window.location.href = createHref; });
+  card.appendChild(btn);
+  cell.appendChild(card);
+  row.appendChild(cell);
+  tableBody.appendChild(row);
+}
+
+function renderManageTasksTable() {
+  const tableBody = document.getElementById('tasksTableBody');
+  if (!tableBody) return;
+
+  const tasks = loadTasksFromStorage();
+  tableBody.innerHTML = '';
+
+  if (!tasks.length) {
+    renderTableEmptyState(tableBody, 'No tasks yet. Create your first one to get started.', 'Create your first Task', 'createTask.html');
+    return;
+  }
+
+  const sortedTasks = [...tasks].sort((a, b) => {
+    const aDate = new Date(`${a.dueDate || a.startDate || ''}T${a.dueTime || '00:00'}`);
+    const bDate = new Date(`${b.dueDate || b.startDate || ''}T${b.dueTime || '00:00'}`);
+    return (Number.isNaN(aDate.getTime()) ? Number.MAX_SAFE_INTEGER : aDate.getTime())
+      - (Number.isNaN(bDate.getTime()) ? Number.MAX_SAFE_INTEGER : bDate.getTime());
+  });
+
+  sortedTasks.forEach((taskObj) => {
+    tableBody.appendChild(renderTaskRow(taskObj));
+  });
+}
+
+function renderManageRemindersTable() {
+  const tableBody = document.getElementById('remindersTableBody');
+  if (!tableBody) return;
+
+  const reminders = loadRemindersFromStorage();
+  tableBody.innerHTML = '';
+
+  if (!reminders.length) {
+    renderTableEmptyState(tableBody, 'No reminders yet. Create your first one to get started.', 'Create your first Reminder', 'createReminder.html');
+    return;
+  }
+
+  const sortedReminders = [...reminders].sort((a, b) => {
+    const aDate = new Date(`${a.date || ''}T${a.time || '00:00'}`);
+    const bDate = new Date(`${b.date || ''}T${b.time || '00:00'}`);
+    return (Number.isNaN(aDate.getTime()) ? Number.MAX_SAFE_INTEGER : aDate.getTime())
+      - (Number.isNaN(bDate.getTime()) ? Number.MAX_SAFE_INTEGER : bDate.getTime());
+  });
+
+  sortedReminders.forEach((reminderObj) => {
+    tableBody.appendChild(renderReminderRow(reminderObj));
+  });
+}
+
+function attachManageTasksHandlers() {
+  if (!document.getElementById('tasksTableBody')) return;
+  if (attachManageTasksHandlers._bound) return;
+  attachManageTasksHandlers._bound = true;
+  renderManageTasksTable();
+
+  const tableBody = document.getElementById('tasksTableBody');
+  tableBody.addEventListener('click', async (e) => {
+    const titleCell = e.target.closest('td[data-task-id]');
+    if (!titleCell) return;
+    const taskId = titleCell.dataset.taskId;
+    const task = loadTasksFromStorage().find(t => t.id === taskId);
+    if (!task) return;
+
+    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const lines = [
+      `<strong>Type:</strong> ${(task.taskKind || 'task').replace(/^\w/, c => c.toUpperCase())}`,
+      `<strong>Start:</strong> ${esc(formatDateForDisplay(task.startDate) || '\u2014')}`,
+      `<strong>Due:</strong> ${esc(formatDateForDisplay(task.dueDate) || '\u2014')}`,
+      `<strong>Domain:</strong> ${task.domain ? esc(task.domain.replace(/^\w/, c => c.toUpperCase())) : '\u2014'}`,
+      `<strong>Bucket:</strong> ${esc(resolveBucketLabel(task.bucket))}`,
+      task.additionalDetails ? `<strong>Notes:</strong> ${esc(task.additionalDetails)}` : null,
+    ].filter(Boolean).join('<br>');
+
+    const result = await Swal.fire({
+      ...getSwalThemeOptions(),
+      title: task.title,
+      html: lines,
+      icon: 'info',
+      showDenyButton: true,
+      denyButtonText: 'Delete',
+      confirmButtonText: 'Close',
+      showCancelButton: false,
+    });
+
+    if (result.isDenied) {
+      const confirmed = await Swal.fire({
+        ...getSwalThemeOptions(),
+        title: 'Delete task?',
+        text: `"${task.title}" will be permanently removed.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        confirmButtonColor: '#d33',
+        cancelButtonText: 'Cancel',
+      });
+      if (confirmed.isConfirmed) {
+        deleteTaskFromStorage(taskId);
+        renderManageTasksTable();
+      }
+    }
+  });
+}
+
+function attachManageRemindersHandlers() {
+  if (!document.getElementById('remindersTableBody')) return;
+  if (attachManageRemindersHandlers._bound) return;
+  attachManageRemindersHandlers._bound = true;
+  renderManageRemindersTable();
+
+  const tableBody = document.getElementById('remindersTableBody');
+  tableBody.addEventListener('click', async (e) => {
+    const titleCell = e.target.closest('td[data-reminder-id]');
+    if (!titleCell) return;
+    const reminderId = titleCell.dataset.reminderId;
+    const reminder = loadRemindersFromStorage().find(r => r.id === reminderId);
+    if (!reminder) return;
+
+    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const lines = [
+      `<strong>Type:</strong> ${(reminder.reminderKind || 'reminder').replace(/^\w/, c => c.toUpperCase())}`,
+      `<strong>Date:</strong> ${esc(formatDateForDisplay(reminder.date) || '\u2014')}`,
+      `<strong>Time:</strong> ${esc(formatTimeForDisplay(reminder.time) || '\u2014')}`,
+      `<strong>Repeat:</strong> ${esc(reminder.repeat || 'never')}`,
+      `<strong>Domain:</strong> ${reminder.domain ? esc(reminder.domain.replace(/^\w/, c => c.toUpperCase())) : '\u2014'}`,
+      `<strong>Bucket:</strong> ${esc(resolveBucketLabel(reminder.bucket))}`,
+      reminder.additionalDetails ? `<strong>Notes:</strong> ${esc(reminder.additionalDetails)}` : null,
+    ].filter(Boolean).join('<br>');
+
+    const result = await Swal.fire({
+      ...getSwalThemeOptions(),
+      title: reminder.title,
+      html: lines,
+      icon: 'info',
+      showDenyButton: true,
+      denyButtonText: 'Delete',
+      confirmButtonText: 'Close',
+      showCancelButton: false,
+    });
+
+    if (result.isDenied) {
+      const confirmed = await Swal.fire({
+        ...getSwalThemeOptions(),
+        title: 'Delete reminder?',
+        text: `"${reminder.title}" will be permanently removed.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        confirmButtonColor: '#d33',
+        cancelButtonText: 'Cancel',
+      });
+      if (confirmed.isConfirmed) {
+        deleteReminderFromStorage(reminderId);
+        renderManageRemindersTable();
+      }
+    }
+  });
+}
+
 function renderManageEventsTable() {
   const tableBody = document.getElementById('eventsTableBody');
   if (!tableBody) return;
@@ -1758,12 +2326,7 @@ function renderManageEventsTable() {
   tableBody.innerHTML = '';
 
   if (!events.length) {
-    const emptyRow = document.createElement('tr');
-    const emptyCell = document.createElement('td');
-    emptyCell.colSpan = 6;
-    emptyCell.textContent = 'No saved events yet.';
-    emptyRow.appendChild(emptyCell);
-    tableBody.appendChild(emptyRow);
+    renderTableEmptyState(tableBody, 'No events yet. Create your first one to get started.', 'Create your first Event', 'createEvent.html');
     return;
   }
 
@@ -1854,6 +2417,11 @@ function attachManageEventsHandlers() {
     await startEventEditFlow(eventId, eventDate);
   });
 }
+attachManageEventsHandlers();
+attachManageTasksHandlers();
+attachManageRemindersHandlers();
+attachTaskSaveHandlers();
+attachReminderSaveHandlers();
 attachRepeatFieldHandlers();
 
 // ── Icon Picker ──────────────────────────────────────────────────────────────

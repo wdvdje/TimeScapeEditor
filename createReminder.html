@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#0000ff">
     <title>Create Reminder</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
@@ -31,6 +33,7 @@
         <input type="text" class="main" id="dailyTitle" name="dailyTitle" placeholder="Reminder Title">
         <p>Date: <input type="date" class="spec" id="dailyDate" name="dailyDate">.</p>
         <p>Time: <input type="time" class="spec" id="dailyTime" name="dailyTime">.</p>
+        <p>Domain: <select name="domainSelect" id="domainSelectDaily" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectDaily" class="spec"></select></p>
         <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="dailyAdditionalDetails">
         <button type="button" class="type" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
@@ -47,6 +50,7 @@
           <option value="monthly">Monthly</option>
           <option value="yearly">Yearly</option>
         </select></p>
+        <p>Domain: <select name="domainSelect" id="domainSelectRoutine" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectRoutine" class="spec"></select></p>
         <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="routineAdditionalDetails">
         <button type="button" class="type" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
@@ -63,6 +67,7 @@
           <option value="monthly">Monthly</option>
           <option value="yearly">Yearly</option>
         </select></p>
+        <p>Domain: <select name="domainSelect" id="domainSelectChoreRem" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectChoreRem" class="spec"></select></p>
         <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="choreAdditionalDetails">
         <button type="button" class="type" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
@@ -73,6 +78,7 @@
         <input type="text" class="main" id="oneTimeTitle" name="oneTimeTitle" placeholder="Reminder Title">
         <p>Date: <input type="date" class="spec" id="oneTimeDate" name="oneTimeDate">.</p>
         <p>Time: <input type="time" class="spec" id="oneTimeTime" name="oneTimeTime">.</p>
+        <p>Domain: <select name="domainSelect" id="domainSelectOneTime" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectOneTime" class="spec"></select></p>
         <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="oneTimeAdditionalDetails">
         <button type="button" class="type" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
@@ -81,5 +87,6 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="java.js"></script>
+    <script>attachReminderSaveHandlers();</script>
   </body>
 </html>
