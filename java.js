@@ -54,17 +54,47 @@ function itemsOptions(createLink, manageLink, item) {
     });
 }
 
-function openCreateBucketPopup() {
+/**
+ * Open createBucket.html as a centred child popup.
+ * @param {string} domain - 'personal' | 'household' | 'jobs'
+ */
+function openCreateBucketPopup(domain) {
   const width = 600;
   const height = 700;
   const left = (screen.width / 2) - (width / 2);
   const top = (screen.height / 2) - (height / 2);
 
+  const url = 'createBucket.html?domain=' + encodeURIComponent(domain || '');
   window.open(
-    'createBucket.html',
+    url,
     'Create_Bucket',
     'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbars=yes'
   );
+}
+
+/**
+ * Call once at the bottom of createBucket.html.
+ * Reads the ?domain query param, writes it into the hidden #bucketDomain input,
+ * and reveals the matching domain section.
+ */
+function initCreateBucket() {
+  const params = new URLSearchParams(window.location.search);
+  const domain = (params.get('domain') || '').toLowerCase().trim();
+
+  const domainInput = document.getElementById('bucketDomain');
+  if (domainInput) domainInput.value = domain;
+
+  const sectionMap = {
+    personal: 'personalDomain',
+    household: 'householdDomain',
+    jobs: 'jobsDomain',
+  };
+
+  const sectionId = sectionMap[domain];
+  if (sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) section.style.display = 'block';
+  }
 }
 
 // today's date

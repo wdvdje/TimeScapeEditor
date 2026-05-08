@@ -13,7 +13,8 @@
 <body>
     <h1>Create Bucket</h1>
     <form id="createBucketForm">  
-        <input type="main" id="bucketTitle" name="bucketTitle" placeholder="Bucket Title">
+        <input type="text" class="main" id="bucketTitle" name="bucketTitle" placeholder="Bucket Title">
+        <input type="hidden" id="bucketDomain" name="bucketDomain" value="">
         <p>Domain:</p>
         <div id="personalDomain" style="display: none;">
             <p>
@@ -37,5 +38,7 @@
             </p>
         </div>
     </form>
+    <script src="java.js"></script>
+    <script>initCreateBucket();</script>
 </body>
 </html>
