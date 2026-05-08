@@ -1,7 +1,20 @@
 // service worker registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js');
+    if (window.location.protocol !== 'file:') {
+      navigator.serviceWorker.register('./sw.js');
+    } else {
+      // If this app is opened directly from disk, clear stale SW state from prior hosted runs.
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => registration.unregister());
+      }).catch(() => {});
+
+      if ('caches' in window) {
+        caches.keys().then((keys) => {
+          keys.forEach((key) => caches.delete(key));
+        }).catch(() => {});
+      }
+    }
   });
 }
 
@@ -80,9 +93,17 @@ function openCreateBucketPopup(domain) {
 function initCreateBucket() {
   const params = new URLSearchParams(window.location.search);
   const domain = (params.get('domain') || '').toLowerCase().trim();
+  const domainLabelMap = {
+    personal: 'Personal',
+    household: 'Household',
+    jobs: 'Jobs',
+  };
 
   const domainInput = document.getElementById('bucketDomain');
   if (domainInput) domainInput.value = domain;
+
+  const domainLabel = document.getElementById('bucketDomainLabel');
+  if (domainLabel) domainLabel.textContent = domainLabelMap[domain] || 'Unknown';
 
   const sectionMap = {
     personal: 'personalDomain',
@@ -124,16 +145,31 @@ const _revealOnClickRegistry = [];
 function revealOnClick(buttonId, targetId) {
   const button = document.getElementById(buttonId);
   const target = document.getElementById(targetId);
+  if (!button || !target) {
+    return;
+  }
+
+  const hideTarget = (el) => {
+    el.classList.add('hidden');
+    el.style.display = 'none';
+  };
+
+  const showTarget = (el) => {
+    el.classList.remove('hidden');
+    el.style.display = 'block';
+  };
+
   button.setAttribute('aria-expanded', 'false');
+  hideTarget(target);
   _revealOnClickRegistry.push({ button, target });
   button.addEventListener('click', () => {
-    const isOpen = !target.classList.contains('hidden');
+    const isOpen = window.getComputedStyle(target).display !== 'none';
     _revealOnClickRegistry.forEach(entry => {
-      entry.target.classList.add('hidden');
+      hideTarget(entry.target);
       entry.button.setAttribute('aria-expanded', 'false');
     });
     if (!isOpen) {
-      target.classList.remove('hidden');
+      showTarget(target);
       button.setAttribute('aria-expanded', 'true');
     }
   });

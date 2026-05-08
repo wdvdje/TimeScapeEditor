@@ -15,30 +15,66 @@
     <form id="createBucketForm">  
         <input type="text" class="main" id="bucketTitle" name="bucketTitle" placeholder="Bucket Title">
         <input type="hidden" id="bucketDomain" name="bucketDomain" value="">
-        <p>Domain:</p>
+        <p>Domain: <strong><span id="bucketDomainLabel">Unknown</span></strong></p>
         <div id="personalDomain" style="display: none;">
             <p>
                 Personal Bucket Type:
-                <button type="button" class="type" id="personalType1" name="personalType1">Personal Type 1</button>
-                <button type="button" class="type" id="personalType2" name="personalType2">Personal Type 2</button>
+                <button type="button" class="type" id="personalType1" name="personalType1" aria-controls="personalType1Options">Project</button>
+                <button type="button" class="type" id="personalType2" name="personalType2" aria-controls="personalType2Options">Tag</button>
             </p>
+            <div id="personalType1Options" style="display: none;">
+                <p>Project Options:</p>
+                <button type="button" class="type" id="personalType1Option1" name="personalType1Option1">Project Option 1</button>
+                <button type="button" class="type" id="personalType1Option2" name="personalType1Option2">Project Option 2</button>
+            </div>
+            <div id="personalType2Options" style="display: none;">
+                <p>Tag Options:</p>
+                <button type="button" class="type" id="personalType2Option1" name="personalType2Option1">Tag Option 1</button>
+                <button type="button" class="type" id="personalType2Option2" name="personalType2Option2">Tag Option 2</button>
+            </div>
         </div>
         <div id="householdDomain" style="display: none;">
             <p>
                 Household Bucket Type:
-                <button type="button" class="type" id="householdType1" name="householdType1">Household Type 1</button>
-                <button type="button" class="type" id="householdType2" name="householdType2">Household Type 2</button>
+                <button type="button" class="type" id="householdType1" name="householdType1" aria-controls="householdType1Options">Project</button>
+                <button type="button" class="type" id="householdType2" name="householdType2" aria-controls="householdType2Options">Tag</button>
             </p>
+            <div id="householdType1Options" style="display: none;">
+                <p>Project Options:</p>
+                <button type="button" class="type" id="householdType1Option1" name="householdType1Option1">Project Option 1</button>
+                <button type="button" class="type" id="householdType1Option2" name="householdType1Option2">Project Option 2</button>
+            </div>
+            <div id="householdType2Options" style="display: none;">
+                <p>Tag Options:</p>
+                <button type="button" class="type" id="householdType2Option1" name="householdType2Option1">Tag Option 1</button>
+                <button type="button" class="type" id="householdType2Option2" name="householdType2Option2">Tag Option 2</button>
+            </div>
         </div>
         <div id="jobsDomain" style="display: none;">
             <p>
                 Jobs Bucket Type:
-                <button type="button" class="type" id="jobsType1" name="jobsType1">Jobs Type 1</button>
-                <button type="button" class="type" id="jobsType2" name="jobsType2">Jobs Type 2</button>
+                <button type="button" class="type" id="jobsType1" name="jobsType1" aria-controls="jobsType1Options">Project</button>
+                <button type="button" class="type" id="jobsType2" name="jobsType2" aria-controls="jobsType2Options">Tag</button>
             </p>
+            <div id="jobsType1Options" style="display: none;">
+                <p>Project Options:</p>
+                <button type="button" class="type" id="jobsType1Option1" name="jobsType1Option1">Project Option 1</button>
+                <button type="button" class="type" id="jobsType1Option2" name="jobsType1Option2">Project Option 2</button>
+            </div>
+            <div id="jobsType2Options" style="display: none;">
+                <p>Tag Options:</p>
+                <button type="button" class="type" id="jobsType2Option1" name="jobsType2Option1">Tag Option 1</button>
+                <button type="button" class="type" id="jobsType2Option2" name="jobsType2Option2">Tag Option 2</button>  
+            </div>
         </div>
     </form>
     <script src="java.js"></script>
+    <script>revealOnClick("personalType1", "personalType1Options");</script>
+    <script>revealOnClick("personalType2", "personalType2Options");</script>
+    <script>revealOnClick("householdType1", "householdType1Options");</script>
+    <script>revealOnClick("householdType2", "householdType2Options");</script>
+    <script>revealOnClick("jobsType1", "jobsType1Options");</script>
+    <script>revealOnClick("jobsType2", "jobsType2Options");</script>
     <script>initCreateBucket();</script>
 </body>
 </html>

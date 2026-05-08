@@ -29,10 +29,23 @@ const STATIC_ASSETS = [
   'https://cdn.jsdelivr.net/npm/sweetalert2@11',
 ];
 
+function getCacheableAssets() {
+  return STATIC_ASSETS.filter((asset) => {
+    try {
+      const resolved = new URL(asset, self.location.href);
+      return resolved.protocol === 'http:' || resolved.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  });
+}
+
 // Install: pre-cache all static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(getCacheableAssets().map((asset) => cache.add(asset)))
+    )
   );
   self.skipWaiting();
 });
