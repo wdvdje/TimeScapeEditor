@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Bucket</title>
+    <meta name="theme-color" content="#0000ff">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Create Bucket</h1>
+    <form id="createBucketForm">  
+        <input type="main" id="bucketTitle" name="bucketTitle" placeholder="Bucket Title">
+        <p>Domain:</p>
+        <div id="personalDomain" style="display: none;">
+            <p>
+                Personal Bucket Type:
+                <button type="button" class="type" id="personalType1" name="personalType1">Personal Type 1</button>
+                <button type="button" class="type" id="personalType2" name="personalType2">Personal Type 2</button>
+            </p>
+        </div>
+        <div id="householdDomain" style="display: none;">
+            <p>
+                Household Bucket Type:
+                <button type="button" class="type" id="householdType1" name="householdType1">Household Type 1</button>
+                <button type="button" class="type" id="householdType2" name="householdType2">Household Type 2</button>
+            </p>
+        </div>
+        <div id="jobsDomain" style="display: none;">
+            <p>
+                Jobs Bucket Type:
+                <button type="button" class="type" id="jobsType1" name="jobsType1">Jobs Type 1</button>
+                <button type="button" class="type" id="jobsType2" name="jobsType2">Jobs Type 2</button>
+            </p>
+        </div>
+    </form>
+</body>
+</html>

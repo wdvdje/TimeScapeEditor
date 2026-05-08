@@ -54,6 +54,19 @@ function itemsOptions(createLink, manageLink, item) {
     });
 }
 
+function openCreateBucketPopup() {
+  const width = 600;
+  const height = 700;
+  const left = (screen.width / 2) - (width / 2);
+  const top = (screen.height / 2) - (height / 2);
+
+  window.open(
+    'createBucket.html',
+    'Create_Bucket',
+    'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbars=yes'
+  );
+}
+
 // today's date
 const dateElement = document.getElementById('current-date');
 if (dateElement) {
