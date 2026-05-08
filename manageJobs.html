@@ -14,17 +14,8 @@
     <h1>Manage Jobs Domain</h1>
     <button class="type" type="button" id="returnToIndex" onclick="window.location.href='index.html'">Return to Index</button>
     <button class="type" type="button" id="createBucket" onclick="openCreateBucketPopup('jobs')">Add Bucket</button>
-    <div class="bucket-container">
-        <div class="bucket">
-            <h2>Test Bucket</h2>
-        </div>
-        <div class="bucket">
-            <h2>Test Bucket</h2>
-        </div>
-        <div class="bucket">
-            <h2>Test Bucket</h2>
-        </div>
-    </div>
+    <div class="bucket-container"></div>
     <script src="java.js"></script>
+    <script>renderManageBuckets('jobs');</script>
 </body>
 </html>

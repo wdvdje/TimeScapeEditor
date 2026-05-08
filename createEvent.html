@@ -37,7 +37,7 @@
         <p>Repeat: <select class="type" data-role="repeat-select"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <p data-role="repeat-until-container" style="display: none;">Until: <input type="date" class="spec" data-role="repeat-until"></p>
         <h2>Appointment Details</h2>
-        <p>Domain: <select name="domainSelect" id="domainSelect"><option>Personal</option><option>Household</option><option>Jobs</option></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
+        <p>Domain: <select name="domainSelect" id="domainSelectAppt"><option>Personal</option><option>Household</option><option>Jobs</option></select>. Bucket: <select name="bucketSelect" id="bucketSelectAppt"></select>.</p>
         <p>Appointment Type: 
           <button id="medicalAppointment" type="button" class="type" aria-controls="medicalDetails">Medical</button>
           <button id="interviewAppointment" type="button" class="type" aria-controls="interviewDetails">Interview</button>
@@ -211,7 +211,7 @@
           <p>Meeting Purpose: <input type="text" class="spec" id="purposeProfessionalMeeting" name="purposeProfessionalMeeting"></p>
           <p>Meeting Link: <input type="url" id="linkProfessionalMeeting" name="linkProfessionalMeeting"></p>
         </div>
-        <p>Domain: <select name="domainSelect" id="domainSelect"><option>Personal</option><option>Household</option><option>Jobs</option></select>. Bucket: <select name="bucketSelect" id="bucketSelect"></select>.</p>
+        <p>Domain: <select name="domainSelect" id="domainSelectMeeting"><option>Personal</option><option>Household</option><option>Jobs</option></select>. Bucket: <select name="bucketSelect" id="bucketSelectMeeting"></select>.</p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="meetingAdditionalDetails"></textarea>
         <p>Create Sub-Item
@@ -238,6 +238,11 @@
     <script>revealOnClick('fitnessFocus', 'fitnessFocusDetails');</script>
     <script>revealOnClick('personalMeeting', 'personalMeetingDetails');</script>
     <script>revealOnClick('professionalMeeting', 'professionalMeetingDetails');</script>
+    <script>
+      populateBucketSelect('domainSelectAppt', 'bucketSelectAppt');
+      populateBucketSelect('domainSelectEvent', 'bucketSelectEvent');
+      populateBucketSelect('domainSelectMeeting', 'bucketSelectMeeting');
+    </script>
     <script>attachEventSaveHandlers();</script>
     <script>initEditMode();</script>
   </body>

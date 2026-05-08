@@ -33,6 +33,15 @@
                 </p>
                 <p>Project Description:</p>
                 <textarea id="personalType1Description" style="width: 100%; height: 50px;" class="spec" name="personalType1Description" placeholder="Enter project description here..."></textarea>
+                <p>Icon Overwrite?
+                <label><input type="radio" name="personalIconOverwrite" value="no"> No.</label>
+                <label><input type="radio" name="personalIconOverwrite" value="yes"> Yes. Select Icon.</label>
+                </p>
+                <div id="personalIconSelectContainer" style="display: none;">
+                    <button type="button" class="type" id="personalSelectIcon">Select Icon</button>
+                    <input type="hidden" id="personalProjectIconId" name="personalProjectIconId" value="">
+                    <span class="selected-icon-preview" id="personalProjectIconPreview" aria-live="polite"></span>
+                </div>
             </div>
             <div id="personalType2Options" style="display: none;">
                 <p>
@@ -44,11 +53,13 @@
                 </select>
                 </p>
                 <p>Icon Overwrite?
-                <label><input type="radio" name="personalIconOverwrite" value="no"> No.</label>
-                <label><input type="radio" name="personalIconOverwrite" value="yes"> Yes. Select Icon.</label>
+                <label><input type="radio" name="personalTagIconOverwrite" value="no"> No.</label>
+                <label><input type="radio" name="personalTagIconOverwrite" value="yes"> Yes. Select Icon.</label>
                 </p>
-                <div id="personalIconSelectContainer" style="display: none;">
-                    <button type="button" class="type" id="personalSelectIcon">Select Icon</button>
+                <div id="personalTagIconSelectContainer" style="display: none;">
+                    <button type="button" class="type" id="personalTagSelectIcon">Select Icon</button>
+                    <input type="hidden" id="personalTagIconId" name="personalTagIconId" value="">
+                    <span class="selected-icon-preview" id="personalTagIconPreview" aria-live="polite"></span>
                 </div>
             </div>
         </div>
@@ -69,6 +80,15 @@
                 </p>
                 <p>Project Description:</p>
                 <textarea id="householdType1Description" style="width: 100%; height: 50px;" class="spec" name="householdType1Description" placeholder="Enter project description here..."></textarea>
+                <p>Icon Overwrite?
+                <label><input type="radio" name="householdIconOverwrite" value="no"> No.</label>
+                <label><input type="radio" name="householdIconOverwrite" value="yes"> Yes. Select Icon.</label>
+                </p>
+                <div id="householdIconSelectContainer" style="display: none;">
+                    <button type="button" class="type" id="householdSelectIcon">Select Icon</button>
+                    <input type="hidden" id="householdProjectIconId" name="householdProjectIconId" value="">
+                    <span class="selected-icon-preview" id="householdProjectIconPreview" aria-live="polite"></span>
+                </div>
             </div>
             <div id="householdType2Options" style="display: none;">
                 <p>
@@ -80,9 +100,14 @@
                 </select>
                 </p>
                 <p>Icon Overwrite?
-                <label><input type="radio" name="iconOverwrite" value="no"> No.</label>
-                <label><input type="radio" name="iconOverwrite" value="yes"> Yes. Select Icon.</label>
+                <label><input type="radio" name="householdTagIconOverwrite" value="no"> No.</label>
+                <label><input type="radio" name="householdTagIconOverwrite" value="yes"> Yes. Select Icon.</label>
                 </p>
+                <div id="householdTagIconSelectContainer" style="display: none;">
+                    <button type="button" class="type" id="householdTagSelectIcon">Select Icon</button>
+                    <input type="hidden" id="householdTagIconId" name="householdTagIconId" value="">
+                    <span class="selected-icon-preview" id="householdTagIconPreview" aria-live="polite"></span>
+                </div>
             </div>
         </div>
         <div id="jobsDomain" style="display: none;">
@@ -94,8 +119,18 @@
             </p>
             <div id="jobsType0Options" style="display: none;">
                 <p>Job Type:</p>
-                <button type="button" class="type" id="jobsType0Option1" name="jobsType0Option1">Job Option 1</button>
-                <button type="button" class="type" id="jobsType0Option2" name="jobsType0Option2">Job Option 2</button>
+                <button type="button" class="type" id="jobsType0Option1" name="jobsType0Option1" data-value="option1">Job Option 1</button>
+                <button type="button" class="type" id="jobsType0Option2" name="jobsType0Option2" data-value="option2">Job Option 2</button>
+                <input type="hidden" id="jobsType0Option" name="jobsType0Option" value="">
+                <p>Icon Overwrite?
+                <label><input type="radio" name="jobsJobIconOverwrite" value="no"> No.</label>
+                <label><input type="radio" name="jobsJobIconOverwrite" value="yes"> Yes. Select Icon.</label>
+                </p>
+                <div id="jobsJobIconSelectContainer" style="display: none;">
+                    <button type="button" class="type" id="jobsJobSelectIcon">Select Icon</button>
+                    <input type="hidden" id="jobsJobIconId" name="jobsJobIconId" value="">
+                    <span class="selected-icon-preview" id="jobsJobIconPreview" aria-live="polite"></span>
+                </div>
             </div>
             <div id="jobsType1Options" style="display: none;">
                 <p>
@@ -108,6 +143,15 @@
                 </p>
                 <p>Project Description:</p>
                 <textarea id="jobsType1Description" style="width: 100%; height: 50px;" class="spec" name="jobsType1Description" placeholder="Enter project description here..."></textarea>
+                <p>Icon Overwrite?
+                <label><input type="radio" name="jobsIconOverwrite" value="no"> No.</label>
+                <label><input type="radio" name="jobsIconOverwrite" value="yes"> Yes. Select Icon.</label>
+                </p>
+                <div id="jobsIconSelectContainer" style="display: none;">
+                    <button type="button" class="type" id="jobsSelectIcon">Select Icon</button>
+                    <input type="hidden" id="jobsProjectIconId" name="jobsProjectIconId" value="">
+                    <span class="selected-icon-preview" id="jobsProjectIconPreview" aria-live="polite"></span>
+                </div>
             </div>
             <div id="jobsType2Options" style="display: none;">
                 <p>
@@ -119,20 +163,45 @@
                 </select>
                 </p>
                 <p>Icon Overwrite?
-                <label><input type="radio" name="jobsIconOverwrite" value="no"> No.</label>
-                <label><input type="radio" name="jobsIconOverwrite" value="yes"> Yes. Select Icon.</label>
+                <label><input type="radio" name="jobsTagIconOverwrite" value="no"> No.</label>
+                <label><input type="radio" name="jobsTagIconOverwrite" value="yes"> Yes. Select Icon.</label>
                 </p>
+                <div id="jobsTagIconSelectContainer" style="display: none;">
+                    <button type="button" class="type" id="jobsTagSelectIcon">Select Icon</button>
+                    <input type="hidden" id="jobsTagIconId" name="jobsTagIconId" value="">
+                    <span class="selected-icon-preview" id="jobsTagIconPreview" aria-live="polite"></span>
+                </div>
             </div>
         </div>
         <button type="submit" class="type">Create Bucket</button>
     </form>
+
+    <div id="iconPickerModal" class="icon-modal hidden" aria-hidden="true" role="dialog" aria-labelledby="iconPickerTitle">
+        <div class="icon-modal-panel" role="document">
+            <h2 id="iconPickerTitle">Select an Icon</h2>
+            <p id="iconPickerSubtitle">Choose an icon for this bucket.</p>
+            <div class="icon-filter-row" id="iconFilterRow">
+                <button type="button" class="type icon-filter-button" data-domain="personal">Personal</button>
+                <button type="button" class="type icon-filter-button" data-domain="household">Household</button>
+                <button type="button" class="type icon-filter-button" data-domain="jobs">Jobs</button>
+            </div>
+            <div id="iconPickerGrid" class="icon-grid" aria-label="Icon options"></div>
+            <div id="iconPickerSelection" class="icon-selection">No icon selected.</div>
+            <div class="icon-modal-actions">
+                <button type="button" class="type" id="iconPickerCancel">Cancel</button>
+                <button type="button" class="type" id="iconPickerConfirm">Use Icon</button>
+            </div>
+        </div>
+    </div>
     <script src="java.js"></script>
     <script>revealOnClick("personalType1", "personalType1Options");</script>
     <script>revealOnClick("personalType2", "personalType2Options");</script>
     <script>revealOnClick("householdType1", "householdType1Options");</script>
     <script>revealOnClick("householdType2", "householdType2Options");</script>
+    <script>revealOnClick("jobsType0", "jobsType0Options");</script>
     <script>revealOnClick("jobsType1", "jobsType1Options");</script>
     <script>revealOnClick("jobsType2", "jobsType2Options");</script>
     <script>initCreateBucket();</script>
+    <script>attachBucketSaveHandler();</script>
 </body>
 </html>
