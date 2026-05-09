@@ -1,0 +1,56 @@
+{
+  "name": "timescape-editor",
+  "version": "1.0.0",
+  "description": "Manage your events, tasks, and reminders with TimeScape Editor.",
+  "main": "electron/main.js",
+  "homepage": "./",
+  "author": "William Joyce",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "dist": "electron-builder",
+    "build": "electron-builder --publish never"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.timescape.editor",
+    "productName": "TimeScape Editor",
+    "files": [
+      "*.html",
+      "*.css",
+      "*.js",
+      "icons/**",
+      "additionalServices/**",
+      "electron/**",
+      "manifest.json",
+      "sw.js"
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "icon": "icons/icon.icns"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150,
+          "type": "file"
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
+  }
+}

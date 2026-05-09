@@ -701,7 +701,11 @@ function loadRemindersFromStorage() {
 
 function saveReminderToStorage(reminderObj) {
   const reminders = loadRemindersFromStorage();
-  reminders.push(reminderObj);
+  const normalizedReminder = {
+    ...reminderObj,
+    contentItems: Array.isArray(reminderObj.contentItems) ? reminderObj.contentItems : [],
+  };
+  reminders.push(normalizedReminder);
   localStorage.setItem(REMINDERS_STORAGE_KEY, JSON.stringify(reminders));
 }
 
@@ -2241,6 +2245,21 @@ function summarizeReminderContentItems(contentItems) {
   ].join(' | ');
 }
 
+function buildReminderContentTitlePreview(contentItems) {
+  const items = Array.isArray(contentItems) ? contentItems : [];
+  const titles = items
+    .map((item) => _getReminderContentSummary(item))
+    .filter((summary) => !!summary);
+
+  if (!titles.length) return [];
+
+  const preview = titles.slice(0, 3);
+  if (titles.length > 3) {
+    preview.push(`+${titles.length - 3} more`);
+  }
+  return preview;
+}
+
 function attachReminderSaveHandlers() {
   if (!document.getElementById('reminderTypes')) return;
   if (attachReminderSaveHandlers._bound) return;
@@ -2754,6 +2773,7 @@ function renderTaskRow(taskObj) {
 
 function renderReminderRow(reminderObj) {
   const row = document.createElement('tr');
+  const normalizedContentItems = Array.isArray(reminderObj.contentItems) ? reminderObj.contentItems : [];
 
   const iconCell = document.createElement('td');
   row.appendChild(iconCell);
@@ -2785,12 +2805,16 @@ function renderReminderRow(reminderObj) {
   logisticsCell.appendChild(createTextLine(`Date: ${formatDateForDisplay(reminderObj.date)}`));
   logisticsCell.appendChild(createTextLine(`Time: ${formatTimeForDisplay(reminderObj.time)}`));
   logisticsCell.appendChild(createTextLine(`Repeat: ${reminderObj.repeat || 'never'}`));
+  logisticsCell.appendChild(createTextLine(`Type: ${(reminderObj.reminderKind || 'reminder').replace(/^\w/, (ch) => ch.toUpperCase())}`));
   row.appendChild(logisticsCell);
 
-  const detailsCell = document.createElement('td');
-  detailsCell.appendChild(createTextLine((reminderObj.reminderKind || 'reminder').replace(/^\w/, (ch) => ch.toUpperCase())));
-  detailsCell.appendChild(createTextLine(`Contents: ${summarizeReminderContentItems(reminderObj.contentItems)}`));
-  row.appendChild(detailsCell);
+  const contentsCell = document.createElement('td');
+  contentsCell.appendChild(createTextLine(summarizeReminderContentItems(normalizedContentItems)));
+  const previewLines = buildReminderContentTitlePreview(normalizedContentItems);
+  previewLines.forEach((line) => {
+    contentsCell.appendChild(createTextLine(line));
+  });
+  row.appendChild(contentsCell);
 
   const additionalCell = document.createElement('td');
   additionalCell.appendChild(createTextLine(reminderObj.additionalDetails || '-'));
@@ -2816,7 +2840,7 @@ function renderTableEmptyState(tableBody, message, createLabel, createHref) {
   btn.type = 'button';
   btn.className = 'type';
   btn.textContent = createLabel;
-  btn.addEventListener('click', () => { window.location.href = createHref; });
+  btn.addEventListener('click', () => { window.open(createHref, '_blank', 'width=800,height=600'); });
   card.appendChild(btn);
   cell.appendChild(card);
   row.appendChild(cell);
