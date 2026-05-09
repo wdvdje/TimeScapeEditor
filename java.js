@@ -191,6 +191,24 @@ function prefillBucketForm(bucket) {
     if (descEl) descEl.value = bucket.description || '';
   }
 
+  const calibration = bucket.calibration && typeof bucket.calibration === 'object' ? bucket.calibration : {};
+  if (optionSectionId === 'jobsType0Options') {
+    const hourlyEl = document.getElementById('jobsHourlyRate');
+    const flatEl = document.getElementById('jobsFlatPay');
+    const locationEl = document.getElementById('jobsDefaultLocation');
+    if (hourlyEl && calibration.hourlyRate !== undefined && calibration.hourlyRate !== null) hourlyEl.value = calibration.hourlyRate;
+    if (flatEl && calibration.flatPay !== undefined && calibration.flatPay !== null) flatEl.value = calibration.flatPay;
+    if (locationEl) locationEl.value = calibration.defaultLocation || '';
+  }
+  if (optionSectionId === 'jobsType1Options') {
+    const hourlyEl = document.getElementById('jobsProjectHourlyRate');
+    const flatEl = document.getElementById('jobsProjectFlatPay');
+    const locationEl = document.getElementById('jobsProjectDefaultLocation');
+    if (hourlyEl && calibration.hourlyRate !== undefined && calibration.hourlyRate !== null) hourlyEl.value = calibration.hourlyRate;
+    if (flatEl && calibration.flatPay !== undefined && calibration.flatPay !== null) flatEl.value = calibration.flatPay;
+    if (locationEl) locationEl.value = calibration.defaultLocation || '';
+  }
+
   // Icon overwrite radios + hidden icon input + preview
   const iconRadioMap = {
     personalType1Options:  'personalIconOverwrite',
@@ -738,7 +756,21 @@ function generateBucketId() {
 /** Retrieve all saved buckets from localStorage */
 function loadBucketsFromStorage() {
   try {
-    return JSON.parse(localStorage.getItem(BUCKETS_STORAGE_KEY)) || [];
+    const stored = JSON.parse(localStorage.getItem(BUCKETS_STORAGE_KEY)) || [];
+    return stored.map((bucket) => {
+      const calibration = bucket && bucket.calibration && typeof bucket.calibration === 'object'
+        ? bucket.calibration
+        : {};
+      return {
+        ...bucket,
+        domain: bucket && bucket.domain ? String(bucket.domain).toLowerCase() : '',
+        calibration: {
+          hourlyRate: calibration.hourlyRate !== undefined ? calibration.hourlyRate : null,
+          flatPay: calibration.flatPay !== undefined ? calibration.flatPay : null,
+          defaultLocation: calibration.defaultLocation || '',
+        },
+      };
+    });
   } catch {
     return [];
   }
@@ -770,7 +802,18 @@ function deleteBucketById(id) {
 
 /** Return all buckets for a given domain */
 function loadBucketsByDomain(domain) {
-  return loadBucketsFromStorage().filter((b) => b.domain === domain);
+  const cleanDomain = String(domain || '').toLowerCase();
+  return loadBucketsFromStorage().filter((b) => b.domain === cleanDomain);
+}
+
+function parseMoneyInput(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return null;
+  const raw = String(el.value || '').trim();
+  if (!raw) return null;
+  const num = Number(raw);
+  if (!Number.isFinite(num) || num < 0) return null;
+  return Number(num.toFixed(2));
 }
 
 /**
@@ -839,6 +882,11 @@ function buildBucketFromForm() {
   let description = '';
   let iconOverrideEnabled = false;
   let iconId = '';
+  let calibration = {
+    hourlyRate: null,
+    flatPay: null,
+    defaultLocation: '',
+  };
 
   const sections = kindSectionMap[domain] || [];
   for (const sectionId of sections) {
@@ -905,6 +953,21 @@ function buildBucketFromForm() {
       }
     }
 
+    if (sectionId === 'jobsType0Options') {
+      calibration = {
+        hourlyRate: parseMoneyInput('jobsHourlyRate'),
+        flatPay: parseMoneyInput('jobsFlatPay'),
+        defaultLocation: ((document.getElementById('jobsDefaultLocation') || {}).value || '').trim(),
+      };
+    }
+    if (sectionId === 'jobsType1Options') {
+      calibration = {
+        hourlyRate: parseMoneyInput('jobsProjectHourlyRate'),
+        flatPay: parseMoneyInput('jobsProjectFlatPay'),
+        defaultLocation: ((document.getElementById('jobsProjectDefaultLocation') || {}).value || '').trim(),
+      };
+    }
+
     break; // found the visible section
   }
 
@@ -921,6 +984,7 @@ function buildBucketFromForm() {
     title: title.trim(),
     subtypeOption,
     description,
+    calibration,
     iconOverrideEnabled,
     iconId,
     createdAt: now,
@@ -1326,6 +1390,8 @@ function buildAppointmentEvent() {
     repeatUntil: repeatSettings.repeatUntil,
     domain: form.querySelector('[name="domainSelect"]') ? form.querySelector('[name="domainSelect"]').value : '',
     bucket: form.querySelector('[name="bucketSelect"]') ? form.querySelector('[name="bucketSelect"]').value : '',
+    hourlyRate: parseMoneyInput('appointmentHourlyRate'),
+    flatPay: parseMoneyInput('appointmentFlatPay'),
     additionalDetails: form.querySelector('textarea[name="appointmentAdditionalDetails"]').value.trim(),
     typeDetails: activeDetail ? collectInputValues(activeDetail) : {},
     createdAt: new Date().toISOString(),
@@ -1348,8 +1414,10 @@ function buildEventEvent() {
     location: document.getElementById('eventLocation').value.trim(),
     repeat: repeatSettings.repeat,
     repeatUntil: repeatSettings.repeatUntil,
-    domain: '',
-    bucket: '',
+    domain: form.querySelector('[name="domainSelect"]') ? form.querySelector('[name="domainSelect"]').value : '',
+    bucket: form.querySelector('[name="bucketSelect"]') ? form.querySelector('[name="bucketSelect"]').value : '',
+    hourlyRate: parseMoneyInput('eventHourlyRate'),
+    flatPay: parseMoneyInput('eventFlatPay'),
     additionalDetails: form.querySelector('textarea[name="eventAdditionalDetails"]').value.trim(),
     typeDetails: activeDetail ? collectInputValues(activeDetail) : {},
     createdAt: new Date().toISOString(),
@@ -1372,8 +1440,10 @@ function buildFocusEvent() {
     location: document.getElementById('focusLocation').value.trim(),
     repeat: repeatSettings.repeat,
     repeatUntil: repeatSettings.repeatUntil,
-    domain: '',
-    bucket: '',
+    domain: form.querySelector('[name="domainSelect"]') ? form.querySelector('[name="domainSelect"]').value : '',
+    bucket: form.querySelector('[name="bucketSelect"]') ? form.querySelector('[name="bucketSelect"]').value : '',
+    hourlyRate: parseMoneyInput('focusHourlyRate'),
+    flatPay: parseMoneyInput('focusFlatPay'),
     additionalDetails: form.querySelector('textarea[name="focusAdditionalDetails"]').value.trim(),
     typeDetails: activeDetail ? collectInputValues(activeDetail) : {},
     createdAt: new Date().toISOString(),
@@ -1395,8 +1465,10 @@ function buildJobEvent() {
     location: document.getElementById('jobLocation').value.trim(),
     repeat: repeatSettings.repeat,
     repeatUntil: repeatSettings.repeatUntil,
-    domain: '',
-    bucket: '',
+    domain: form.querySelector('[name="domainSelect"]') ? form.querySelector('[name="domainSelect"]').value : '',
+    bucket: form.querySelector('[name="bucketSelect"]') ? form.querySelector('[name="bucketSelect"]').value : '',
+    hourlyRate: parseMoneyInput('jobHourlyRate'),
+    flatPay: parseMoneyInput('jobFlatPay'),
     additionalDetails: form.querySelector('textarea[name="jobAdditionalDetails"]').value.trim(),
     typeDetails: {},
     createdAt: new Date().toISOString(),
@@ -1421,10 +1493,57 @@ function buildMeetingEvent() {
     repeatUntil: repeatSettings.repeatUntil,
     domain: form.querySelector('[name="domainSelect"]') ? form.querySelector('[name="domainSelect"]').value : '',
     bucket: form.querySelector('[name="bucketSelect"]') ? form.querySelector('[name="bucketSelect"]').value : '',
+    hourlyRate: parseMoneyInput('meetingHourlyRate'),
+    flatPay: parseMoneyInput('meetingFlatPay'),
     additionalDetails: form.querySelector('textarea[name="meetingAdditionalDetails"]').value.trim(),
     typeDetails: activeDetail ? collectInputValues(activeDetail) : {},
     createdAt: new Date().toISOString(),
   };
+}
+
+function getBucketCalibrationById(bucketId) {
+  if (!bucketId) return null;
+  const bucket = loadBucketById(bucketId);
+  if (!bucket || !bucket.calibration) return null;
+  return bucket.calibration;
+}
+
+function _setValueIfEmpty(inputEl, value) {
+  if (!inputEl) return;
+  if (value === null || value === undefined || value === '') return;
+  if (String(inputEl.value || '').trim() !== '') return;
+  inputEl.value = String(value);
+}
+
+function applyJobsCalibrationToForm(formEl, calibration, fieldMap) {
+  if (!formEl || !calibration || typeof calibration !== 'object' || !fieldMap) return;
+
+  const hourlyEl = fieldMap.hourlyRateId ? document.getElementById(fieldMap.hourlyRateId) : null;
+  const flatEl = fieldMap.flatPayId ? document.getElementById(fieldMap.flatPayId) : null;
+  const locationEl = fieldMap.locationId ? document.getElementById(fieldMap.locationId) : null;
+
+  _setValueIfEmpty(hourlyEl, calibration.hourlyRate);
+  _setValueIfEmpty(flatEl, calibration.flatPay);
+  _setValueIfEmpty(locationEl, calibration.defaultLocation);
+}
+
+function wireBucketCalibrationAutofill(formEl, domainSelectId, bucketSelectId, fieldMap) {
+  if (!formEl) return;
+  const domainEl = document.getElementById(domainSelectId);
+  const bucketEl = document.getElementById(bucketSelectId);
+  if (!domainEl || !bucketEl) return;
+
+  function applyFromCurrentSelection() {
+    const domain = String(domainEl.value || '').toLowerCase();
+    if (domain !== 'jobs') return;
+    const calibration = getBucketCalibrationById(bucketEl.value);
+    if (!calibration) return;
+    applyJobsCalibrationToForm(formEl, calibration, fieldMap);
+  }
+
+  bucketEl.addEventListener('change', applyFromCurrentSelection);
+  domainEl.addEventListener('change', applyFromCurrentSelection);
+  applyFromCurrentSelection();
 }
 
 /**
@@ -1443,11 +1562,40 @@ function attachEventSaveHandlers() {
   Object.entries(saveMap).forEach(([formId, buildFn]) => {
     const form = document.getElementById(formId);
     if (!form) return;
+
+    const autofillMap = {
+      'form-appointment': { domainId: 'domainSelectAppt', bucketId: 'bucketSelectAppt', fields: { hourlyRateId: 'appointmentHourlyRate', flatPayId: 'appointmentFlatPay', locationId: 'appointmentLocation' } },
+      'form-event': { domainId: 'domainSelectEvent', bucketId: 'bucketSelectEvent', fields: { hourlyRateId: 'eventHourlyRate', flatPayId: 'eventFlatPay', locationId: 'eventLocation' } },
+      'form-focus': { domainId: 'domainSelectFocus', bucketId: 'bucketSelectFocus', fields: { hourlyRateId: 'focusHourlyRate', flatPayId: 'focusFlatPay', locationId: 'focusLocation' } },
+      'form-job': { domainId: 'domainSelectJob', bucketId: 'bucketSelectJob', fields: { hourlyRateId: 'jobHourlyRate', flatPayId: 'jobFlatPay', locationId: 'jobLocation' } },
+      'form-meeting': { domainId: 'domainSelectMeeting', bucketId: 'bucketSelectMeeting', fields: { hourlyRateId: 'meetingHourlyRate', flatPayId: 'meetingFlatPay', locationId: 'meetingLocation' } },
+    };
+    const autofillCfg = autofillMap[formId];
+    if (autofillCfg) {
+      wireBucketCalibrationAutofill(form, autofillCfg.domainId, autofillCfg.bucketId, autofillCfg.fields);
+    }
+
     form.addEventListener('submit', (e) => {
       const editId = form.dataset.editId;
       const editDate = form.dataset.editDate;
       const editScope = form.dataset.editScope || (editDate ? 'single' : 'all');
-      const eventObj = buildFn();
+      let eventObj = buildFn();
+
+      const domainEl = form.querySelector('[name="domainSelect"]');
+      const bucketEl = form.querySelector('[name="bucketSelect"]');
+      const domainValue = ((domainEl && domainEl.value) || '').toLowerCase();
+      const bucketId = bucketEl ? bucketEl.value : '';
+      if (domainValue === 'jobs' && bucketId) {
+        const calibration = getBucketCalibrationById(bucketId);
+        if (calibration) {
+          eventObj = {
+            ...eventObj,
+            hourlyRate: eventObj.hourlyRate !== null && eventObj.hourlyRate !== undefined ? eventObj.hourlyRate : calibration.hourlyRate,
+            flatPay: eventObj.flatPay !== null && eventObj.flatPay !== undefined ? eventObj.flatPay : calibration.flatPay,
+            location: eventObj.location || calibration.defaultLocation || '',
+          };
+        }
+      }
 
       if (editId) {
         e.preventDefault();
@@ -1518,6 +1666,9 @@ function attachTaskSaveHandlers() {
       additionalName: 'assignmentAdditionalDetails',
       domainId: 'domainSelectAssignment',
       bucketId: 'bucketSelectAssignment',
+      hourlyRateId: 'assignmentHourlyRate',
+      flatPayId: 'assignmentFlatPay',
+      locationId: 'assignmentLocation',
       label: 'task',
     },
     'form-chore': {
@@ -1530,6 +1681,9 @@ function attachTaskSaveHandlers() {
       additionalName: 'choreAdditionalDetails',
       domainId: 'domainSelectChore',
       bucketId: 'bucketSelectChore',
+      hourlyRateId: 'choreHourlyRate',
+      flatPayId: 'choreFlatPay',
+      locationId: 'choreLocation',
       label: 'task',
     },
     'form-task': {
@@ -1542,6 +1696,9 @@ function attachTaskSaveHandlers() {
       additionalName: 'taskAdditionalDetails',
       domainId: 'domainSelectTask',
       bucketId: 'bucketSelectTask',
+      hourlyRateId: 'taskHourlyRate',
+      flatPayId: 'taskFlatPay',
+      locationId: 'taskLocation',
       label: 'task',
     },
   };
@@ -1551,6 +1708,13 @@ function attachTaskSaveHandlers() {
     if (!form) return;
 
     attachFieldErrorListeners(cfg.titleId);
+    if (cfg.domainId && cfg.bucketId) {
+      wireBucketCalibrationAutofill(form, cfg.domainId, cfg.bucketId, {
+        hourlyRateId: cfg.hourlyRateId,
+        flatPayId: cfg.flatPayId,
+        locationId: cfg.locationId,
+      });
+    }
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -1574,9 +1738,21 @@ function attachTaskSaveHandlers() {
         remindAtTime: !!((document.getElementById(cfg.remindTimeId) || {}).checked),
         domain: ((document.getElementById(cfg.domainId) || {}).value || '').toLowerCase(),
         bucket: (document.getElementById(cfg.bucketId) || {}).value || '',
+        hourlyRate: parseMoneyInput(cfg.hourlyRateId),
+        flatPay: parseMoneyInput(cfg.flatPayId),
+        location: ((document.getElementById(cfg.locationId) || {}).value || '').trim(),
         additionalDetails: additionalEl ? additionalEl.value.trim() : '',
         createdAt: new Date().toISOString(),
       };
+
+      if (taskObj.domain === 'jobs' && taskObj.bucket) {
+        const calibration = getBucketCalibrationById(taskObj.bucket);
+        if (calibration) {
+          if (taskObj.hourlyRate === null || taskObj.hourlyRate === undefined) taskObj.hourlyRate = calibration.hourlyRate;
+          if (taskObj.flatPay === null || taskObj.flatPay === undefined) taskObj.flatPay = calibration.flatPay;
+          if (!taskObj.location) taskObj.location = calibration.defaultLocation || '';
+        }
+      }
 
       saveTaskToStorage(taskObj);
       showSaveToast(cfg.kind.charAt(0).toUpperCase() + cfg.kind.slice(1));
@@ -2275,6 +2451,9 @@ function attachReminderSaveHandlers() {
       repeatValue: 'daily',
       domainId: 'domainSelectDaily',
       bucketId: 'bucketSelectDaily',
+      hourlyRateId: 'dailyHourlyRate',
+      flatPayId: 'dailyFlatPay',
+      locationId: 'dailyLocation',
       label: 'reminder',
     },
     'form-routine': {
@@ -2286,6 +2465,9 @@ function attachReminderSaveHandlers() {
       repeatSelectId: 'routineFrequency',
       domainId: 'domainSelectRoutine',
       bucketId: 'bucketSelectRoutine',
+      hourlyRateId: 'routineHourlyRate',
+      flatPayId: 'routineFlatPay',
+      locationId: 'routineLocation',
       label: 'reminder',
     },
     'form-chore': {
@@ -2297,6 +2479,9 @@ function attachReminderSaveHandlers() {
       repeatSelectId: 'choreFrequency',
       domainId: 'domainSelectChoreRem',
       bucketId: 'bucketSelectChoreRem',
+      hourlyRateId: 'choreReminderHourlyRate',
+      flatPayId: 'choreReminderFlatPay',
+      locationId: 'choreReminderLocation',
       label: 'reminder',
     },
     'form-oneTime': {
@@ -2308,6 +2493,9 @@ function attachReminderSaveHandlers() {
       repeatValue: 'never',
       domainId: 'domainSelectOneTime',
       bucketId: 'bucketSelectOneTime',
+      hourlyRateId: 'oneTimeHourlyRate',
+      flatPayId: 'oneTimeFlatPay',
+      locationId: 'oneTimeLocation',
       label: 'reminder',
     },
   };
@@ -2319,6 +2507,11 @@ function attachReminderSaveHandlers() {
     attachFieldErrorListeners(cfg.titleId);
     if (cfg.domainId && cfg.bucketId) {
       populateBucketSelect(cfg.domainId, cfg.bucketId);
+      wireBucketCalibrationAutofill(form, cfg.domainId, cfg.bucketId, {
+        hourlyRateId: cfg.hourlyRateId,
+        flatPayId: cfg.flatPayId,
+        locationId: cfg.locationId,
+      });
     }
 
     form.addEventListener('submit', (e) => {
@@ -2343,10 +2536,22 @@ function attachReminderSaveHandlers() {
         repeat: cfg.repeatValue || (repeatEl ? repeatEl.value : 'never'),
         domain: ((document.getElementById(cfg.domainId) || {}).value || '').toLowerCase(),
         bucket: (document.getElementById(cfg.bucketId) || {}).value || '',
+        hourlyRate: parseMoneyInput(cfg.hourlyRateId),
+        flatPay: parseMoneyInput(cfg.flatPayId),
+        location: ((document.getElementById(cfg.locationId) || {}).value || '').trim(),
         additionalDetails: additionalEl ? additionalEl.value.trim() : '',
         contentItems: getReminderContentItemsForSave(cfg.kind),
         createdAt: new Date().toISOString(),
       };
+
+      if (reminderObj.domain === 'jobs' && reminderObj.bucket) {
+        const calibration = getBucketCalibrationById(reminderObj.bucket);
+        if (calibration) {
+          if (reminderObj.hourlyRate === null || reminderObj.hourlyRate === undefined) reminderObj.hourlyRate = calibration.hourlyRate;
+          if (reminderObj.flatPay === null || reminderObj.flatPay === undefined) reminderObj.flatPay = calibration.flatPay;
+          if (!reminderObj.location) reminderObj.location = calibration.defaultLocation || '';
+        }
+      }
 
       saveReminderToStorage(reminderObj);
       showSaveToast(cfg.kind === 'oneTime' ? 'Reminder' : cfg.kind.charAt(0).toUpperCase() + cfg.kind.slice(1));
@@ -2722,6 +2927,239 @@ function resolveBucketLabel(bucketId) {
   if (!bucketId) return '-';
   const bucket = loadBucketById(bucketId);
   return bucket ? bucket.title : bucketId;
+}
+
+function toIsoDate(value) {
+  if (!value) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toISOString().slice(0, 10);
+}
+
+function formatDomainLabel(domain) {
+  if (!domain) return '-';
+  const clean = String(domain).trim().toLowerCase();
+  if (!clean) return '-';
+  return clean.charAt(0).toUpperCase() + clean.slice(1);
+}
+
+function isDateInRange(dateStr, startDate, endDate) {
+  if (!dateStr) return false;
+  return dateStr >= startDate && dateStr <= endDate;
+}
+
+function getUnifiedReportItems(startDate, endDate) {
+  const eventItems = getEventsForDisplay()
+    .filter((eventObj) => isDateInRange(eventObj.date, startDate, endDate))
+    .map((eventObj) => ({
+      itemType: 'Event',
+      title: eventObj.title || '(Untitled Event)',
+      domain: formatDomainLabel(eventObj.domain),
+      bucket: resolveBucketLabel(eventObj.bucket),
+      date: eventObj.date || '',
+      time: eventObj.startTime || '',
+      notes: eventObj.eventType || eventObj.additionalDetails || '',
+    }));
+
+  const taskItems = loadTasksFromStorage()
+    .map((taskObj) => {
+      const taskDate = taskObj.dueDate || taskObj.startDate || '';
+      return {
+        itemType: 'Task',
+        title: taskObj.title || '(Untitled Task)',
+        domain: formatDomainLabel(taskObj.domain),
+        bucket: resolveBucketLabel(taskObj.bucket),
+        date: taskDate,
+        time: taskObj.dueTime || '',
+        notes: taskObj.taskKind || taskObj.additionalDetails || '',
+      };
+    })
+    .filter((taskObj) => isDateInRange(taskObj.date, startDate, endDate));
+
+  const reminderItems = loadRemindersFromStorage()
+    .filter((reminderObj) => isDateInRange(reminderObj.date, startDate, endDate))
+    .map((reminderObj) => ({
+      itemType: 'Reminder',
+      title: reminderObj.title || '(Untitled Reminder)',
+      domain: formatDomainLabel(reminderObj.domain),
+      bucket: resolveBucketLabel(reminderObj.bucket),
+      date: reminderObj.date || '',
+      time: reminderObj.time || '',
+      notes: reminderObj.reminderKind || reminderObj.additionalDetails || '',
+    }));
+
+  return [...eventItems, ...taskItems, ...reminderItems].sort((a, b) => {
+    const aDateTime = `${a.date || ''}T${a.time || '00:00'}`;
+    const bDateTime = `${b.date || ''}T${b.time || '00:00'}`;
+    return aDateTime.localeCompare(bDateTime);
+  });
+}
+
+function filterReportItemsByDomain(items, domainValue) {
+  if (!domainValue || domainValue === 'all') return items;
+  const target = formatDomainLabel(domainValue);
+  return items.filter((item) => item.domain === target);
+}
+
+function buildReportSummaryText(items) {
+  const counts = { Event: 0, Task: 0, Reminder: 0 };
+  items.forEach((item) => {
+    if (counts[item.itemType] !== undefined) {
+      counts[item.itemType] += 1;
+    }
+  });
+  return `Total ${items.length} | Events ${counts.Event} | Tasks ${counts.Task} | Reminders ${counts.Reminder}`;
+}
+
+function renderUnifiedReportRows(tableBody, items, emptyMessage) {
+  if (!tableBody) return;
+  tableBody.innerHTML = '';
+
+  if (!items.length) {
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 6;
+    cell.textContent = emptyMessage;
+    row.appendChild(cell);
+    tableBody.appendChild(row);
+    return;
+  }
+
+  items.forEach((item) => {
+    const row = document.createElement('tr');
+    [
+      item.itemType,
+      item.title,
+      item.domain,
+      item.bucket,
+      formatDateForDisplay(item.date),
+      formatTimeForDisplay(item.time),
+    ].forEach((value) => {
+      const cell = document.createElement('td');
+      cell.textContent = value || '-';
+      row.appendChild(cell);
+    });
+    tableBody.appendChild(row);
+  });
+}
+
+function toWeekRange(todayIso) {
+  const today = new Date(`${todayIso}T00:00:00`);
+  const dayIndex = today.getDay();
+  const daysFromMonday = (dayIndex + 6) % 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - daysFromMonday);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  return {
+    start: monday.toISOString().slice(0, 10),
+    end: sunday.toISOString().slice(0, 10),
+  };
+}
+
+function initTodayReportPage() {
+  const tableBody = document.getElementById('todayReportTableBody');
+  if (!tableBody) return;
+
+  const domainFilter = document.getElementById('todayReportDomainFilter');
+  const summary = document.getElementById('todayReportSummary');
+  const dateLabel = document.getElementById('todayReportDateLabel');
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const todayItems = getUnifiedReportItems(todayIso, todayIso);
+
+  if (dateLabel) {
+    dateLabel.textContent = formatDateForDisplay(todayIso);
+  }
+
+  function render() {
+    const filtered = filterReportItemsByDomain(todayItems, domainFilter ? domainFilter.value : 'all');
+    if (summary) {
+      summary.textContent = buildReportSummaryText(filtered);
+    }
+    renderUnifiedReportRows(tableBody, filtered, 'No items scheduled for today.');
+  }
+
+  if (domainFilter) {
+    domainFilter.addEventListener('change', render);
+  }
+  render();
+}
+
+function initWeekViewPage() {
+  const tableBody = document.getElementById('weekViewTableBody');
+  if (!tableBody) return;
+
+  const domainFilter = document.getElementById('weekViewDomainFilter');
+  const summary = document.getElementById('weekViewSummary');
+  const rangeLabel = document.getElementById('weekViewRangeLabel');
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const weekRange = toWeekRange(todayIso);
+  const weekItems = getUnifiedReportItems(weekRange.start, weekRange.end);
+
+  if (rangeLabel) {
+    rangeLabel.textContent = `${formatDateForDisplay(weekRange.start)} - ${formatDateForDisplay(weekRange.end)}`;
+  }
+
+  function render() {
+    const filtered = filterReportItemsByDomain(weekItems, domainFilter ? domainFilter.value : 'all');
+    if (summary) {
+      summary.textContent = buildReportSummaryText(filtered);
+    }
+    renderUnifiedReportRows(tableBody, filtered, 'No items scheduled for this week.');
+  }
+
+  if (domainFilter) {
+    domainFilter.addEventListener('change', render);
+  }
+  render();
+}
+
+function initCalendarViewPage() {
+  const tableBody = document.getElementById('calendarViewTableBody');
+  if (!tableBody) return;
+
+  const domainFilter = document.getElementById('calendarViewDomainFilter');
+  const monthPicker = document.getElementById('calendarMonthPicker');
+  const dayPicker = document.getElementById('calendarDayPicker');
+  const monthSummary = document.getElementById('calendarMonthSummary');
+  const daySummary = document.getElementById('calendarDaySummary');
+
+  const todayIso = new Date().toISOString().slice(0, 10);
+  if (monthPicker && !monthPicker.value) {
+    monthPicker.value = todayIso.slice(0, 7);
+  }
+  if (dayPicker && !dayPicker.value) {
+    dayPicker.value = todayIso;
+  }
+
+  function render() {
+    const selectedMonth = (monthPicker ? monthPicker.value : todayIso.slice(0, 7)) || todayIso.slice(0, 7);
+    const selectedDay = toIsoDate(dayPicker ? dayPicker.value : todayIso) || `${selectedMonth}-01`;
+    const monthStart = `${selectedMonth}-01`;
+    const monthEnd = `${selectedMonth}-31`;
+
+    const monthItems = getUnifiedReportItems(monthStart, monthEnd);
+    const dayItems = monthItems.filter((item) => item.date === selectedDay);
+    const domainValue = domainFilter ? domainFilter.value : 'all';
+
+    const filteredMonth = filterReportItemsByDomain(monthItems, domainValue);
+    const filteredDay = filterReportItemsByDomain(dayItems, domainValue);
+
+    if (monthSummary) {
+      monthSummary.textContent = `Month view (${selectedMonth}): ${buildReportSummaryText(filteredMonth)}`;
+    }
+    if (daySummary) {
+      daySummary.textContent = `Selected day (${formatDateForDisplay(selectedDay)}): ${buildReportSummaryText(filteredDay)}`;
+    }
+
+    renderUnifiedReportRows(tableBody, filteredDay, 'No items for the selected calendar day.');
+  }
+
+  if (domainFilter) domainFilter.addEventListener('change', render);
+  if (monthPicker) monthPicker.addEventListener('change', render);
+  if (dayPicker) dayPicker.addEventListener('change', render);
+  render();
 }
 
 function renderTaskRow(taskObj) {
@@ -3104,6 +3542,9 @@ attachManageRemindersHandlers();
 attachTaskSaveHandlers();
 attachReminderSaveHandlers();
 attachRepeatFieldHandlers();
+initTodayReportPage();
+initWeekViewPage();
+initCalendarViewPage();
 
 // ── Icon Picker ──────────────────────────────────────────────────────────────
 

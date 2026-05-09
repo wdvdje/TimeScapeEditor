@@ -36,6 +36,7 @@
         <p>Date: <input type="date" class="spec" id="appointmentDate" name="appointmentDate">.</p>
       	<p>Start Time: <input type="time" class="spec" id="appointmentStartTime" name="appointmentStartTime">. End Time: <input type="time" class="spec" id="appointmentEndTime" name="appointmentEndTime">.</p>
         <p>Location: <input type="text" class="spec" id="appointmentLocation" name="appointmentLocation"></p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="appointmentHourlyRate" name="appointmentHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="appointmentFlatPay" name="appointmentFlatPay" placeholder="00.00"></p>
         <p>Repeat: <select class="type" data-role="repeat-select"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <p data-role="repeat-until-container" style="display: none;">Until: <input type="date" class="spec" data-role="repeat-until"></p>
         <h2>Appointment Details</h2>
@@ -101,6 +102,7 @@
         <p>Date: <input type="date" class="spec" id="eventDate" name="eventDate">.</p>
         <p>Start Time: <input type="time" class="spec" id="eventStartTime" name="eventStartTime">. End Time: <input type="time" class="spec" id="eventEndTime" name="eventEndTime">.</p>
         <p>Location: <input type="text" class="spec" id="eventLocation" name="eventLocation"></p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="eventHourlyRate" name="eventHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="eventFlatPay" name="eventFlatPay" placeholder="00.00"></p>
         <p>Repeat: <select class="type" data-role="repeat-select"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <p data-role="repeat-until-container" style="display: none;">Until: <input type="date" class="spec" data-role="repeat-until"></p>
         <h2>Event Details</h2>
@@ -139,6 +141,7 @@
         <p>Date: <input type="date" class="spec" id="focusDate" name="focusDate">.</p>
         <p>Start Time: <input type="time" class="spec" id="focusStartTime" name="focusStartTime">. End Time: <input type="time" class="spec" id="focusEndTime" name="focusEndTime">.</p>
         <p>Location: <input type="text" class="spec" id="focusLocation" name="focusLocation"></p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="focusHourlyRate" name="focusHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="focusFlatPay" name="focusFlatPay" placeholder="00.00"></p>
         <p>Repeat: <select class="type" data-role="repeat-select"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <p data-role="repeat-until-container" style="display: none;">Until: <input type="date" class="spec" data-role="repeat-until"></p>
         <h2>Focus Details</h2>
@@ -164,6 +167,7 @@
           <p>Icon:</p>
           <p>Fitness: <input type="text" class="spec" id="fitnessFitnessFocus" name="fitnessFitnessFocus"></p>
         </div>
+        <p>Domain: <select name="domainSelect" id="domainSelectFocus"><option>Personal</option><option>Household</option><option>Jobs</option></select>. Bucket: <select name="bucketSelect" id="bucketSelectFocus"></select>.</p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="focusAdditionalDetails"></textarea>
         <p>Create Sub-Item
@@ -178,8 +182,10 @@
         <p>Date: <input type="date" class="spec" id="jobDate" name="jobDate">.</p>
         <p>Start time: <input type="time" class="spec" id="jobStartTime" name="jobStartTime">. End time: <input type="time" class="spec" id="jobEndTime" name="jobEndTime">.</p>
         <p>Location: <input type="text" class="spec" id="jobLocation" name="jobLocation"></p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="jobHourlyRate" name="jobHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="jobFlatPay" name="jobFlatPay" placeholder="00.00"></p>
         <p>Repeat: <select class="type" data-role="repeat-select"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <p data-role="repeat-until-container" style="display: none;">Until: <input type="date" class="spec" data-role="repeat-until"></p>
+        <p>Domain: <select name="domainSelect" id="domainSelectJob"><option>Personal</option><option>Household</option><option>Jobs</option></select>. Bucket: <select name="bucketSelect" id="bucketSelectJob"></select>.</p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="jobAdditionalDetails"></textarea>
         <p>Create Sub-Item
@@ -194,6 +200,7 @@
         <p>Date: <input type="date" class="spec" id="meetingDate" name="meetingDate">.</p>
         <p>Start Time: <input type="time" class="spec" id="meetingStartTime" name="meetingStartTime">. End Time: <input type="time" class="spec" id="meetingEndTime" name="meetingEndTime">.</p>
         <p>Location: <input type="text" class="spec" id="meetingLocation" name="meetingLocation"></p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="meetingHourlyRate" name="meetingHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="meetingFlatPay" name="meetingFlatPay" placeholder="00.00"></p>
         <p>Repeat: <select class="type" data-role="repeat-select"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <p data-role="repeat-until-container" style="display: none;">Until: <input type="date" class="spec" data-role="repeat-until"></p>
         <h2>Meeting Details</h2>
@@ -243,6 +250,8 @@
     <script>
       populateBucketSelect('domainSelectAppt', 'bucketSelectAppt');
       populateBucketSelect('domainSelectEvent', 'bucketSelectEvent');
+      populateBucketSelect('domainSelectFocus', 'bucketSelectFocus');
+      populateBucketSelect('domainSelectJob', 'bucketSelectJob');
       populateBucketSelect('domainSelectMeeting', 'bucketSelectMeeting');
     </script>
     <script>attachEventSaveHandlers();</script>

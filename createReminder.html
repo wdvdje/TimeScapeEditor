@@ -34,6 +34,8 @@
         <p>Date: <input type="date" class="spec" id="dailyDate" name="dailyDate">.</p>
         <p>Time: <input type="time" class="spec" id="dailyTime" name="dailyTime">.</p>
         <p>Domain: <select name="domainSelect" id="domainSelectDaily" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectDaily" class="spec"></select></p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="dailyHourlyRate" name="dailyHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="dailyFlatPay" name="dailyFlatPay" placeholder="00.00"></p>
+        <p>Location: <input type="text" class="spec" id="dailyLocation" name="dailyLocation" placeholder="Office, Site, Remote, etc."></p>
         <h2>Daily Reminder Contents</h2>
         <button type="button" class="type" id="addTextEntry">Add Text Entry</button>
         <button type="button" class="type" id="addChecklist">Add Checklist</button>
@@ -58,6 +60,8 @@
           <option value="yearly">Yearly</option>
         </select></p>
         <p>Domain: <select name="domainSelect" id="domainSelectRoutine" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectRoutine" class="spec"></select></p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="routineHourlyRate" name="routineHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="routineFlatPay" name="routineFlatPay" placeholder="00.00"></p>
+        <p>Location: <input type="text" class="spec" id="routineLocation" name="routineLocation" placeholder="Office, Site, Remote, etc."></p>
         <h2>Routine Contents</h2>
         <button type="button" class="type" id="addTextEntryRoutine">Add Text Entry</button>
         <button type="button" class="type" id="addChecklistRoutine">Add Checklist</button>
@@ -82,6 +86,8 @@
           <option value="yearly">Yearly</option>
         </select></p>
         <p>Domain: <select name="domainSelect" id="domainSelectChoreRem" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectChoreRem" class="spec"></select></p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="choreReminderHourlyRate" name="choreReminderHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="choreReminderFlatPay" name="choreReminderFlatPay" placeholder="00.00"></p>
+        <p>Location: <input type="text" class="spec" id="choreReminderLocation" name="choreReminderLocation" placeholder="Office, Site, Remote, etc."></p>
         <h2>Chore Contents</h2>
         <button type="button" class="type" id="addTextEntryChore">Add Text Entry</button>
         <button type="button" class="type" id="addChecklistChore">Add Checklist</button>
@@ -100,6 +106,8 @@
         <p>Date: <input type="date" class="spec" id="oneTimeDate" name="oneTimeDate">.</p>
         <p>Time: <input type="time" class="spec" id="oneTimeTime" name="oneTimeTime">.</p>
         <p>Domain: <select name="domainSelect" id="domainSelectOneTime" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectOneTime" class="spec"></select></p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="oneTimeHourlyRate" name="oneTimeHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="oneTimeFlatPay" name="oneTimeFlatPay" placeholder="00.00"></p>
+        <p>Location: <input type="text" class="spec" id="oneTimeLocation" name="oneTimeLocation" placeholder="Office, Site, Remote, etc."></p>
         <h2>One-Time Reminder Contents</h2>
         <button type="button" class="type" id="addTextEntryOneTime">Add Text Entry</button>
         <button type="button" class="type" id="addChecklistOneTime">Add Checklist</button>

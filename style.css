@@ -525,3 +525,34 @@ button.bucket-button:hover {
   border: 4px solid white;
   cursor: pointer;
 }
+
+.report-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 12px 0 16px;
+  font-family: "Source Sans 3", sans-serif;
+}
+
+.report-controls label {
+  font-weight: 700;
+}
+
+.report-controls input,
+.report-controls select {
+  border: 2px solid blue;
+  border-radius: 8px;
+  font-family: "Source Sans 3", sans-serif;
+  padding: 4px 8px;
+}
+
+.report-summary {
+  border: 3px solid blue;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-family: "Source Sans 3", sans-serif;
+  font-weight: 700;
+}

@@ -125,6 +125,9 @@
                 <button type="button" class="type" id="jobsType0Option1" name="jobsType0Option1" data-value="option1">Job Option 1</button>
                 <button type="button" class="type" id="jobsType0Option2" name="jobsType0Option2" data-value="option2">Job Option 2</button>
                 <input type="hidden" id="jobsType0Option" name="jobsType0Option" value="">
+                <p>Default Hourly Pay Rate: $<input type="number" min="0" step="0.01" class="spec" id="jobsHourlyRate" name="jobsHourlyRate" placeholder="00.00"></p>
+                <p>Default Flat Pay Amount: $<input type="number" min="0" step="0.01" class="spec" id="jobsFlatPay" name="jobsFlatPay" placeholder="00.00"></p>
+                <p>Default Location: <input type="text" class="spec" id="jobsDefaultLocation" name="jobsDefaultLocation" placeholder="Office, Site, Remote, etc."></p>
                 <p>Icon Overwrite?
                 <label><input type="radio" name="jobsJobIconOverwrite" value="no"> No.</label>
                 <label><input type="radio" name="jobsJobIconOverwrite" value="yes"> Yes. Select Icon.</label>
@@ -144,6 +147,9 @@
                     <option value="option2">Project Option 2</option>
                 </select>
                 </p>
+                <p>Default Hourly Pay Rate: $<input type="number" min="0" step="0.01" class="spec" id="jobsProjectHourlyRate" name="jobsProjectHourlyRate" placeholder="00.00"></p>
+                <p>Default Flat Pay Amount: $<input type="number" min="0" step="0.01" class="spec" id="jobsProjectFlatPay" name="jobsProjectFlatPay" placeholder="00.00"></p>
+                <p>Default Location: <input type="text" class="spec" id="jobsProjectDefaultLocation" name="jobsProjectDefaultLocation" placeholder="Office, Site, Remote, etc."></p>
                 <p>Project Description:</p>
                 <textarea id="jobsType1Description" style="width: 100%; height: 50px;" class="spec" name="jobsType1Description" placeholder="Enter project description here..."></textarea>
                 <p>Icon Overwrite?
