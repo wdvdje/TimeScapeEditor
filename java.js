@@ -50,6 +50,29 @@ function showSaveToast(label) {
   });
 }
 
+const POPUP_DEFAULTS = {
+  width: 600,
+  height: 700,
+};
+
+// Keep popup dimensions centralized so all create/edit windows stay consistent.
+// If one flow needs a different size later, pass width/height via options.
+function openCenteredPopup(url, windowName, options = {}) {
+  const width = Number(options.width || POPUP_DEFAULTS.width);
+  const height = Number(options.height || POPUP_DEFAULTS.height);
+  const left = (screen.width / 2) - (width / 2);
+  const top = (screen.height / 2) - (height / 2);
+  const features = [
+    'width=' + width,
+    'height=' + height,
+    'top=' + top,
+    'left=' + left,
+    'resizable=' + (options.resizable === false ? 'no' : 'yes'),
+    'scrollbars=' + (options.scrollbars === false ? 'no' : 'yes')
+  ];
+  return window.open(url, windowName, features.join(','));
+}
+
 function itemsOptions(createLink, manageLink, item) {
     Swal.fire({
         ...getSwalThemeOptions(),
@@ -63,19 +86,11 @@ function itemsOptions(createLink, manageLink, item) {
         reverseButtons: false
     }).then((result) => {
         if (result.isConfirmed) {
-            const width = 600;
-            const height = 700;
-            const left = (screen.width / 2) - (width / 2);
-            const top = (screen.height / 2) - (height / 2);
-
             // Unique per item (Events / Tasks / Reminders)
             const windowName = `Create_${String(item).replace(/\s+/g, '_')}`;
 
-            window.open(
-                createLink,
-                windowName,
-                'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbar=yes'
-            );
+            // Use the shared popup helper so create flows keep the same dimensions.
+        openCenteredPopup(createLink, windowName);
         } else if (result.isDenied) {
             window.location.href = manageLink;
         } else if (result.isDismissed) {
@@ -90,16 +105,8 @@ function itemsOptions(createLink, manageLink, item) {
  * @param {string} bucketId
  */
 function openEditBucketPopup(bucketId) {
-  const width = 600;
-  const height = 700;
-  const left = (screen.width / 2) - (width / 2);
-  const top  = (screen.height / 2) - (height / 2);
   const url  = 'createBucket.html?id=' + encodeURIComponent(bucketId);
-  window.open(
-    url,
-    'Edit_Bucket_' + bucketId,
-    'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbars=yes'
-  );
+  openCenteredPopup(url, 'Edit_Bucket_' + bucketId);
 }
 
 /** Close this bucket popup and tell the opener to re-render its bucket grid. */
@@ -271,17 +278,8 @@ async function deleteBucketFromEditMode() {
  * @param {string} domain - 'personal' | 'household' | 'jobs'
  */
 function openCreateBucketPopup(domain) {
-  const width = 600;
-  const height = 700;
-  const left = (screen.width / 2) - (width / 2);
-  const top = (screen.height / 2) - (height / 2);
-
   const url = 'createBucket.html?domain=' + encodeURIComponent(domain || '');
-  window.open(
-    url,
-    'Create_Bucket',
-    'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbars=yes'
-  );
+  openCenteredPopup(url, 'Create_Bucket');
 }
 
 /**
@@ -2840,7 +2838,11 @@ function renderTableEmptyState(tableBody, message, createLabel, createHref) {
   btn.type = 'button';
   btn.className = 'type';
   btn.textContent = createLabel;
-  btn.addEventListener('click', () => { window.open(createHref, '_blank', 'width=800,height=600'); });
+  btn.addEventListener('click', () => {
+    // Reuse the same sizing standard even from empty-state CTA buttons.
+    const targetName = 'Create_' + String(createLabel || 'Item').replace(/\s+/g, '_');
+    openCenteredPopup(createHref, targetName);
+  });
   card.appendChild(btn);
   cell.appendChild(card);
   row.appendChild(cell);
@@ -3032,15 +3034,7 @@ function renderManageEventsTable() {
 renderManageEventsTable();
 
 function openEditPopup(url) {
-  const width = 600;
-  const height = 700;
-  const left = (screen.width / 2) - (width / 2);
-  const top = (screen.height / 2) - (height / 2);
-  window.open(
-    url,
-    'Edit_Event',
-    'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + ',resizable=yes,scrollbars=yes'
-  );
+  openCenteredPopup(url, 'Edit_Event');
 }
 
 async function startEventEditFlow(eventId, eventDate) {

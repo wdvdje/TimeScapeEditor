@@ -1,5 +1,6 @@
 {
   "name": "timescape-editor",
+  "productName": "TimeScape Editor",
   "version": "1.0.0",
   "description": "Manage your events, tasks, and reminders with TimeScape Editor.",
   "main": "electron/main.js",

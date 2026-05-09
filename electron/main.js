@@ -1,6 +1,9 @@
 const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 
+// Ensure macOS menu/About uses the branded app name in dev and packaged runs.
+app.setName('TimeScape Editor');
+
 let mainWindow;
 const hasSingleInstanceLock = app.requestSingleInstanceLock();
 
@@ -62,7 +65,7 @@ app.on('activate', () => {
 if (process.platform === 'darwin') {
   const template = [
     {
-      label: 'TimeScape',
+      label: app.getName(),
       submenu: [
         { role: 'about' },
         { type: 'separator' },
