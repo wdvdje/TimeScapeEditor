@@ -34,6 +34,13 @@
         <p>Date: <input type="date" class="spec" id="dailyDate" name="dailyDate">.</p>
         <p>Time: <input type="time" class="spec" id="dailyTime" name="dailyTime">.</p>
         <p>Domain: <select name="domainSelect" id="domainSelectDaily" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectDaily" class="spec"></select></p>
+        <h2>Daily Reminder Contents</h2>
+        <button type="button" class="type" id="addTextEntry">Add Text Entry</button>
+        <button type="button" class="type" id="addChecklist">Add Checklist</button>
+        <button type="button" class="type" id="addLink">Add Link</button>
+        <button type="button" class="type" id="uploadFile">Upload File</button>
+        <button type="button" class="type" id="addSubReminder">Add Sub-Reminder</button>
+        <div class="formbox reminder-content-items" id="dailyContentItems"></div>
         <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="dailyAdditionalDetails">
         <button type="button" class="type" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
@@ -51,6 +58,13 @@
           <option value="yearly">Yearly</option>
         </select></p>
         <p>Domain: <select name="domainSelect" id="domainSelectRoutine" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectRoutine" class="spec"></select></p>
+        <h2>Routine Contents</h2>
+        <button type="button" class="type" id="addTextEntryRoutine">Add Text Entry</button>
+        <button type="button" class="type" id="addChecklistRoutine">Add Checklist</button>
+        <button type="button" class="type" id="addLinkRoutine">Add Link</button>
+        <button type="button" class="type" id="uploadFileRoutine">Upload File</button>
+        <button type="button" class="type" id="addSubReminderRoutine">Add Sub-Reminder</button>
+        <div class="formbox reminder-content-items" id="routineContentItems"></div>
         <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="routineAdditionalDetails">
         <button type="button" class="type" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
@@ -68,6 +82,13 @@
           <option value="yearly">Yearly</option>
         </select></p>
         <p>Domain: <select name="domainSelect" id="domainSelectChoreRem" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectChoreRem" class="spec"></select></p>
+        <h2>Chore Contents</h2>
+        <button type="button" class="type" id="addTextEntryChore">Add Text Entry</button>
+        <button type="button" class="type" id="addChecklistChore">Add Checklist</button>
+        <button type="button" class="type" id="addLinkChore">Add Link</button>
+        <button type="button" class="type" id="uploadFileChore">Upload File</button>
+        <button type="button" class="type" id="addSubReminderChore">Add Sub-Reminder</button>
+        <div class="formbox reminder-content-items" id="choreContentItems"></div>
         <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="choreAdditionalDetails">
         <button type="button" class="type" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
@@ -79,12 +100,31 @@
         <p>Date: <input type="date" class="spec" id="oneTimeDate" name="oneTimeDate">.</p>
         <p>Time: <input type="time" class="spec" id="oneTimeTime" name="oneTimeTime">.</p>
         <p>Domain: <select name="domainSelect" id="domainSelectOneTime" class="spec"><option>Personal</option><option>Household</option><option>Jobs</option></select> Bucket: <select name="bucketSelect" id="bucketSelectOneTime" class="spec"></select></p>
+        <h2>One-Time Reminder Contents</h2>
+        <button type="button" class="type" id="addTextEntryOneTime">Add Text Entry</button>
+        <button type="button" class="type" id="addChecklistOneTime">Add Checklist</button>
+        <button type="button" class="type" id="addLinkOneTime">Add Link</button>
+        <button type="button" class="type" id="uploadFileOneTime">Upload File</button>
+        <button type="button" class="type" id="addSubReminderOneTime">Add Sub-Reminder</button>
+        <div class="formbox reminder-content-items" id="oneTimeContentItems"></div>
         <h2>Additional Details:</h2>
         <input type="textarea" class="spec" name="oneTimeAdditionalDetails">
         <button type="button" class="type" onclick="returnType('reminderTypes', 'reminder-area-form')">Back</button>
         <button type="submit" class="type">Save</button>
       </form>
     </div>
+    <div id="reminderContentModal" class="icon-modal hidden" aria-hidden="true" role="dialog" aria-labelledby="reminderContentModalTitle">
+      <div class="icon-modal-panel reminder-content-modal-panel" role="document">
+        <h2 id="reminderContentModalTitle">Add Content Item</h2>
+        <div id="reminderContentModalFields"></div>
+        <div class="icon-modal-actions">
+          <button type="button" class="type" id="reminderContentDelete" style="margin-right: auto;">Delete</button>
+          <button type="button" class="type" id="reminderContentCancel">Cancel</button>
+          <button type="button" class="type" id="reminderContentSave">Save Item</button>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="reminderContentFilePicker" class="hidden-file-input" hidden>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="java.js"></script>
     <script>attachReminderSaveHandlers();</script>

@@ -409,6 +409,108 @@ div.bucket p {
   gap: 10px;
   margin-top: 14px;
 }
+
+.reminder-content-items {
+  min-height: 84px;
+}
+
+.reminder-content-empty {
+  margin: 0;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 18px;
+  color: #1f1f1f;
+}
+
+.reminder-content-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reminder-content-link {
+  border: 2px solid blue;
+  border-radius: 12px;
+  background: #eef2ff;
+  color: #0e225c;
+  text-align: left;
+  padding: 10px 12px;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.reminder-content-link:hover {
+  border-color: #ffffff;
+  cursor: pointer;
+}
+
+.reminder-content-modal-panel {
+  width: min(760px, 100%);
+}
+
+.reminder-content-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.reminder-content-field label {
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
+.reminder-content-field input,
+.reminder-content-field textarea {
+  border: 2px solid blue;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1f1f1f;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 16px;
+  padding: 8px 10px;
+}
+
+.reminder-content-field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.checklist-editor-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checklist-editor-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checklist-editor-row input[type="text"] {
+  flex: 1;
+}
+
+.checklist-editor-row button {
+  white-space: nowrap;
+}
+
+.file-item-meta {
+  margin: 8px 0 0;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 15px;
+  color: #1f1f1f;
+}
+
 button.bucket-button {
   border: 4px solid blue;
   border-radius: 25px;

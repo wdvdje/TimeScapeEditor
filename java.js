@@ -1584,10 +1584,669 @@ function attachTaskSaveHandlers() {
   });
 }
 
+const REMINDER_CONTENT_FORM_CONFIG = {
+  daily: {
+    formId: 'form-daily',
+    containerId: 'dailyContentItems',
+    buttonSuffix: '',
+  },
+  routine: {
+    formId: 'form-routine',
+    containerId: 'routineContentItems',
+    buttonSuffix: 'Routine',
+  },
+  chore: {
+    formId: 'form-chore',
+    containerId: 'choreContentItems',
+    buttonSuffix: 'Chore',
+  },
+  oneTime: {
+    formId: 'form-oneTime',
+    containerId: 'oneTimeContentItems',
+    buttonSuffix: 'OneTime',
+  },
+};
+
+const REMINDER_CONTENT_TYPE_LABELS = {
+  text: 'Text Entry',
+  checklist: 'Checklist',
+  link: 'Link',
+  file: 'File',
+  subReminder: 'Sub-Reminder',
+};
+
+const _reminderContentState = {
+  itemsByKind: {
+    daily: [],
+    routine: [],
+    chore: [],
+    oneTime: [],
+  },
+  activeKind: null,
+  activeType: null,
+  activeItemId: null,
+  pendingFileData: null,
+};
+
+function _cloneReminderContent(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function _getReminderContentItems(kind) {
+  return _reminderContentState.itemsByKind[kind] || [];
+}
+
+function _setReminderContentItems(kind, items) {
+  _reminderContentState.itemsByKind[kind] = items;
+}
+
+function _resetReminderContentItems(kind) {
+  _setReminderContentItems(kind, []);
+  renderReminderContentList(kind);
+}
+
+function _escapeHtml(text) {
+  return String(text || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function _getReminderContentSummary(item) {
+  if (!item) return '';
+
+  if (item.itemType === 'text') {
+    return item.title || item.body || '';
+  }
+  if (item.itemType === 'checklist') {
+    const checklistItems = Array.isArray(item.items) ? item.items : [];
+    const completeCount = checklistItems.filter((entry) => !!entry.checked).length;
+    return `${item.title || 'Checklist'} (${completeCount}/${checklistItems.length})`;
+  }
+  if (item.itemType === 'link') {
+    return item.label || item.url || '';
+  }
+  if (item.itemType === 'file') {
+    return item.title || item.fileName || 'File';
+  }
+  if (item.itemType === 'subReminder') {
+    return item.title || 'Sub-Reminder';
+  }
+
+  return item.title || '';
+}
+
+function _notifyReminderContentWarning(title, text) {
+  if (window.Swal && typeof window.Swal.fire === 'function') {
+    Swal.fire({
+      ...getSwalThemeOptions(),
+      title,
+      text,
+      icon: 'warning',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+    });
+    return;
+  }
+  window.alert(text);
+}
+
+function renderReminderContentList(kind) {
+  const cfg = REMINDER_CONTENT_FORM_CONFIG[kind];
+  if (!cfg) return;
+
+  const container = document.getElementById(cfg.containerId);
+  if (!container) return;
+
+  const items = _getReminderContentItems(kind);
+  container.innerHTML = '';
+
+  if (!items.length) {
+    const empty = document.createElement('p');
+    empty.className = 'reminder-content-empty';
+    empty.textContent = 'No content items yet. Use the buttons above to add one.';
+    container.appendChild(empty);
+    return;
+  }
+
+  const list = document.createElement('ul');
+  list.className = 'reminder-content-list';
+
+  items.forEach((item, index) => {
+    const listItem = document.createElement('li');
+    const action = document.createElement('button');
+    action.type = 'button';
+    action.className = 'reminder-content-link';
+    action.dataset.itemId = item.id;
+    action.dataset.kind = kind;
+    const typeLabel = REMINDER_CONTENT_TYPE_LABELS[item.itemType] || 'Item';
+    const summary = _getReminderContentSummary(item);
+    action.textContent = `${index + 1}. ${typeLabel}: ${summary || '(Untitled)'}`;
+    listItem.appendChild(action);
+    list.appendChild(listItem);
+  });
+
+  container.appendChild(list);
+}
+
+function _createReminderContentField(labelText, inputEl) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'reminder-content-field';
+  const label = document.createElement('label');
+  label.textContent = labelText;
+  wrapper.appendChild(label);
+  wrapper.appendChild(inputEl);
+  return wrapper;
+}
+
+function _renderChecklistRows(checklistRows) {
+  const rowsContainer = document.getElementById('checklistEditorRows');
+  if (!rowsContainer) return;
+  rowsContainer.innerHTML = '';
+
+  checklistRows.forEach((item, index) => {
+    const row = document.createElement('div');
+    row.className = 'checklist-editor-row';
+
+    const checkInput = document.createElement('input');
+    checkInput.type = 'checkbox';
+    checkInput.className = 'checklist-row-check';
+    checkInput.checked = !!item.checked;
+    row.appendChild(checkInput);
+
+    const textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.className = 'checklist-row-text';
+    textInput.placeholder = `Checklist item ${index + 1}`;
+    textInput.value = item.text || '';
+    row.appendChild(textInput);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'type';
+    removeBtn.textContent = 'Remove';
+    removeBtn.addEventListener('click', () => {
+      const nextRows = _readChecklistRows();
+      nextRows.splice(index, 1);
+      _renderChecklistRows(nextRows.length ? nextRows : [{ text: '', checked: false }]);
+    });
+    row.appendChild(removeBtn);
+
+    rowsContainer.appendChild(row);
+  });
+}
+
+function _readChecklistRows() {
+  const rowsContainer = document.getElementById('checklistEditorRows');
+  if (!rowsContainer) return [];
+
+  return Array.from(rowsContainer.querySelectorAll('.checklist-editor-row')).map((row) => {
+    const textEl = row.querySelector('.checklist-row-text');
+    const checkEl = row.querySelector('.checklist-row-check');
+    return {
+      text: (textEl ? textEl.value : '').trim(),
+      checked: !!(checkEl && checkEl.checked),
+    };
+  });
+}
+
+function _renderReminderContentModalFields(itemType, itemData) {
+  const fields = document.getElementById('reminderContentModalFields');
+  if (!fields) return;
+  fields.innerHTML = '';
+
+  if (itemType === 'text') {
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.id = 'reminderContentTitle';
+    titleInput.value = itemData.title || '';
+    fields.appendChild(_createReminderContentField('Title', titleInput));
+
+    const bodyInput = document.createElement('textarea');
+    bodyInput.id = 'reminderContentBody';
+    bodyInput.value = itemData.body || '';
+    fields.appendChild(_createReminderContentField('Text', bodyInput));
+    return;
+  }
+
+  if (itemType === 'checklist') {
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.id = 'reminderContentTitle';
+    titleInput.value = itemData.title || '';
+    fields.appendChild(_createReminderContentField('Checklist Title', titleInput));
+
+    const checklistField = document.createElement('div');
+    checklistField.className = 'reminder-content-field';
+    const label = document.createElement('label');
+    label.textContent = 'Checklist Items';
+    checklistField.appendChild(label);
+
+    const rows = document.createElement('div');
+    rows.id = 'checklistEditorRows';
+    rows.className = 'checklist-editor-rows';
+    checklistField.appendChild(rows);
+
+    const addRowBtn = document.createElement('button');
+    addRowBtn.type = 'button';
+    addRowBtn.className = 'type';
+    addRowBtn.textContent = 'Add Checklist Row';
+    addRowBtn.addEventListener('click', () => {
+      const nextRows = _readChecklistRows();
+      nextRows.push({ text: '', checked: false });
+      _renderChecklistRows(nextRows);
+    });
+    checklistField.appendChild(addRowBtn);
+    fields.appendChild(checklistField);
+
+    const initialRows = Array.isArray(itemData.items) && itemData.items.length
+      ? itemData.items
+      : [{ text: '', checked: false }];
+    _renderChecklistRows(initialRows);
+    return;
+  }
+
+  if (itemType === 'link') {
+    const labelInput = document.createElement('input');
+    labelInput.type = 'text';
+    labelInput.id = 'reminderContentLabel';
+    labelInput.value = itemData.label || '';
+    fields.appendChild(_createReminderContentField('Link Label', labelInput));
+
+    const urlInput = document.createElement('input');
+    urlInput.type = 'url';
+    urlInput.id = 'reminderContentUrl';
+    urlInput.placeholder = 'https://example.com';
+    urlInput.value = itemData.url || '';
+    fields.appendChild(_createReminderContentField('URL', urlInput));
+    return;
+  }
+
+  if (itemType === 'file') {
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.id = 'reminderContentTitle';
+    titleInput.value = itemData.title || '';
+    fields.appendChild(_createReminderContentField('Display Title (Optional)', titleInput));
+
+    const fileField = document.createElement('div');
+    fileField.className = 'reminder-content-field';
+    const fileLabel = document.createElement('label');
+    fileLabel.textContent = 'Selected File';
+    fileField.appendChild(fileLabel);
+
+    const chooseBtn = document.createElement('button');
+    chooseBtn.type = 'button';
+    chooseBtn.className = 'type';
+    chooseBtn.id = 'reminderContentChooseFile';
+    chooseBtn.textContent = itemData.fileName ? 'Replace File' : 'Choose File';
+    chooseBtn.addEventListener('click', () => {
+      const filePicker = document.getElementById('reminderContentFilePicker');
+      if (!filePicker) return;
+      filePicker.value = '';
+      filePicker.click();
+    });
+    fileField.appendChild(chooseBtn);
+
+    const fileMeta = document.createElement('p');
+    fileMeta.id = 'reminderContentFileMeta';
+    fileMeta.className = 'file-item-meta';
+    if (itemData.fileName) {
+      const kbSize = itemData.sizeBytes ? Math.max(1, Math.round(itemData.sizeBytes / 1024)) : 0;
+      fileMeta.textContent = `Current: ${itemData.fileName}${kbSize ? ` (${kbSize} KB)` : ''}`;
+    } else {
+      fileMeta.textContent = 'No file selected.';
+    }
+    fileField.appendChild(fileMeta);
+    fields.appendChild(fileField);
+    return;
+  }
+
+  if (itemType === 'subReminder') {
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.id = 'reminderContentTitle';
+    titleInput.value = itemData.title || '';
+    fields.appendChild(_createReminderContentField('Sub-Reminder Title', titleInput));
+
+    const notesInput = document.createElement('textarea');
+    notesInput.id = 'reminderContentNotes';
+    notesInput.value = itemData.notes || '';
+    fields.appendChild(_createReminderContentField('Notes', notesInput));
+  }
+}
+
+function _closeReminderContentModal() {
+  const modal = document.getElementById('reminderContentModal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+  _reminderContentState.activeKind = null;
+  _reminderContentState.activeType = null;
+  _reminderContentState.activeItemId = null;
+  _reminderContentState.pendingFileData = null;
+}
+
+function _openReminderContentModal(kind, itemType, itemId) {
+  const modal = document.getElementById('reminderContentModal');
+  if (!modal) return;
+
+  const currentItems = _getReminderContentItems(kind);
+  const existingItem = itemId ? currentItems.find((item) => item.id === itemId) : null;
+  const resolvedType = existingItem ? existingItem.itemType : itemType;
+  const itemData = existingItem ? _cloneReminderContent(existingItem) : { itemType: resolvedType };
+  if (!resolvedType) return;
+  const isEdit = !!existingItem;
+
+  _reminderContentState.activeKind = kind;
+  _reminderContentState.activeType = resolvedType;
+  _reminderContentState.activeItemId = existingItem ? existingItem.id : null;
+  _reminderContentState.pendingFileData = null;
+
+  const titleEl = document.getElementById('reminderContentModalTitle');
+  if (titleEl) {
+    const modalType = REMINDER_CONTENT_TYPE_LABELS[resolvedType] || 'Item';
+    titleEl.textContent = `${isEdit ? 'Edit' : 'Add'} ${modalType}`;
+  }
+
+  const deleteBtn = document.getElementById('reminderContentDelete');
+  if (deleteBtn) {
+    deleteBtn.style.display = isEdit ? '' : 'none';
+  }
+
+  _renderReminderContentModalFields(resolvedType, itemData);
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+async function _convertFileToDataUrl(fileObj) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result || '');
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(fileObj);
+  });
+}
+
+function _normalizeLinkUrl(rawUrl) {
+  const trimmed = (rawUrl || '').trim();
+  if (!trimmed) return '';
+  const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const parsed = new URL(withProtocol);
+    if (!/^https?:$/i.test(parsed.protocol)) return '';
+    return parsed.toString();
+  } catch {
+    return '';
+  }
+}
+
+async function _saveReminderContentModal() {
+  const kind = _reminderContentState.activeKind;
+  const itemType = _reminderContentState.activeType;
+  if (!kind || !itemType) return;
+
+  const existingItems = _getReminderContentItems(kind);
+  const existingItem = _reminderContentState.activeItemId
+    ? existingItems.find((item) => item.id === _reminderContentState.activeItemId)
+    : null;
+
+  const nowIso = new Date().toISOString();
+  let nextItem = {
+    id: existingItem ? existingItem.id : generateItemId('rci'),
+    itemType,
+    createdAt: existingItem ? existingItem.createdAt : nowIso,
+    updatedAt: nowIso,
+  };
+
+  if (itemType === 'text') {
+    const title = (document.getElementById('reminderContentTitle') || {}).value || '';
+    const body = (document.getElementById('reminderContentBody') || {}).value || '';
+    if (!title.trim()) {
+      _notifyReminderContentWarning('Missing title', 'Please provide a title for this text entry.');
+      return;
+    }
+    nextItem = { ...nextItem, title: title.trim(), body: body.trim() };
+  }
+
+  if (itemType === 'checklist') {
+    const title = (document.getElementById('reminderContentTitle') || {}).value || '';
+    if (!title.trim()) {
+      _notifyReminderContentWarning('Missing title', 'Please provide a checklist title.');
+      return;
+    }
+
+    const checklistItems = _readChecklistRows()
+      .filter((row) => row.text)
+      .map((row) => ({ text: row.text, checked: !!row.checked }));
+
+    if (!checklistItems.length) {
+      _notifyReminderContentWarning('No checklist rows', 'Add at least one checklist row before saving.');
+      return;
+    }
+
+    nextItem = { ...nextItem, title: title.trim(), items: checklistItems };
+  }
+
+  if (itemType === 'link') {
+    const label = (document.getElementById('reminderContentLabel') || {}).value || '';
+    const rawUrl = (document.getElementById('reminderContentUrl') || {}).value || '';
+    const normalizedUrl = _normalizeLinkUrl(rawUrl);
+    if (!label.trim()) {
+      _notifyReminderContentWarning('Missing label', 'Please provide a label for this link.');
+      return;
+    }
+    if (!normalizedUrl) {
+      _notifyReminderContentWarning('Invalid URL', 'Please provide a valid URL.');
+      return;
+    }
+
+    nextItem = {
+      ...nextItem,
+      label: label.trim(),
+      url: normalizedUrl,
+    };
+  }
+
+  if (itemType === 'file') {
+    const title = ((document.getElementById('reminderContentTitle') || {}).value || '').trim();
+    let fileData = existingItem || null;
+
+    if (_reminderContentState.pendingFileData) {
+      const pendingFile = _reminderContentState.pendingFileData;
+      const base64Data = await _convertFileToDataUrl(pendingFile);
+      fileData = {
+        fileName: pendingFile.name,
+        mimeType: pendingFile.type || 'application/octet-stream',
+        sizeBytes: pendingFile.size || 0,
+        base64Data,
+      };
+    }
+
+    if (!fileData || !fileData.base64Data) {
+      _notifyReminderContentWarning('No file selected', 'Choose a file before saving this item.');
+      return;
+    }
+
+    nextItem = {
+      ...nextItem,
+      title,
+      fileName: fileData.fileName,
+      mimeType: fileData.mimeType,
+      sizeBytes: fileData.sizeBytes,
+      base64Data: fileData.base64Data,
+    };
+  }
+
+  if (itemType === 'subReminder') {
+    const title = (document.getElementById('reminderContentTitle') || {}).value || '';
+    const notes = (document.getElementById('reminderContentNotes') || {}).value || '';
+    if (!title.trim()) {
+      _notifyReminderContentWarning('Missing title', 'Please provide a title for this sub-reminder.');
+      return;
+    }
+    nextItem = {
+      ...nextItem,
+      title: title.trim(),
+      notes: notes.trim(),
+    };
+  }
+
+  const updatedItems = [...existingItems];
+  const existingIndex = updatedItems.findIndex((item) => item.id === nextItem.id);
+  if (existingIndex >= 0) {
+    updatedItems[existingIndex] = nextItem;
+  } else {
+    updatedItems.push(nextItem);
+  }
+
+  _setReminderContentItems(kind, updatedItems);
+  renderReminderContentList(kind);
+  _closeReminderContentModal();
+}
+
+function _deleteReminderContentFromModal() {
+  const kind = _reminderContentState.activeKind;
+  const itemId = _reminderContentState.activeItemId;
+  if (!kind || !itemId) return;
+
+  const updatedItems = _getReminderContentItems(kind).filter((item) => item.id !== itemId);
+  _setReminderContentItems(kind, updatedItems);
+  renderReminderContentList(kind);
+  _closeReminderContentModal();
+}
+
+function attachReminderContentHandlers() {
+  if (!document.getElementById('reminder-area-form')) return;
+  if (attachReminderContentHandlers._bound) return;
+  attachReminderContentHandlers._bound = true;
+
+  Object.entries(REMINDER_CONTENT_FORM_CONFIG).forEach(([kind, cfg]) => {
+    const container = document.getElementById(cfg.containerId);
+    if (!container) return;
+
+    const buttonMap = [
+      { baseId: 'addTextEntry', itemType: 'text' },
+      { baseId: 'addChecklist', itemType: 'checklist' },
+      { baseId: 'addLink', itemType: 'link' },
+      { baseId: 'uploadFile', itemType: 'file' },
+      { baseId: 'addSubReminder', itemType: 'subReminder' },
+    ];
+
+    buttonMap.forEach((btnCfg) => {
+      const triggerId = `${btnCfg.baseId}${cfg.buttonSuffix}`;
+      const trigger = document.getElementById(triggerId);
+      if (!trigger) return;
+      trigger.addEventListener('click', () => {
+        _openReminderContentModal(kind, btnCfg.itemType, null);
+      });
+    });
+
+    container.addEventListener('click', (e) => {
+      const itemBtn = e.target.closest('button[data-item-id]');
+      if (!itemBtn) return;
+      _openReminderContentModal(kind, null, itemBtn.dataset.itemId);
+    });
+
+    renderReminderContentList(kind);
+  });
+
+  const modal = document.getElementById('reminderContentModal');
+  const cancelBtn = document.getElementById('reminderContentCancel');
+  const saveBtn = document.getElementById('reminderContentSave');
+  const deleteBtn = document.getElementById('reminderContentDelete');
+  const filePicker = document.getElementById('reminderContentFilePicker');
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', _closeReminderContentModal);
+  }
+  if (saveBtn) {
+    saveBtn.addEventListener('click', () => {
+      _saveReminderContentModal();
+    });
+  }
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', _deleteReminderContentFromModal);
+  }
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        _closeReminderContentModal();
+      }
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const openModal = document.getElementById('reminderContentModal');
+      if (openModal && !openModal.classList.contains('hidden')) {
+        _closeReminderContentModal();
+      }
+    }
+  });
+
+  if (filePicker) {
+    filePicker.addEventListener('change', (e) => {
+      const target = e.target;
+      const pickedFile = target && target.files && target.files[0] ? target.files[0] : null;
+      _reminderContentState.pendingFileData = pickedFile;
+
+      const fileMeta = document.getElementById('reminderContentFileMeta');
+      const chooseBtn = document.getElementById('reminderContentChooseFile');
+      if (chooseBtn) {
+        chooseBtn.textContent = pickedFile ? 'Replace File' : 'Choose File';
+      }
+      if (fileMeta) {
+        if (pickedFile) {
+          const kbSize = Math.max(1, Math.round((pickedFile.size || 0) / 1024));
+          fileMeta.textContent = `Pending: ${pickedFile.name} (${kbSize} KB)`;
+        } else {
+          fileMeta.textContent = 'No file selected.';
+        }
+      }
+    });
+  }
+}
+
+function getReminderContentItemsForSave(kind) {
+  const items = _getReminderContentItems(kind);
+  return _cloneReminderContent(items);
+}
+
+function summarizeReminderContentItems(contentItems) {
+  const items = Array.isArray(contentItems) ? contentItems : [];
+  if (!items.length) return 'None';
+
+  const counts = {
+    text: 0,
+    checklist: 0,
+    link: 0,
+    file: 0,
+    subReminder: 0,
+  };
+
+  items.forEach((item) => {
+    if (counts[item.itemType] !== undefined) {
+      counts[item.itemType] += 1;
+    }
+  });
+
+  return [
+    `Total ${items.length}`,
+    `Text ${counts.text}`,
+    `Checklist ${counts.checklist}`,
+    `Link ${counts.link}`,
+    `File ${counts.file}`,
+    `Sub-Reminder ${counts.subReminder}`,
+  ].join(' | ');
+}
+
 function attachReminderSaveHandlers() {
   if (!document.getElementById('reminderTypes')) return;
   if (attachReminderSaveHandlers._bound) return;
   attachReminderSaveHandlers._bound = true;
+
+  attachReminderContentHandlers();
 
   const configMap = {
     'form-daily': {
@@ -1668,12 +2327,14 @@ function attachReminderSaveHandlers() {
         domain: ((document.getElementById(cfg.domainId) || {}).value || '').toLowerCase(),
         bucket: (document.getElementById(cfg.bucketId) || {}).value || '',
         additionalDetails: additionalEl ? additionalEl.value.trim() : '',
+        contentItems: getReminderContentItemsForSave(cfg.kind),
         createdAt: new Date().toISOString(),
       };
 
       saveReminderToStorage(reminderObj);
       showSaveToast(cfg.kind === 'oneTime' ? 'Reminder' : cfg.kind.charAt(0).toUpperCase() + cfg.kind.slice(1));
       form.reset();
+      _resetReminderContentItems(cfg.kind);
       returnType('reminderTypes', 'reminder-area-form');
     });
   });
@@ -2128,6 +2789,7 @@ function renderReminderRow(reminderObj) {
 
   const detailsCell = document.createElement('td');
   detailsCell.appendChild(createTextLine((reminderObj.reminderKind || 'reminder').replace(/^\w/, (ch) => ch.toUpperCase())));
+  detailsCell.appendChild(createTextLine(`Contents: ${summarizeReminderContentItems(reminderObj.contentItems)}`));
   row.appendChild(detailsCell);
 
   const additionalCell = document.createElement('td');
@@ -2285,6 +2947,7 @@ function attachManageRemindersHandlers() {
       `<strong>Repeat:</strong> ${esc(reminder.repeat || 'never')}`,
       `<strong>Domain:</strong> ${reminder.domain ? esc(reminder.domain.replace(/^\w/, c => c.toUpperCase())) : '\u2014'}`,
       `<strong>Bucket:</strong> ${esc(resolveBucketLabel(reminder.bucket))}`,
+      `<strong>Contents:</strong> ${esc(summarizeReminderContentItems(reminder.contentItems))}`,
       reminder.additionalDetails ? `<strong>Notes:</strong> ${esc(reminder.additionalDetails)}` : null,
     ].filter(Boolean).join('<br>');
 
