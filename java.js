@@ -437,10 +437,7 @@ if (taskCountEl) {
 }
 const reminderCountEl = document.getElementById('reminder-count');
 if (reminderCountEl) {
-  reminderCountEl.textContent = loadRemindersFromStorage().filter(r =>
-    r.date === _dashboardToday ||
-    (r.repeat && r.repeat !== 'never' && r.date && r.date <= _dashboardToday)
-  ).length;
+  reminderCountEl.textContent = getRemindersForDisplay().filter((r) => r.date === _dashboardToday).length;
 }
 
 // create form swap
@@ -1594,14 +1591,19 @@ function addYears(dateObj, years) {
 
 function getNextRecurringDate(dateObj, repeatValue) {
   switch ((repeatValue || '').trim().toLowerCase()) {
+    case 'daily':
     case 'every day':
       return addDays(dateObj, 1);
+    case 'weekly':
     case 'every week':
       return addDays(dateObj, 7);
+    case 'biweekly':
     case 'every 2 weeks':
       return addDays(dateObj, 14);
+    case 'monthly':
     case 'every month':
       return addMonths(dateObj, 1);
+    case 'yearly':
     case 'every year':
       return addYears(dateObj, 1);
     case 'every weekday': {
@@ -1662,6 +1664,45 @@ function expandRecurringEvent(eventObj, maxOccurrences = MAX_RECURRING_OCCURRENC
 
 function getEventsForDisplay() {
   return loadEventsFromStorage().flatMap((eventObj) => expandRecurringEvent(eventObj));
+}
+
+function expandRecurringReminder(reminderObj, maxOccurrences = MAX_RECURRING_OCCURRENCES) {
+  if (!reminderObj) return [];
+
+  const occurrences = [{
+    ...reminderObj,
+    sourceReminderId: reminderObj.id,
+    occurrenceIndex: 0,
+    occurrenceCount: 1,
+  }];
+
+  const baseDate = parseLocalDate(reminderObj.date);
+  const repeatValue = (reminderObj.repeat || '').trim().toLowerCase();
+  const hasRepeat = repeatValue && repeatValue !== 'never';
+  if (!baseDate || !hasRepeat) {
+    return occurrences;
+  }
+
+  let nextDate = cloneDate(baseDate);
+  while (occurrences.length < maxOccurrences) {
+    nextDate = getNextRecurringDate(nextDate, repeatValue);
+    if (!nextDate) break;
+
+    occurrences.push({
+      ...reminderObj,
+      id: `${reminderObj.id}__occurrence_${occurrences.length}`,
+      date: formatLocalDate(nextDate),
+      sourceReminderId: reminderObj.id,
+      occurrenceIndex: occurrences.length,
+      occurrenceCount: occurrences.length + 1,
+    });
+  }
+
+  return occurrences;
+}
+
+function getRemindersForDisplay() {
+  return loadRemindersFromStorage().flatMap((reminderObj) => expandRecurringReminder(reminderObj));
 }
 
 /**
@@ -1901,6 +1942,33 @@ function wireBucketCalibrationAutofill(formEl, domainSelectId, bucketSelectId, f
   applyFromCurrentSelection();
 }
 
+function wireJobsCompensationVisibility(domainSelectId, fieldMap) {
+  const domainEl = document.getElementById(domainSelectId);
+  if (!domainEl || !fieldMap) return;
+
+  const hourlyEl = fieldMap.hourlyRateId ? document.getElementById(fieldMap.hourlyRateId) : null;
+  const flatEl = fieldMap.flatPayId ? document.getElementById(fieldMap.flatPayId) : null;
+  const compensationRow = (hourlyEl && hourlyEl.closest('p')) || (flatEl && flatEl.closest('p'));
+  if (!compensationRow) return;
+
+  function syncVisibility() {
+    const show = String(domainEl.value || '').toLowerCase() === 'jobs';
+    compensationRow.style.display = show ? '' : 'none';
+
+    if (hourlyEl) {
+      hourlyEl.disabled = !show;
+      if (!show) hourlyEl.value = '';
+    }
+    if (flatEl) {
+      flatEl.disabled = !show;
+      if (!show) flatEl.value = '';
+    }
+  }
+
+  domainEl.addEventListener('change', syncVisibility);
+  syncVisibility();
+}
+
 /**
  * Wire each event form submit to its builder and storage call.
  * Call this once at the bottom of createEvent.html.
@@ -1928,6 +1996,10 @@ function attachEventSaveHandlers() {
     const autofillCfg = autofillMap[formId];
     if (autofillCfg) {
       wireBucketCalibrationAutofill(form, autofillCfg.domainId, autofillCfg.bucketId, autofillCfg.fields);
+      wireJobsCompensationVisibility(autofillCfg.domainId, {
+        hourlyRateId: autofillCfg.fields.hourlyRateId,
+        flatPayId: autofillCfg.fields.flatPayId,
+      });
     }
 
     form.addEventListener('submit', (e) => {
@@ -1940,6 +2012,13 @@ function attachEventSaveHandlers() {
       const bucketEl = form.querySelector('[name="bucketSelect"]');
       const domainValue = ((domainEl && domainEl.value) || '').toLowerCase();
       const bucketId = bucketEl ? bucketEl.value : '';
+      if (domainValue !== 'jobs') {
+        eventObj = {
+          ...eventObj,
+          hourlyRate: null,
+          flatPay: null,
+        };
+      }
       if (domainValue === 'jobs' && bucketId) {
         const calibration = getBucketCalibrationById(bucketId);
         if (calibration) {
@@ -2069,6 +2148,10 @@ function attachTaskSaveHandlers() {
         flatPayId: cfg.flatPayId,
         locationId: cfg.locationId,
       });
+      wireJobsCompensationVisibility(cfg.domainId, {
+        hourlyRateId: cfg.hourlyRateId,
+        flatPayId: cfg.flatPayId,
+      });
     }
 
     form.addEventListener('submit', (e) => {
@@ -2099,6 +2182,11 @@ function attachTaskSaveHandlers() {
         additionalDetails: additionalEl ? additionalEl.value.trim() : '',
         createdAt: new Date().toISOString(),
       };
+
+      if (taskObj.domain !== 'jobs') {
+        taskObj.hourlyRate = null;
+        taskObj.flatPay = null;
+      }
 
       if (taskObj.domain === 'jobs' && taskObj.bucket) {
         const calibration = getBucketCalibrationById(taskObj.bucket);
@@ -2867,6 +2955,10 @@ function attachReminderSaveHandlers() {
         flatPayId: cfg.flatPayId,
         locationId: cfg.locationId,
       });
+      wireJobsCompensationVisibility(cfg.domainId, {
+        hourlyRateId: cfg.hourlyRateId,
+        flatPayId: cfg.flatPayId,
+      });
     }
 
     form.addEventListener('submit', (e) => {
@@ -2898,6 +2990,15 @@ function attachReminderSaveHandlers() {
         contentItems: getReminderContentItemsForSave(cfg.kind),
         createdAt: new Date().toISOString(),
       };
+
+      if (cfg.kind === 'daily') {
+        reminderObj.repeat = 'daily';
+      }
+
+      if (reminderObj.domain !== 'jobs') {
+        reminderObj.hourlyRate = null;
+        reminderObj.flatPay = null;
+      }
 
       if (reminderObj.domain === 'jobs' && reminderObj.bucket) {
         const calibration = getBucketCalibrationById(reminderObj.bucket);
@@ -3332,7 +3433,7 @@ function getUnifiedReportItems(startDate, endDate) {
     })
     .filter((taskObj) => isDateInRange(taskObj.date, startDate, endDate));
 
-  const reminderItems = loadRemindersFromStorage()
+  const reminderItems = getRemindersForDisplay()
     .filter((reminderObj) => isDateInRange(reminderObj.date, startDate, endDate))
     .map((reminderObj) => ({
       itemType: 'Reminder',
