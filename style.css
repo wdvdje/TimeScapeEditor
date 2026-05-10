@@ -702,3 +702,215 @@ button.bucket-button:hover {
     gap: 6px;
   }
 }
+
+/* ── Week Schedule Grid ─────────────────────────────────────────────────── */
+
+.week-schedule-wrapper {
+  overflow-x: auto;
+  border: 4px solid blue;
+  border-radius: 16px;
+  background: #ffffff;
+  margin-top: 12px;
+}
+
+.week-schedule-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #0000ff;
+  border-radius: 12px 12px 0 0;
+}
+
+.week-gutter-spacer {
+  flex: 0 0 60px;
+  min-width: 60px;
+}
+
+.week-day-header {
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
+  padding: 8px 4px;
+  font-family: "Source Sans 3", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  box-sizing: border-box;
+}
+
+.week-day-header.today {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* All-day strip */
+.week-allday-row {
+  display: flex;
+  border-bottom: 2px solid #0000ff;
+  min-height: 32px;
+  background: #f0f0f0;
+}
+
+.week-allday-gutter {
+  flex: 0 0 60px;
+  min-width: 60px;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 11px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 2px solid #0000ff;
+  box-sizing: border-box;
+}
+
+.week-allday-cell {
+  flex: 1;
+  min-width: 100px;
+  padding: 3px 2px;
+  border-left: 1px solid #d0d0d0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.week-allday-cell.today {
+  background: rgba(0, 0, 255, 0.05);
+}
+
+/* Scrollable body */
+.week-schedule-body {
+  display: flex;
+  max-height: 72vh;
+  overflow-y: auto;
+}
+
+.week-gutter-col {
+  flex: 0 0 60px;
+  min-width: 60px;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: #f5f5f5;
+  border-right: 2px solid #0000ff;
+}
+
+.week-hour-label {
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 3px 6px 0 0;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 11px;
+  color: #555;
+  box-sizing: border-box;
+  border-top: 1px solid #d8d8d8;
+}
+
+.week-hour-label:first-child {
+  border-top: none;
+}
+
+.week-day-col {
+  flex: 1;
+  min-width: 100px;
+  position: relative;
+  border-left: 1px solid #d0d0d0;
+  box-sizing: border-box;
+}
+
+.week-day-col.today {
+  background: rgba(0, 0, 255, 0.04);
+}
+
+.week-hour-slot {
+  height: 60px;
+  border-top: 1px solid #e8e8e8;
+  box-sizing: border-box;
+}
+
+.week-hour-slot:nth-child(even) {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.week-event-block {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  border-radius: 5px;
+  padding: 2px 5px;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 11px;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 2;
+  min-height: 18px;
+  box-sizing: border-box;
+  line-height: 1.3;
+  background: rgba(0, 0, 200, 0.18);
+  border: 1.5px solid #0000cc;
+  color: #000066;
+}
+
+.week-event-block.type-task {
+  background: rgba(0, 160, 60, 0.18);
+  border-color: #007830;
+  color: #004d1f;
+}
+
+.week-event-block.type-reminder {
+  background: rgba(180, 80, 0, 0.18);
+  border-color: #b45000;
+  color: #7a3500;
+}
+
+.week-event-block strong {
+  display: block;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.week-event-block span {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+/* All-day chip (reuses event block colours) */
+.week-allday-chip {
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(0, 0, 200, 0.18);
+  border: 1.5px solid #0000cc;
+  color: #000066;
+}
+
+.week-allday-chip.type-task {
+  background: rgba(0, 160, 60, 0.18);
+  border-color: #007830;
+  color: #004d1f;
+}
+
+.week-allday-chip.type-reminder {
+  background: rgba(180, 80, 0, 0.18);
+  border-color: #b45000;
+  color: #7a3500;
+}
+
+@media (max-width: 600px) {
+  .week-day-header,
+  .week-allday-cell,
+  .week-day-col {
+    min-width: 70px;
+  }
+}
+

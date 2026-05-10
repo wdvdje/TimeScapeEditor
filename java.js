@@ -3525,31 +3525,163 @@ function initTodayReportPage() {
 }
 
 function initWeekViewPage() {
-  const tableBody = document.getElementById('weekViewTableBody');
-  if (!tableBody) return;
+  const gridContainer = document.getElementById('weekScheduleGrid');
+  if (!gridContainer) return;
 
   const domainFilter = document.getElementById('weekViewDomainFilter');
-  const summary = document.getElementById('weekViewSummary');
   const rangeLabel = document.getElementById('weekViewRangeLabel');
   const todayIso = new Date().toISOString().slice(0, 10);
   const weekRange = toWeekRange(todayIso);
   const weekItems = getUnifiedReportItems(weekRange.start, weekRange.end);
 
   if (rangeLabel) {
-    rangeLabel.textContent = `${formatDateForDisplay(weekRange.start)} - ${formatDateForDisplay(weekRange.end)}`;
+    rangeLabel.textContent = `${formatDateForDisplay(weekRange.start)} – ${formatDateForDisplay(weekRange.end)}`;
+  }
+
+  const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const HOUR_PX = 60; // pixels per hour
+
+  function getWeekDates() {
+    const dates = [];
+    const start = new Date(weekRange.start + 'T00:00:00');
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      dates.push(d.toISOString().slice(0, 10));
+    }
+    return dates;
+  }
+
+  function formatDayHeader(isoDate) {
+    const d = new Date(isoDate + 'T00:00:00');
+    return `${DAY_SHORT[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
+  }
+
+  function hourLabel(h) {
+    if (h === 0) return '12 AM';
+    if (h < 12) return `${h} AM`;
+    if (h === 12) return '12 PM';
+    return `${h - 12} PM`;
+  }
+
+  function timeToMinutes(timeStr) {
+    if (!timeStr) return null;
+    const parts = timeStr.split(':');
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || 0, 10);
+  }
+
+  function typeClass(itemType) {
+    if (itemType === 'Task') return 'type-task';
+    if (itemType === 'Reminder') return 'type-reminder';
+    return 'type-event';
   }
 
   function render() {
     const filtered = filterReportItemsByDomain(weekItems, domainFilter ? domainFilter.value : 'all');
-    if (summary) {
-      summary.textContent = buildReportSummaryText(filtered);
+    gridContainer.innerHTML = '';
+
+    const weekDates = getWeekDates();
+
+    // ── Header row (day names) ──────────────────────────────────────────────
+    const header = document.createElement('div');
+    header.className = 'week-schedule-header';
+
+    const gutterSpacer = document.createElement('div');
+    gutterSpacer.className = 'week-gutter-spacer';
+    header.appendChild(gutterSpacer);
+
+    weekDates.forEach((isoDate) => {
+      const dayHeader = document.createElement('div');
+      dayHeader.className = 'week-day-header' + (isoDate === todayIso ? ' today' : '');
+      dayHeader.textContent = formatDayHeader(isoDate);
+      header.appendChild(dayHeader);
+    });
+    gridContainer.appendChild(header);
+
+    // ── All-day strip (items without a time) ───────────────────────────────
+    const alldayRow = document.createElement('div');
+    alldayRow.className = 'week-allday-row';
+
+    const alldayGutter = document.createElement('div');
+    alldayGutter.className = 'week-allday-gutter';
+    alldayGutter.textContent = 'All Day';
+    alldayRow.appendChild(alldayGutter);
+
+    weekDates.forEach((isoDate) => {
+      const cell = document.createElement('div');
+      cell.className = 'week-allday-cell' + (isoDate === todayIso ? ' today' : '');
+      const dayItems = filtered.filter((item) => item.date === isoDate && !item.time);
+      dayItems.forEach((item) => {
+        const chip = document.createElement('div');
+        chip.className = `week-allday-chip ${typeClass(item.itemType)}`;
+        chip.textContent = item.title;
+        chip.title = `${item.itemType}: ${item.title}`;
+        cell.appendChild(chip);
+      });
+      alldayRow.appendChild(cell);
+    });
+    gridContainer.appendChild(alldayRow);
+
+    // ── Scrollable schedule body ────────────────────────────────────────────
+    const body = document.createElement('div');
+    body.className = 'week-schedule-body';
+
+    // Time gutter column
+    const gutterCol = document.createElement('div');
+    gutterCol.className = 'week-gutter-col';
+    for (let h = 0; h < 24; h++) {
+      const label = document.createElement('div');
+      label.className = 'week-hour-label';
+      label.textContent = hourLabel(h);
+      gutterCol.appendChild(label);
     }
-    renderUnifiedReportRows(tableBody, filtered, 'No items scheduled for this week.');
+    body.appendChild(gutterCol);
+
+    // Day columns
+    weekDates.forEach((isoDate) => {
+      const col = document.createElement('div');
+      col.className = 'week-day-col' + (isoDate === todayIso ? ' today' : '');
+      col.style.minHeight = `${24 * HOUR_PX}px`;
+
+      // Background hour-slot grid lines
+      for (let h = 0; h < 24; h++) {
+        const slot = document.createElement('div');
+        slot.className = 'week-hour-slot';
+        col.appendChild(slot);
+      }
+
+      // Timed event blocks
+      const timedItems = filtered.filter((item) => item.date === isoDate && item.time);
+      timedItems.forEach((item) => {
+        const mins = timeToMinutes(item.time);
+        const topPx = (mins / 60) * HOUR_PX;
+        const block = document.createElement('div');
+        block.className = `week-event-block ${typeClass(item.itemType)}`;
+        block.style.top = `${topPx}px`;
+        block.style.height = `${HOUR_PX - 4}px`;
+        block.title = `${item.itemType}: ${item.title}\n${item.time}${item.bucket ? ' · ' + item.bucket : ''}`;
+
+        const titleEl = document.createElement('strong');
+        titleEl.textContent = item.title;
+        block.appendChild(titleEl);
+
+        const timeEl = document.createElement('span');
+        timeEl.textContent = item.time;
+        block.appendChild(timeEl);
+
+        col.appendChild(block);
+      });
+
+      body.appendChild(col);
+    });
+
+    gridContainer.appendChild(body);
+
+    // Scroll to 7 AM on render
+    body.scrollTop = 7 * HOUR_PX;
   }
 
-  if (domainFilter) {
-    domainFilter.addEventListener('change', render);
-  }
+  if (domainFilter) domainFilter.addEventListener('change', render);
   render();
 }
 
