@@ -9,10 +9,58 @@
         <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
         <link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-180x180.png">
         <link rel="stylesheet" href="../style.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <body>
         <h1>Habits & Routines</h1>
         <p>Track and manage your daily habits and routines to build consistency and achieve your goals.</p>
-        <!-- Habits & routines content goes here -->
+
+        <h2>Time Tracker</h2>
+        <div class="tracker-panel" id="timeTrackerPanel">
+          <div class="tracker-status-row">
+            <div class="tracker-status-card">
+              <p>Status</p>
+              <strong id="trackerStatusLabel">Idle</strong>
+            </div>
+            <div class="tracker-status-card">
+              <p>Elapsed</p>
+              <strong id="trackerElapsedLabel">00:00:00</strong>
+            </div>
+            <div class="tracker-status-card">
+              <p>Today Tracked</p>
+              <strong id="trackerTodayTotal">00:00:00</strong>
+            </div>
+          </div>
+
+          <div class="tracker-form-row">
+            <label for="trackerTitleInput">Session Title</label>
+            <input type="text" class="spec tracker-input" id="trackerTitleInput" placeholder="Focused work session">
+
+            <label for="trackerDomainSelect">Domain</label>
+            <select class="spec" id="trackerDomainSelect">
+              <option value="personal">Personal</option>
+              <option value="household">Household</option>
+              <option value="jobs">Jobs</option>
+            </select>
+
+            <label for="trackerBucketSelect">Bucket</label>
+            <select class="spec" id="trackerBucketSelect"></select>
+          </div>
+
+          <div class="tracker-meta-row">
+            <p>Started: <strong id="trackerStartedAtLabel">-</strong></p>
+            <p>Paused: <strong id="trackerPausedAtLabel">-</strong></p>
+          </div>
+
+          <div class="tracker-actions">
+            <button class="type" type="button" id="trackerStartBtn">Start</button>
+            <button class="type" type="button" id="trackerPauseBtn">Pause</button>
+            <button class="type" type="button" id="trackerResumeBtn">Resume</button>
+            <button class="type" type="button" id="trackerStopBtn">Stop & Save</button>
+            <button class="type" type="button" id="trackerDiscardBtn">Discard</button>
+          </div>
+        </div>
+
+        <script src="../java.js"></script>
     </body>
 </html>
