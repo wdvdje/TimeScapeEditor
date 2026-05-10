@@ -3044,6 +3044,89 @@ function renderUnifiedReportRows(tableBody, items, emptyMessage) {
   });
 }
 
+function isIsoDateInMonth(isoDate, monthValue) {
+  return Boolean(isoDate && monthValue && isoDate.startsWith(`${monthValue}-`));
+}
+
+function renderCalendarMonthGrid(tableBody, monthValue, items, selectedDay, onDaySelected) {
+  if (!tableBody || !monthValue) return;
+  tableBody.innerHTML = '';
+
+  const monthParts = monthValue.split('-').map((part) => Number(part));
+  if (monthParts.length !== 2 || monthParts.some((part) => Number.isNaN(part))) return;
+
+  const year = monthParts[0];
+  const monthIndex = monthParts[1] - 1;
+  const firstDayOfMonth = new Date(year, monthIndex, 1).getDay();
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const totalGridSlots = Math.ceil((firstDayOfMonth + daysInMonth) / 7) * 7;
+
+  const itemsByDate = new Map();
+  items.forEach((item) => {
+    if (!item || !item.date) return;
+    if (!isIsoDateInMonth(item.date, monthValue)) return;
+    if (!itemsByDate.has(item.date)) {
+      itemsByDate.set(item.date, []);
+    }
+    itemsByDate.get(item.date).push(item);
+  });
+
+  for (let slot = 0; slot < totalGridSlots; slot += 1) {
+    if (slot % 7 === 0) {
+      tableBody.appendChild(document.createElement('tr'));
+    }
+
+    const row = tableBody.lastElementChild;
+    const cell = document.createElement('td');
+    cell.className = 'calendar-day-cell';
+
+    const dayNumber = slot - firstDayOfMonth + 1;
+    if (dayNumber < 1 || dayNumber > daysInMonth) {
+      cell.classList.add('calendar-day-empty');
+      row.appendChild(cell);
+      continue;
+    }
+
+    const dayIso = `${monthValue}-${String(dayNumber).padStart(2, '0')}`;
+    if (dayIso === selectedDay) {
+      cell.classList.add('calendar-day-selected');
+    }
+
+    const dayHeader = document.createElement('div');
+    dayHeader.className = 'calendar-day-number';
+    dayHeader.textContent = String(dayNumber);
+    cell.appendChild(dayHeader);
+
+    const dayItems = itemsByDate.get(dayIso) || [];
+    const dayItemsContainer = document.createElement('div');
+    dayItemsContainer.className = 'calendar-day-items';
+
+    dayItems.slice(0, 3).forEach((item) => {
+      const itemLine = document.createElement('div');
+      itemLine.className = 'calendar-day-item';
+      const timePrefix = item.time ? `${formatTimeForDisplay(item.time)} ` : '';
+      itemLine.textContent = `${timePrefix}${item.itemType}: ${item.title}`;
+      dayItemsContainer.appendChild(itemLine);
+    });
+
+    if (dayItems.length > 3) {
+      const overflowLine = document.createElement('div');
+      overflowLine.className = 'calendar-day-item calendar-day-more';
+      overflowLine.textContent = `+${dayItems.length - 3} more`;
+      dayItemsContainer.appendChild(overflowLine);
+    }
+
+    cell.appendChild(dayItemsContainer);
+    cell.addEventListener('click', () => {
+      if (typeof onDaySelected === 'function') {
+        onDaySelected(dayIso);
+      }
+    });
+
+    row.appendChild(cell);
+  }
+}
+
 function toWeekRange(todayIso) {
   const today = new Date(`${todayIso}T00:00:00`);
   const dayIndex = today.getDay();
@@ -3135,7 +3218,11 @@ function initCalendarViewPage() {
 
   function render() {
     const selectedMonth = (monthPicker ? monthPicker.value : todayIso.slice(0, 7)) || todayIso.slice(0, 7);
-    const selectedDay = toIsoDate(dayPicker ? dayPicker.value : todayIso) || `${selectedMonth}-01`;
+    const selectedDayRaw = toIsoDate(dayPicker ? dayPicker.value : todayIso);
+    const selectedDay = isIsoDateInMonth(selectedDayRaw, selectedMonth) ? selectedDayRaw : `${selectedMonth}-01`;
+    if (dayPicker && dayPicker.value !== selectedDay) {
+      dayPicker.value = selectedDay;
+    }
     const monthStart = `${selectedMonth}-01`;
     const monthEnd = `${selectedMonth}-31`;
 
@@ -3153,7 +3240,12 @@ function initCalendarViewPage() {
       daySummary.textContent = `Selected day (${formatDateForDisplay(selectedDay)}): ${buildReportSummaryText(filteredDay)}`;
     }
 
-    renderUnifiedReportRows(tableBody, filteredDay, 'No items for the selected calendar day.');
+    renderCalendarMonthGrid(tableBody, selectedMonth, filteredMonth, selectedDay, (dayIso) => {
+      if (dayPicker) {
+        dayPicker.value = dayIso;
+      }
+      render();
+    });
   }
 
   if (domainFilter) domainFilter.addEventListener('change', render);
