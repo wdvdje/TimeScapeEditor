@@ -11,7 +11,8 @@
     "start": "electron .",
     "dev": "electron . --dev",
     "dist": "electron-builder",
-    "build": "electron-builder --publish never"
+    "build": "electron-builder --publish never",
+    "dist-unsigned": "electron-builder --config.mac.sign=null"
   },
   "devDependencies": {
     "electron": "^42.0.1",
@@ -36,7 +37,12 @@
         "zip"
       ],
       "category": "public.app-category.productivity",
-      "icon": "icons/icon.icns"
+      "icon": "icons/icon.icns",
+      "sign": {
+        "identity": "Apple Development"
+      },
+      "entitlements": "./electron/entitlements.mac.plist",
+      "entitlementsInherit": "./electron/entitlements.mac.plist"
     },
     "dmg": {
       "contents": [

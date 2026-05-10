@@ -76,11 +76,23 @@ To add Windows/Linux support later, update `electron-builder.json` configuration
 
 ## Building for Distribution
 
-For distributing outside your organization, you'll need to:
-1. Sign the app with an Apple Developer certificate (~$99/year)
-2. Notarize with Apple (required for Gatekeeper)
+### Free Signing (Local Development)
+The app is configured to use free Xcode Apple Development certificates. To set up:
 
-For internal/personal use, the unsigned builds work fine.
+1. Open Xcode (or just run from terminal—Xcode will prompt if needed).
+2. Go to Xcode > Settings > Accounts, add your Apple ID.
+3. Run `npm run dist` — electron-builder will find and use your free Apple Development certificate.
+4. The resulting `.dmg` and `.app` will be signed locally.
+
+Note: Free signing works on your machine and testing, but Gatekeeper will still show warnings for others unless the app is notarized.
+
+### Production Distribution (~$99/year)
+For distributing outside your organization, you'll need to:
+1. Join Apple Developer Program ($99/year).
+2. Sign the app with your Developer ID Application certificate.
+3. Notarize with Apple (required for Gatekeeper to auto-approve).
+
+For internal/personal use, free Xcode signing works fine.
 
 ## Troubleshooting
 

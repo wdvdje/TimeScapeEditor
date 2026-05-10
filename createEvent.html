@@ -182,10 +182,31 @@
         <p>Date: <input type="date" class="spec" id="jobDate" name="jobDate">.</p>
         <p>Start time: <input type="time" class="spec" id="jobStartTime" name="jobStartTime">. End time: <input type="time" class="spec" id="jobEndTime" name="jobEndTime">.</p>
         <p>Location: <input type="text" class="spec" id="jobLocation" name="jobLocation"></p>
-        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="jobHourlyRate" name="jobHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="jobFlatPay" name="jobFlatPay" placeholder="00.00"></p>
         <p>Repeat: <select class="type" data-role="repeat-select"><option>never</option><option>every day</option><option>every week</option><option>every 2 weeks</option><option>every month</option><option>every year</option><option>every weekday</option><option>every weekend</option></select></p>
         <p data-role="repeat-until-container" style="display: none;">Until: <input type="date" class="spec" data-role="repeat-until"></p>
+        <h2>Job Details</h2>
+        <p>Job Type:
+          <button type="button" class="type" id="interviewJob" name="interviewJob">Interview</button>
+          <button type="button" class="type" id="onSiteJob" name="onSiteJob">On-Site</button>
+          <button type="button" class="type" id="remoteJob" name="remoteJob">Remote</button>
+        </p>
+        <div id="interviewJobDetails" class="hidden">
+          <p>Icon:</p>
+          <p>Organization: <input type="text" class="spec" id="organizationInterviewJob" name="organizationInterviewJob"></p>
+          <p>Interview Link: <input type="url" class="spec" id="interviewLinkJob" name="interviewLinkJob" placeholder="https://example.com/"></p>
+        </div>
+        <div id="onSiteJobDetails" class="hidden">
+          <p>Icon:</p>
+          <p>Worksite: <input type="text" class="spec" id="worksiteOnSiteJob" name="worksiteOnSiteJob"></p>
+          <p>Manager: <input type="text" class="spec" id="managerOnSiteJob" name="managerOnSiteJob"></p>
+        </div>
+        <div id="remoteJobDetails" class="hidden">
+          <p>Icon:</p>
+          <p>Platform: <input type="text" class="spec" id="platformRemoteJob" name="platformRemoteJob" placeholder="Zoom, Teams, etc."></p>
+          <p>Join Link: <input type="url" class="spec" id="joinLinkRemoteJob" name="joinLinkRemoteJob" placeholder="https://example.com/"></p>
+        </div>
         <p>Domain: <select name="domainSelect" id="domainSelectJob"><option>Personal</option><option>Household</option><option>Jobs</option></select>. Bucket: <select name="bucketSelect" id="bucketSelectJob"></select>.</p>
+        <p>Compensation: Hourly $<input type="number" min="0" step="0.01" class="spec" id="jobHourlyRate" name="jobHourlyRate" placeholder="00.00"> Flat $<input type="number" min="0" step="0.01" class="spec" id="jobFlatPay" name="jobFlatPay" placeholder="00.00"></p>
         <h2>Additional Details:</h2>
         <textarea style="width: 100%; height: 75px;" class="spec" name="jobAdditionalDetails"></textarea>
         <p>Create Sub-Item
@@ -245,6 +266,9 @@
     <script>revealOnClick('writingFocus', 'writingFocusDetails');</script>
     <script>revealOnClick('projectFocus', 'projectFocusDetails');</script>
     <script>revealOnClick('fitnessFocus', 'fitnessFocusDetails');</script>
+    <script>revealOnClick('interviewJob', 'interviewJobDetails');</script>
+    <script>revealOnClick('onSiteJob', 'onSiteJobDetails');</script>
+    <script>revealOnClick('remoteJob', 'remoteJobDetails');</script>
     <script>revealOnClick('personalMeeting', 'personalMeetingDetails');</script>
     <script>revealOnClick('professionalMeeting', 'professionalMeetingDetails');</script>
     <script>

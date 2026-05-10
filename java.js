@@ -1368,6 +1368,9 @@ const SUBTYPE_LABELS = {
   writingFocusDetails: 'Writing',
   projectFocusDetails: 'Project',
   fitnessFocusDetails: 'Fitness',
+  interviewJobDetails: 'Interview',
+  onSiteJobDetails: 'On-Site',
+  remoteJobDetails: 'Remote',
   personalMeetingDetails: 'Personal',
   professionalMeetingDetails: 'Professional',
 };
@@ -1452,12 +1455,13 @@ function buildFocusEvent() {
 
 function buildJobEvent() {
   const form = document.getElementById('form-job');
+  const activeDetail = getActiveSubtypeDetail(form);
   const repeatSettings = getRepeatSettings(form);
   return {
     id: generateEventId(),
     eventCategory: 'job',
-    eventType: null,
-    icon: '',
+    eventType: activeDetail ? (SUBTYPE_LABELS[activeDetail.id] || null) : null,
+    icon: extractIcon(activeDetail),
     title: document.getElementById('jobTitle').value.trim(),
     date: document.getElementById('jobDate').value,
     startTime: document.getElementById('jobStartTime').value,
@@ -1470,7 +1474,7 @@ function buildJobEvent() {
     hourlyRate: parseMoneyInput('jobHourlyRate'),
     flatPay: parseMoneyInput('jobFlatPay'),
     additionalDetails: form.querySelector('textarea[name="jobAdditionalDetails"]').value.trim(),
-    typeDetails: {},
+    typeDetails: activeDetail ? collectInputValues(activeDetail) : {},
     createdAt: new Date().toISOString(),
   };
 }
