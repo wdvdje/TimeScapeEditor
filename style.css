@@ -561,6 +561,15 @@ button.bucket-button:hover {
   font-weight: 700;
 }
 
+.calendar-month-table {
+  table-layout: fixed;
+}
+
+.calendar-month-table thead th,
+.calendar-month-table tbody td {
+  width: 14.2857%;
+}
+
 .calendar-day-cell {
   text-align: left;
   vertical-align: top;
@@ -568,6 +577,7 @@ button.bucket-button:hover {
   height: 110px;
   background: #f8f8f8;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .calendar-day-empty {
@@ -591,6 +601,7 @@ button.bucket-button:hover {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  min-width: 0;
 }
 
 .calendar-day-item {
