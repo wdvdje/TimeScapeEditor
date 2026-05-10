@@ -14,6 +14,51 @@
   <body>
     <h1>TimeScape Editor</h1>
     <p>Today is <strong><span id="current-date"></span></strong>. You have <strong><span id="event-count"></span></strong> events, <strong><span id="task-count"></span></strong> tasks, and <strong><span id="reminder-count"></span></strong> reminders scheduled for today.</p>
+    <h2>Time Tracker</h2>
+    <div class="tracker-panel" id="timeTrackerPanel">
+      <div class="tracker-status-row">
+        <div class="tracker-status-card">
+          <p>Status</p>
+          <strong id="trackerStatusLabel">Idle</strong>
+        </div>
+        <div class="tracker-status-card">
+          <p>Elapsed</p>
+          <strong id="trackerElapsedLabel">00:00:00</strong>
+        </div>
+        <div class="tracker-status-card">
+          <p>Today Tracked</p>
+          <strong id="trackerTodayTotal">00:00:00</strong>
+        </div>
+      </div>
+
+      <div class="tracker-form-row">
+        <label for="trackerTitleInput">Session Title</label>
+        <input type="text" class="spec tracker-input" id="trackerTitleInput" placeholder="Focused work session">
+
+        <label for="trackerDomainSelect">Domain</label>
+        <select class="spec" id="trackerDomainSelect">
+          <option value="personal">Personal</option>
+          <option value="household">Household</option>
+          <option value="jobs">Jobs</option>
+        </select>
+
+        <label for="trackerBucketSelect">Bucket</label>
+        <select class="spec" id="trackerBucketSelect"></select>
+      </div>
+
+      <div class="tracker-meta-row">
+        <p>Started: <strong id="trackerStartedAtLabel">-</strong></p>
+        <p>Paused: <strong id="trackerPausedAtLabel">-</strong></p>
+      </div>
+
+      <div class="tracker-actions">
+        <button class="type" type="button" id="trackerStartBtn">Start</button>
+        <button class="type" type="button" id="trackerPauseBtn">Pause</button>
+        <button class="type" type="button" id="trackerResumeBtn">Resume</button>
+        <button class="type" type="button" id="trackerStopBtn">Stop & Save</button>
+        <button class="type" type="button" id="trackerDiscardBtn">Discard</button>
+      </div>
+    </div>
     <h2>Schedules & Calendars</h2>
     <div class="formbox">
       <button class="formbutton" id="openTodayReport" onclick="location.href='todayReport.html'">

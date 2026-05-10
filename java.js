@@ -499,6 +499,357 @@ function revealOnClick(buttonId, targetId) {
 
 const EVENTS_STORAGE_KEY = 'timescapeEvents';
 const MAX_RECURRING_OCCURRENCES = 12;
+const TIME_ENTRIES_STORAGE_KEY = 'timescapeTimeEntries';
+const ACTIVE_TRACKER_SESSION_STORAGE_KEY = 'timescapeActiveSession';
+const TIME_TRACKER_SCHEMA_KEY = 'timescapeTimeSchemaVersion';
+const TIME_TRACKER_SCHEMA_VERSION = '1';
+let _trackerTickIntervalId = null;
+
+function ensureTimeTrackerSchema() {
+  try {
+    const existingVersion = localStorage.getItem(TIME_TRACKER_SCHEMA_KEY);
+    if (existingVersion !== TIME_TRACKER_SCHEMA_VERSION) {
+      localStorage.setItem(TIME_TRACKER_SCHEMA_KEY, TIME_TRACKER_SCHEMA_VERSION);
+    }
+  } catch {
+    // Storage access can fail in private contexts; tracker UI will remain read-only.
+  }
+}
+
+function loadTimeEntriesFromStorage() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(TIME_ENTRIES_STORAGE_KEY)) || [];
+    if (!Array.isArray(raw)) return [];
+    return raw.filter((entry) => entry && typeof entry === 'object').map((entry) => ({
+      ...entry,
+      elapsedMs: Number(entry.elapsedMs || 0),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function saveTimeEntryToStorage(entryObj) {
+  const entries = loadTimeEntriesFromStorage();
+  entries.push(entryObj);
+  localStorage.setItem(TIME_ENTRIES_STORAGE_KEY, JSON.stringify(entries));
+}
+
+function loadActiveTrackerSession() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(ACTIVE_TRACKER_SESSION_STORAGE_KEY));
+    if (!stored || typeof stored !== 'object') return null;
+    return {
+      ...stored,
+      pausedAccumulatedMs: Number(stored.pausedAccumulatedMs || 0),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function saveActiveTrackerSession(sessionObj) {
+  localStorage.setItem(ACTIVE_TRACKER_SESSION_STORAGE_KEY, JSON.stringify(sessionObj));
+}
+
+function clearActiveTrackerSession() {
+  localStorage.removeItem(ACTIVE_TRACKER_SESSION_STORAGE_KEY);
+}
+
+function toLocalIsoDate(dateObj) {
+  if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return '';
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getTodayLocalIsoDate() {
+  return toLocalIsoDate(new Date());
+}
+
+function formatTrackerDuration(elapsedMs) {
+  const safeMs = Math.max(0, Number(elapsedMs || 0));
+  const totalSeconds = Math.floor(safeMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function formatTrackerDateTime(isoDateTime) {
+  if (!isoDateTime) return '-';
+  const dateObj = new Date(isoDateTime);
+  if (Number.isNaN(dateObj.getTime())) return '-';
+  return dateObj.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+}
+
+function getTrackerElapsedMs(sessionObj, nowMs = Date.now()) {
+  if (!sessionObj || !sessionObj.startedAt) return 0;
+
+  const startedMs = Date.parse(sessionObj.startedAt);
+  if (!Number.isFinite(startedMs)) return 0;
+
+  const pausedAccumulatedMs = Number(sessionObj.pausedAccumulatedMs || 0);
+  const pausedAtMs = sessionObj.pausedAt ? Date.parse(sessionObj.pausedAt) : null;
+  const endMs = sessionObj.status === 'paused' && Number.isFinite(pausedAtMs)
+    ? pausedAtMs
+    : nowMs;
+
+  const elapsed = endMs - startedMs - pausedAccumulatedMs;
+  return Math.max(0, elapsed);
+}
+
+function getTrackedTodayMs() {
+  const today = getTodayLocalIsoDate();
+  const savedMs = loadTimeEntriesFromStorage().reduce((acc, entry) => {
+    const started = entry && entry.startedAt ? new Date(entry.startedAt) : null;
+    if (!started || Number.isNaN(started.getTime())) return acc;
+    return toLocalIsoDate(started) === today ? acc + Math.max(0, Number(entry.elapsedMs || 0)) : acc;
+  }, 0);
+
+  const active = loadActiveTrackerSession();
+  if (!active || !active.startedAt) return savedMs;
+
+  const started = new Date(active.startedAt);
+  if (Number.isNaN(started.getTime())) return savedMs;
+  if (toLocalIsoDate(started) !== today) return savedMs;
+  return savedMs + getTrackerElapsedMs(active);
+}
+
+function notifyTrackerWarning(title, text) {
+  if (window.Swal && typeof window.Swal.fire === 'function') {
+    Swal.fire({
+      ...getSwalThemeOptions(),
+      title,
+      text,
+      icon: 'warning',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+    });
+    return;
+  }
+  window.alert(text);
+}
+
+function readTrackerFormValues() {
+  const titleEl = document.getElementById('trackerTitleInput');
+  const domainEl = document.getElementById('trackerDomainSelect');
+  const bucketEl = document.getElementById('trackerBucketSelect');
+
+  return {
+    title: (titleEl ? titleEl.value : '').trim(),
+    domain: ((domainEl ? domainEl.value : '') || '').toLowerCase(),
+    bucket: bucketEl ? bucketEl.value : '',
+  };
+}
+
+function writeTrackerFormValues(sessionObj) {
+  if (!sessionObj) return;
+
+  const titleEl = document.getElementById('trackerTitleInput');
+  const domainEl = document.getElementById('trackerDomainSelect');
+  const bucketEl = document.getElementById('trackerBucketSelect');
+
+  if (titleEl) titleEl.value = sessionObj.title || '';
+  if (domainEl && sessionObj.domain) {
+    domainEl.value = sessionObj.domain;
+    domainEl.dispatchEvent(new Event('change'));
+  }
+  if (bucketEl && sessionObj.bucket !== undefined) {
+    bucketEl.value = sessionObj.bucket;
+  }
+}
+
+function setTrackerFormLocked(locked) {
+  ['trackerTitleInput', 'trackerDomainSelect', 'trackerBucketSelect'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = locked;
+  });
+}
+
+function updateTimeTrackerDashboard() {
+  const panel = document.getElementById('timeTrackerPanel');
+  if (!panel) return;
+
+  const statusLabel = document.getElementById('trackerStatusLabel');
+  const elapsedLabel = document.getElementById('trackerElapsedLabel');
+  const todayTotalLabel = document.getElementById('trackerTodayTotal');
+  const startedAtLabel = document.getElementById('trackerStartedAtLabel');
+  const pausedAtLabel = document.getElementById('trackerPausedAtLabel');
+  const startBtn = document.getElementById('trackerStartBtn');
+  const pauseBtn = document.getElementById('trackerPauseBtn');
+  const resumeBtn = document.getElementById('trackerResumeBtn');
+  const stopBtn = document.getElementById('trackerStopBtn');
+  const discardBtn = document.getElementById('trackerDiscardBtn');
+
+  const sessionObj = loadActiveTrackerSession();
+  const hasActive = !!sessionObj;
+  const isRunning = hasActive && sessionObj.status === 'running';
+  const isPaused = hasActive && sessionObj.status === 'paused';
+
+  if (sessionObj) {
+    writeTrackerFormValues(sessionObj);
+    if (statusLabel) statusLabel.textContent = isPaused ? 'Paused' : 'Running';
+    if (elapsedLabel) elapsedLabel.textContent = formatTrackerDuration(getTrackerElapsedMs(sessionObj));
+    if (startedAtLabel) startedAtLabel.textContent = formatTrackerDateTime(sessionObj.startedAt);
+    if (pausedAtLabel) pausedAtLabel.textContent = isPaused ? formatTrackerDateTime(sessionObj.pausedAt) : '-';
+  } else {
+    if (statusLabel) statusLabel.textContent = 'Idle';
+    if (elapsedLabel) elapsedLabel.textContent = '00:00:00';
+    if (startedAtLabel) startedAtLabel.textContent = '-';
+    if (pausedAtLabel) pausedAtLabel.textContent = '-';
+  }
+
+  if (todayTotalLabel) {
+    todayTotalLabel.textContent = formatTrackerDuration(getTrackedTodayMs());
+  }
+
+  setTrackerFormLocked(hasActive);
+
+  if (startBtn) startBtn.disabled = hasActive;
+  if (pauseBtn) pauseBtn.disabled = !isRunning;
+  if (resumeBtn) resumeBtn.disabled = !isPaused;
+  if (stopBtn) stopBtn.disabled = !hasActive;
+  if (discardBtn) discardBtn.disabled = !hasActive;
+}
+
+function startTrackerTickLoop() {
+  if (_trackerTickIntervalId) {
+    window.clearInterval(_trackerTickIntervalId);
+    _trackerTickIntervalId = null;
+  }
+
+  _trackerTickIntervalId = window.setInterval(() => {
+    const active = loadActiveTrackerSession();
+    if (active && active.status === 'running') {
+      updateTimeTrackerDashboard();
+    }
+  }, 1000);
+}
+
+function startTimeTrackerSession() {
+  const existingSession = loadActiveTrackerSession();
+  if (existingSession) {
+    notifyTrackerWarning('Session already running', 'Stop or discard the current session before starting another one.');
+    return;
+  }
+
+  const context = readTrackerFormValues();
+  if (!context.title) {
+    notifyTrackerWarning('Missing title', 'Add a session title before starting the timer.');
+    return;
+  }
+
+  const nowIso = new Date().toISOString();
+  const sessionObj = {
+    id: generateItemId('ses'),
+    title: context.title,
+    domain: context.domain,
+    bucket: context.bucket,
+    sourceType: 'manual',
+    status: 'running',
+    startedAt: nowIso,
+    pausedAt: '',
+    pausedAccumulatedMs: 0,
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  };
+
+  saveActiveTrackerSession(sessionObj);
+  updateTimeTrackerDashboard();
+}
+
+function pauseTimeTrackerSession() {
+  const sessionObj = loadActiveTrackerSession();
+  if (!sessionObj || sessionObj.status !== 'running') return;
+
+  saveActiveTrackerSession({
+    ...sessionObj,
+    status: 'paused',
+    pausedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  updateTimeTrackerDashboard();
+}
+
+function resumeTimeTrackerSession() {
+  const sessionObj = loadActiveTrackerSession();
+  if (!sessionObj || sessionObj.status !== 'paused') return;
+
+  const pausedAtMs = Date.parse(sessionObj.pausedAt || '');
+  const nowMs = Date.now();
+  const pauseDurationMs = Number.isFinite(pausedAtMs) ? Math.max(0, nowMs - pausedAtMs) : 0;
+
+  saveActiveTrackerSession({
+    ...sessionObj,
+    status: 'running',
+    pausedAt: '',
+    pausedAccumulatedMs: Number(sessionObj.pausedAccumulatedMs || 0) + pauseDurationMs,
+    updatedAt: new Date().toISOString(),
+  });
+  updateTimeTrackerDashboard();
+}
+
+function finalizeTimeTrackerSession(saveEntry) {
+  const sessionObj = loadActiveTrackerSession();
+  if (!sessionObj) return;
+
+  const endedAt = new Date().toISOString();
+  const elapsedMs = getTrackerElapsedMs(sessionObj, Date.now());
+
+  if (saveEntry && elapsedMs > 0) {
+    const entryObj = {
+      id: generateItemId('tme'),
+      sessionId: sessionObj.id,
+      title: sessionObj.title,
+      domain: sessionObj.domain,
+      bucket: sessionObj.bucket,
+      sourceType: sessionObj.sourceType || 'manual',
+      startedAt: sessionObj.startedAt,
+      endedAt,
+      elapsedMs,
+      createdAt: endedAt,
+    };
+    saveTimeEntryToStorage(entryObj);
+    showSaveToast('Time Entry');
+  }
+
+  clearActiveTrackerSession();
+  updateTimeTrackerDashboard();
+}
+
+function initTimeTrackerDashboard() {
+  const panel = document.getElementById('timeTrackerPanel');
+  if (!panel) return;
+  if (initTimeTrackerDashboard._initialized) return;
+  initTimeTrackerDashboard._initialized = true;
+
+  ensureTimeTrackerSchema();
+  populateBucketSelect('trackerDomainSelect', 'trackerBucketSelect');
+
+  const startBtn = document.getElementById('trackerStartBtn');
+  const pauseBtn = document.getElementById('trackerPauseBtn');
+  const resumeBtn = document.getElementById('trackerResumeBtn');
+  const stopBtn = document.getElementById('trackerStopBtn');
+  const discardBtn = document.getElementById('trackerDiscardBtn');
+
+  if (startBtn) startBtn.addEventListener('click', startTimeTrackerSession);
+  if (pauseBtn) pauseBtn.addEventListener('click', pauseTimeTrackerSession);
+  if (resumeBtn) resumeBtn.addEventListener('click', resumeTimeTrackerSession);
+  if (stopBtn) stopBtn.addEventListener('click', () => finalizeTimeTrackerSession(true));
+  if (discardBtn) discardBtn.addEventListener('click', () => finalizeTimeTrackerSession(false));
+
+  startTrackerTickLoop();
+  updateTimeTrackerDashboard();
+}
 
 // ── Icon Library ─────────────────────────────────────────────────────────────
 // Each entry: { id, label, domain, svg }
@@ -3638,6 +3989,7 @@ attachManageRemindersHandlers();
 attachTaskSaveHandlers();
 attachReminderSaveHandlers();
 attachRepeatFieldHandlers();
+initTimeTrackerDashboard();
 initTodayReportPage();
 initWeekViewPage();
 initCalendarViewPage();
